@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم السرية - منصة asiltrain</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #2980b9; --success: #27ae60; --bg: #ecf0f1; }
+        :root { 
+            --primary: #2c3e50; 
+            --accent: #2980b9; 
+            --success: #27ae60; 
+            --danger: #e74c3c;
+            --bg: #ecf0f1; 
+        }
         body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
-        .admin-box { max-width: 700px; background: white; margin: 30px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; }
+        .admin-box { max-width: 700px; background: white; margin: 30px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: relative; }
+        h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; margin-top: 10px; }
         .form-group { margin-bottom: 15px; text-align: right; }
         label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; }
         input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
@@ -17,6 +23,8 @@
         .btn:hover { background: #2471a3; }
         .btn-success { background: var(--success); }
         .btn-success:hover { background: #1e8449; }
+        .btn-logout { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 6px; font-size: 14px; font-weight: bold; cursor: pointer; position: absolute; top: 30px; left: 30px; transition: 0.2s; }
+        .btn-logout:hover { background: #c0392b; }
         .result-box { margin-top: 25px; display: none; text-align: right; }
         textarea { width: 100%; height: 200px; font-family: monospace; font-size: 15px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; direction: ltr; text-align: left; }
         .hidden { display: none; }
@@ -25,7 +33,7 @@
 </head>
 <body>
 
-<!-- شاشة الحماية البرمجية المعدلة -->
+<!-- شاشة الحماية البرمجية لمنع المتطفلين -->
 <div id="lockScreen" class="lock-screen">
     <h3 style="color: var(--primary); margin-bottom: 20px;">قفل الأمان للمنصة 🔒</h3>
     
@@ -42,15 +50,17 @@
     <button class="btn" onclick="checkAdminPass()">فتح لوحة التحكم</button>
 </div>
 
-<!-- لوحة التحكم الفعلية -->
+<!-- لوحة التحكم الفعلية (تفتح للمسجلين وتثبت ضد الـ Refresh) -->
 <div id="adminPanel" class="admin-box hidden">
+    <!-- زر تسجيل الخروج الآمن المطور -->
+    <button class="btn-logout" onclick="adminLogout()">🚪 خروج آمن</button>
+
     <h2>مولد أكواد التفعيل والاشتراكات الذكي 🚀</h2>
     <p style="color: #7f8c8d; font-size: 14px;">حدد التخصص والعدد لتوليد أكواد مشفرة تتوافق مع نظام المنصة الحية تلقائياً.</p>
     
     <div class="form-group">
         <label>اختر التخصص المطلوب توليد أكواد له:</label>
         <select id="targetField">
-            <!-- تم تعديل وفصل خيارات الرخص المهنية هنا بنجاح -->
             <option value="TAR">الرخصة المهنية - العام (التربوي)</option>
             <option value="TRN">الرخصة المهنية - المدربين</option>
             <option value="COM">الرخصة المهنية - حاسب آلي</option>
@@ -81,19 +91,30 @@
 </div>
 
 <script>
-// بيانات الدخول الخاصة بك المعتمدة الآن في النظام لقفل الأمان
+// بيانات الدخول المعتمدة والسرية الخاصة بك
 const EXPECTED_USER = 'asiltrain76';
 const EXPECTED_PASS = 'I1396#z1398'; 
 
-// مفتاح خوارزمية التشفير الرياضية اللحظية لصفحة الدخول
+// مفتاح خوارزمية التشفير الرياضية اللحظية المتوافقة مع صفحة الدخول
 const CRYPTO_SALT = 743; 
+
+// نظام الفحص التلقائي للحفاظ على تسجيل الدخول ومنع الطرد عند التحديث
+window.onload = function() {
+    const isLogin = localStorage.getItem('adminLoggedIn');
+    if (isLogin === 'true') {
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+    }
+};
 
 function checkAdminPass() {
     const enteredUser = document.getElementById('adminUser').value.trim();
     const enteredPass = document.getElementById('adminPass').value;
 
-    // التحقق المطابق والكامل من الحساب والرقم السري
     if (enteredUser === EXPECTED_USER && enteredPass === EXPECTED_PASS) {
+        // حفظ حالة الدخول بثبات داخل ذاكرة المتصفح
+        localStorage.setItem('adminLoggedIn', 'true');
+        
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
     } else {
@@ -101,7 +122,15 @@ function checkAdminPass() {
     }
 }
 
-// دالة توليد الأكواد بالمعادلة الشفرية
+// دالة تسجيل الخروج لتنظيف الذاكرة وقفل اللوحة مجدداً عند الرغبة
+function adminLogout() {
+    if(confirm("هل تريد تسجيل الخروج وإغلاق لوحة التحكم؟")) {
+        localStorage.removeItem('adminLoggedIn');
+        window.location.reload();
+    }
+}
+
+// دالة توليد الأكواد بالمعادلة الشفرية الذكية
 function generateSecureCodes() {
     const prefix = document.getElementById('targetField').value;
     const count = parseInt(document.getElementById('codesCount').value);
@@ -118,7 +147,7 @@ function generateSecureCodes() {
     document.getElementById('resultArea').style.display = 'block';
 }
 
-// دالة تحميل الملف تلقائياً للمفكرة
+// دالة تحميل الملف تلقائياً وبأسم التخصص والتاريخ اللحظي للمفكرة
 function downloadTxtFile() {
     const prefix = document.getElementById('targetField').value;
     const text = document.getElementById('codesOutput').value;
