@@ -52,69 +52,98 @@
             <label>البريد الإلكتروني (الإيميل):</label>
             <input type="email" name="البريد_الإلكتروني" required placeholder="name@example.com">
         </div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باقة الأسعار والتفعيل السريع - منصة asiltrain</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f6f7; --danger: #e53e3e; }
+        body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .form-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: right; }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
+        p.subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
+        input[type="text"], input[type="tel"] { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
+        input:focus { border-color: var(--accent); outline: none; }
+        .price-list-group { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .price-item { display: flex; align-items: center; padding: 8px 0; font-size: 14px; line-height: 1.5; border-bottom: 1px dashed #e2e8f0; color: #2d3748; }
+        .price-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .btn-whatsapp { background-color: #25D366; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none; }
+        .btn-whatsapp:hover { background-color: #20ba5a; transform: scale(1.01); }
+        .back-link { display: block; text-align: center; margin-top: 15px; font-size: 14px; color: var(--primary); text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
 
+<div class="form-card">
+    <h2>تفعيل الحساب الفوري عبر الواتساب 🟢</h2>
+    <p class="subtitle">قم بتعبئة بياناتك أدناه واضغط على زر الإرسال ليتم فتح المحادثة مباشرة وإصدار كودك فوراً.</p>
+    
+    <!-- استمارة جمع البيانات التفاعلية اللحظية -->
+    <form onsubmit="sendToWhatsApp(event)">
         <div class="form-group">
-            <label>حدد التخصصات المطلوبة (يمكنك اختيار أكثر من تخصص):</label>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="التربوي العام"> 
-                    <span>الرخصة المهنية - العام (التربوي) <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="المدربين"> 
-                    <span>الرخصة المهنية - المدربين <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="حاسب آلي"> 
-                    <span>الرخصة المهنية - حاسب آلي <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="دراسات إسلامية"> 
-                    <span>الرخصة المهنية - دراسات إسلامية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="لغة عربية"> 
-                    <span>الرخصة المهنية - لغة عربية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="رياضيات"> 
-                    <span>الرخصة المهنية - رياضيات <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="علوم"> 
-                    <span>الرخصة المهنية - علوم <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="اجتماعيات"> 
-                    <span>الرخصة المهنية - اجتماعيات <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="تربية بدنية"> 
-                    <span>الرخصة المهنية - تربية بدنية (رياضة) <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="تربية فنية"> 
-                    <span>الرخصة المهنية - تربية فنية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" name="التخصصات[]" value="القدرات والتحصيلي"> 
-                    <span>مسار الثانوي - القدرات والتحصيلي <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
-                </div>
-            </div>
+            <label>اسم المتدرب / المتدربة الثلاثي:</label>
+            <input type="text" id="subscriberName" required placeholder="أدخل اسمك الكامل">
         </div>
 
         <div class="form-group">
-            <label>إرفاق صورة إيصال السداد أو التحويل البنكي:</label>
-            <div class="file-input">
-                <input type="file" name="وصل_السداد" accept="image/*" required>
+            <label>رقم الجوال الفعال:</label>
+            <input type="tel" id="subscriberPhone" required placeholder="05xxxxxxxx">
+        </div>
+        <div class="form-group">
+            <label>قائمة التخصصات المتاحة والعروض الحالية 🔥:</label>
+            <div class="price-list-group">
+                <div class="price-item">✨ الرخصة المهنية - العام (التربوي) <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - المدربين <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - حاسب آلي <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - دراسات إسلامية <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - لغة عربية <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - رياضيات <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - علوم <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - اجتماعيات <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - تربية بدنية (رياضة) <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ الرخصة المهنية - تربية فنية <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+                <div class="price-item">✨ مسار الثانوي - القدرات والتحصيلي <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
             </div>
         </div>
 
-        <button type="submit" class="btn-submit">إرسال الطلب وتفعيل التخصصات</button>
+        <!-- زر التحويل المطور للواتساب الحقيقي -->
+        <button type="submit" class="btn-whatsapp">
+            💬 إرسال البيانات ووصل السداد عبر الواتساب
+        </button>
     </form>
 
     <a href="index.html" class="back-link">⬅️ العودة لصفحة الدخول الرئيسية</a>
 </div>
+
+<script>
+function sendToWhatsApp(event) {
+    event.preventDefault();
+    
+    // التقاط القيم المدخلة من المتدرب
+    const name = document.getElementById('subscriberName').value.trim();
+    const phone = document.getElementById('subscriberPhone').value.trim();
+    
+    // رقم الواتساب الرسمي الخاص بك بصيغة دولية صحيحة
+    const whatsappNumber = "966555273630";
+    
+    // صياغة نص الرسالة الاحترافية والمشوقة بدقة بالملي
+    const messageText = `مرحباً منصة asiltrain 👋\n\nأود تفعيل حسابي في المحاكي الذكي، وإليك بياناتي:\n👤 الاسم: ${name}\n📱 الجوال: ${phone}\n\n📸 [مرفق صورة الحوالة / إيصال السداد البنكي]`;
+    
+    // ترميز النص ليتوافق مع روابط الويب ومنع تقطيع الكلمات
+    const encodedMessage = encodeURIComponent(messageText);
+    
+    // بناء رابط التوجيه المباشر والديناميكي للواتساب
+    const whatsappUrl = `https://wa.me{whatsappNumber}?text=${encodedMessage}`;
+    
+    // فتح الرابط فوراً في نافذة جديدة ونقل المتدرب إليك مباشرة
+    window.open(whatsappUrl, '_blank');
+}
+</script>
 
 </body>
 </html>
