@@ -7,17 +7,17 @@
     <style>
         :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f6f7; }
         body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .form-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 500px; text-align: right; }
+        .form-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: right; }
         h2 { color: var(--primary); text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
         p.subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
         input[type="text"], input[type="email"], input[type="tel"], select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 15px; transition: 0.3s; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-        .checkbox-group { background: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #e0e0e0; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 14px; }
+        .checkbox-group { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; }
+        .checkbox-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 14px; line-height: 1.5; }
         .checkbox-item:last-child { margin-bottom: 0; }
-        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-item input { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
         .file-input { background: #f8f9fa; border: 2px dashed #cbd5e0; padding: 15px; text-align: center; border-radius: 8px; cursor: pointer; }
         .btn-submit { background-color: var(--accent); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 15px; }
         .btn-submit:hover { background-color: #219653; }
@@ -31,11 +31,12 @@
     <h2>طلب تفعيل الحساب وإرسال الإيصال 💳</h2>
     <p class="subtitle">قم بتعبئة بياناتك وإرفاق وصل السداد وسيتم إرسال أكوادك عبر الواتساب أو الإيميل فوراً.</p>
     
-    <!-- تم إدخال إيميلك الرسمي لربط استمارة المبيعات واستقبال المرفقات والصور -->
+    <!-- ربط السيرفر الرسمي ببريدك الإلكتروني asiltrain76@gmail.com -->
     <form action="https://formsubmit.co" method="POST" enctype="multipart/form-data">
         
-        <input type="hidden" name="_next" value="https://github.io">
+        <!-- حماية ضد الكابتشا وإرجاع المتدرب للرئيسية بعد الإرسال -->
         <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="index.html">
 
         <div class="form-group">
             <label>اسم المتدرب / المتدربة الثلاثي:</label>
@@ -55,17 +56,50 @@
         <div class="form-group">
             <label>حدد التخصصات المطلوبة (يمكنك اختيار أكثر من تخصص):</label>
             <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="التربوي العام"> <span>الرخصة المهنية - العام (التربوي)</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="المدربين"> <span>الرخصة المهنية - المدربين</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="حاسب آلي"> <span>الرخصة المهنية - حاسب آلي</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="دراسات إسلامية"> <span>الرخصة المهنية - دراسات إسلامية</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="لغة عربية"> <span>الرخصة المهنية - لغة عربية</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="رياضيات"> <span>الرخصة المهنية - رياضيات</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="علوم"> <span>الرخصة المهنية - علوم</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="اجتماعيات"> <span>الرخصة المهنية - اجتماعيات</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="تربية بدنية"> <span>الرخصة المهنية - تربية بدنية (رياضة)</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="تربية فنية"> <span>الرخصة المهنية - تربية فنية</span></div>
-                <div class="checkbox-item"><input type="checkbox" name="التخصصات[]" value="القدرات والتحصيلي"> <span>مسار الثانوي - القدرات والتحصيلي</span></div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="التربوي العام"> 
+                    <span>الرخصة المهنية - العام (التربوي) <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="المدربين"> 
+                    <span>الرخصة المهنية - المدربين <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="حاسب آلي"> 
+                    <span>الرخصة المهنية - حاسب آلي <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="دراسات إسلامية"> 
+                    <span>الرخصة المهنية - دراسات إسلامية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="لغة عربية"> 
+                    <span>الرخصة المهنية - لغة عربية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="رياضيات"> 
+                    <span>الرخصة المهنية - رياضيات <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="علوم"> 
+                    <span>الرخصة المهنية - علوم <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="اجتماعيات"> 
+                    <span>الرخصة المهنية - اجتماعيات <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="تربية بدنية"> 
+                    <span>الرخصة المهنية - تربية بدنية (رياضة) <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="تربية فنية"> 
+                    <span>الرخصة المهنية - تربية فنية <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" name="التخصصات[]" value="القدرات والتحصيلي"> 
+                    <span>مسار الثانوي - القدرات والتحصيلي <del style="color: #000; margin-right: 5px;">100 ريال</del> <b style="color: #e53e3e; margin-right: 5px;">40 ريال لفترة محدودة 🔥</b></span>
+                </div>
             </div>
         </div>
 
