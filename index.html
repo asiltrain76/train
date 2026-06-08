@@ -5,91 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منصة المحاكي الذكي الشامل - نسخة الويب</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-content: center;
-        }
-        .quiz-container {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            box-sizing: border-box;
-        }
-        /* كلاسات التحكم في إخفاء وإظهار الشاشات بلمحة بصر */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-content: center; }
+        .quiz-container { background-color: #ffffff; width: 100%; max-width: 600px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 25px; box-sizing: border-box; }
         .screen { display: none; }
         .active-screen { display: block; }
-        
         h2, h3 { color: #1a365d; text-align: center; margin-top: 0; }
         .form-group { margin-bottom: 20px; }
         label { font-weight: bold; display: block; margin-bottom: 8px; color: #4a5568; }
-        
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #cbd5e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            box-sizing: border-box;
-            background-color: #fff;
-        }
-        
-        .nav-btn {
-            width: 100%;
-            background-color: #3182ce;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 10px;
-        }
+        select, input { width: 100%; padding: 12px; border: 2px solid #cbd5e0; border-radius: 8px; font-size: 1rem; box-sizing: border-box; background-color: #fff; }
+        .nav-btn { width: 100%; background-color: #3182ce; color: white; border: none; border-radius: 8px; padding: 14px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background-color 0.2s; margin-top: 10px; }
         .nav-btn:hover { background-color: #2b6cb0; }
-        
-        /* شريط التقدم التفاعلي */
-        .progress-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            color: #4a5568;
-        }
+        .progress-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.95rem; font-weight: bold; color: #4a5568; }
         .score-badge { background-color: #ebf8ff; color: #2b6cb0; padding: 4px 10px; border-radius: 20px; border: 1px solid #bee3f8; }
         .progress-bar-bg { background-color: #e2e8f0; width: 50%; height: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #cbd5e0; }
         .progress-bar-fill { background-color: #3182ce; width: 0%; height: 100%; border-radius: 10px; transition: width 0.4s ease; }
-        
         .question-box { font-size: 1.2rem; font-weight: bold; line-height: 1.6; margin-bottom: 20px; color: #1a365d; }
         .options-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
-        .option-btn {
-            background-color: #fff; border: 2px solid #cbd5e0; border-radius: 8px;
-            padding: 14px; font-size: 1rem; text-align: right; cursor: pointer; transition: all 0.2s ease;
-        }
+        .option-btn { background-color: #fff; border: 2px solid #cbd5e0; border-radius: 8px; padding: 14px; font-size: 1rem; text-align: right; cursor: pointer; transition: all 0.2s ease; }
         .option-btn:hover { border-color: #3182ce; background-color: #ebf8ff; }
         .btn-correct { background-color: #c6f6d5 !important; border-color: #38a169 !important; color: #22543d !important; font-weight: bold; }
         .btn-wrong { background-color: #fed7d7 !important; border-color: #e53e3e !important; color: #742a2a !important; }
-        
         .tools-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
         .tool-btn { border: none; border-radius: 8px; padding: 12px; font-size: 0.95rem; font-weight: bold; color: white; cursor: pointer; }
         .btn-eliminate { background-color: #e53e3e; }
         .btn-hint { background-color: #38a169; }
         .btn-key { background-color: #805ad5; }
         .btn-standard { background-color: #2b6cb0; }
-        .btn-end { background-color: #718096; grid-column: span 2; } /* زر إنهاء ممتد على الصف بالكامل */
-        
-        /* تنسيق شاشة النتيجة */
+        .btn-end { background-color: #718096; grid-column: span 2; }
         .results-box { background-color: #f7fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 20px; margin-bottom: 20px; }
         .result-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #edf2f7; font-size: 1.05rem; }
         .result-item:last-child { border-bottom: none; }
@@ -97,10 +39,9 @@
     </style>
 </head>
 <body>
-
 <div class="quiz-container">
     
-    <!-- 1️⃣ الشاشة الأولى: تسجيل اسم المتدرب للترحيب به -->
+    <!-- 1) الشاشة الأولى: ترحيب وتسجيل اسم المتدرب -->
     <div id="screen1" class="screen active-screen">
         <h2>مرحباً بك في المحاكي الذكي</h2>
         <div class="form-group">
@@ -110,11 +51,9 @@
         <button class="nav-btn" onclick="goToScreen2()">التالي</button>
     </div>
 
-    <!-- 2️⃣ الشاشة الثانية: ضبط خيارات الاختبار الذكية والديناميكية المحدثة -->
+    <!-- 2) الشاشة الثانية: ضبط خيارات التخصص والمجال والعدد -->
     <div id="screen2" class="screen">
         <h2>ضبط إعدادات الاختبار</h2>
-        
-        <!-- اختيار التخصص الرئيسي أولاً -->
         <div class="form-group">
             <label for="ddlTakhassus">اختر التخصص المطلوب:</label>
             <select id="ddlTakhassus" onchange="updateFields()">
@@ -123,16 +62,11 @@
                 <option value="تربوي">التربوي العام (الرخصة المهنية)</option>
             </select>
         </div>
-        
-        <!-- قائمة المجالات المحدثة تلقائياً برمجياً حسب التخصص المختار -->
         <div class="form-group">
             <label for="ddlField">اختر المجال المحدد:</label>
             <select id="ddlField">
-                <!-- يتم تعبئتها ديناميكياً عبر الجافا سكريبت -->
             </select>
         </div>
-        
-        <!-- اختيار عدد الأسئلة المطلوبة في الكويز -->
         <div class="form-group">
             <label for="ddlCount">اختر عدد أسئلة الاختبار:</label>
             <select id="ddlCount">
@@ -145,34 +79,30 @@
         <button class="nav-btn" style="background-color: #2b6cb0;" onclick="startExamWeb()">ابدأ الاختبار الآن 🚀</button>
     </div>
 
-    <!-- 3️⃣ الشاشة الثالثة: شاشة الاختبار الحية التفاعلية بالألوان والعداد التراكمي وزر إنهاء -->
+    <!-- 3) الشاشة الثالثة: واجهة الأسئلة التفاعلية بالألوان والمساعدات وزر إنهاء -->
     <div id="screen3" class="screen">
         <div class="progress-container">
             <span id="lblCounter">سؤال 1 من 10</span>
             <div class="progress-bar-bg"><div id="progBarFill" class="progress-bar-fill"></div></div>
             <span id="lblScore" class="score-badge">الصح: 0</span>
         </div>
-
         <div id="txtQuestion" class="question-box">جاري شحن السؤال...</div>
-        
         <div class="options-container">
             <button id="optA" class="option-btn" onclick="checkAnswer(0)"></button>
             <button id="optB" class="option-btn" onclick="checkAnswer(1)"></button>
             <button id="optC" class="option-btn" onclick="checkAnswer(2)"></button>
             <button id="optD" class="option-btn" onclick="checkAnswer(3)"></button>
         </div>
-        
         <div class="tools-container">
             <button id="btnEliminate" class="tool-btn btn-eliminate" onclick="eliminateTwoAnswers()">حذف إجابتين</button>
             <button id="btnHint" class="tool-btn btn-hint" onclick="showHint()">تلميح بسيط</button>
             <button id="btnKey" class="tool-btn btn-key" onclick="showKey()">مفتاح الحل</button>
             <button id="btnStandard" class="tool-btn btn-standard" onclick="showStandard()">المعيار والمؤشر</button>
-            <!-- زر إنهاء الاختبار في أي وقت المطور والمطلوب -->
             <button id="btnEndEarly" class="tool-btn btn-end" onclick="endExamEarly()">إنهاء الاختبار وعرض النتائج 📊</button>
         </div>
     </div>
 
-    <!-- 4️⃣ الشاشة الرابعة: شاشة النتيجة النهائية والإحصائيات والتحليل المرن -->
+    <!-- 4) الشاشة الرابعة: لوحة التحليل النهائي الشامل والإحصائيات الناتجة -->
     <div id="screen4" class="screen">
         <h2>التحليل النهائي للاختبار</h2>
         <div class="results-box">
@@ -189,16 +119,15 @@
 
 </div>
 <script>
-    // 1) بنك الأسئلة الشامل والديناميكي الموزع حسب التخصصات والمجالات المعياري
     const allBankQuestions = {
         "ثانوي": {
             "قدرات": [
-                { Q: "حصل خمسة طلاب في اختبار قصير على الدرجات التالية: (5، 7، 8، 9، 11). ما هو المتوسط الحسابي لدرجاتهم؟", a: "24، وهو المجموع الكلي للدرجات دون قسمتها.", b: "8، ويمثل القيمة الوسطى بعد الترتيب.", c: "8، ونحصل عليه بجمع القيم (40) وقسمتها على عددها (5).", d: "6، وهي القيمة الأكثر تكراراً وشيوعاً بين الدرجات.", correct: "C", hint_simple: "المتوسط الحسابي = مجموع القيم ÷ عددها = 40 ÷ 5 = 8.", hint_standard: "مسار الثانوي | المجال: القدرات العامة (الكمي) | مؤشر: الإحصاء والتحليل.", hint_key: "مجموع القيم تقسيم عددها", elim1: "A", elim2: "D" },
-                { Q: "إذا انطلق قطار بسرعة 100 كم/ساعة، وبعد ساعة انطلق آخر بسرعة 120 كم/ساعة. بعد كم ساعة يلتقيان؟", a: "3 ساعات، باحتساب فارق المسافة المباشر.", b: "5 ساعات، بقسمة مسافة الأول (100 كم) على فارق السرعة بينهما (20 كم/ساعة).", c: "6 ساعات، وهو الزمن اللازم للوصول لنهاية المسار.", d: "4 ساعات، بافتراض التوقف المتكرر في المحطات.", correct: "B", hint_simple: "زمن الالتقاء = الفارق بينهما ÷ فارق السرعة = 100 ÷ (120 - 100) = 5 ساعات.", hint_standard: "مسار الثانوي | المجال: القدرات العامة (الكمي) | مؤشر: مسائل السرعة والحركة.", hint_key: "قسمة مسافة الأول على فارق السرعتين", elim1: "A", elim2: "D" }
+                { Q: "حصل خمسة طلاب في اختبار قصير على الدرجات التالية: (5، 7، 8، 9، 11). ما هو المتوسط الحسابي لدرجاتهم؟", a: "24، وهو المجموع الكلي للدرجات دون قسمتها.", b: "8، ويمثل القيمة الوسطى بعد الترتيب تصاعدياً.", c: "8، ونحصل عليه بجمع القيم (40) وقسمتها على عددها (5).", d: "6، وهي القيمة الأكثر تكراراً وشيوعاً بين الدرجات.", correct: "C", hint_simple: "المتوسط الحسابي = مجموع القيم ÷ عددها = 40 ÷ 5 = 8.", hint_standard: "مسار الثانوي | المجال: القدرات العامة (الكمي) | مؤشر: الإحصاء والتحليل.", hint_key: "مجموع القيم تقسيم عددها", elim1: "A", elim2: "D" },
+                { Q: "إذا انطلق قطار بسرعة 100 كم/ساعة، وبعد ساعة انطلق آخر بسرعة 120 كم/ساعة. بعد كم ساعة يلتقيان؟", a: "3 ساعات، باحتساب فارق المسافة المباشر.", b: "5 ساعات، بقسمة مسافة الأول (100 كم) على فارق السرعة بينهما (20 كم/ساعة).", c: "6 ساعات، وهو الزمن اللازم للوصول لنهاية المسار.", d: "4 ساعات, بافتراض التوقف المتكرر في المحطات.", correct: "B", hint_simple: "زمن الالتقاء = الفارق بينهما ÷ فارق السرعة = 100 ÷ (120 - 100) = 5 ساعات.", hint_standard: "مسار الثانوي | المجال: القدرات العامة (الكمي) | مؤشر: مسائل السرعة والحركة.", hint_key: "قسمة مسافة الأول على فارق السرعتين", elim1: "A", elim2: "D" }
             ],
             "تحصيلي": [
                 { Q: "أي العبارات التالية تمثل المفهوم العلمي لتغير موضع الجسم بالنسبة للزمن، والمسؤولة عن حساب التسارع؟", a: "المسافة القياسية المطلقة المقطوعة خلال زمن الرحلة.", b: "السرعة المتجهة، ونحصل عليها بقسمة التغير في الإزاحة على الزمن.", c: "القوة المحصلة المؤثرة على الجسم والمسببة لحركته.", d: "الزخم الخطي الثابت للجسم أثناء حركته في مسار مستقيم.", correct: "B", hint_simple: "السرعة المتجهة هي معدل تغير الإزاحة بالنسبة للزمن، والتسارع هو معدل تغير هذه السرعة.", hint_standard: "مسار الثانوي | المجال: التحصيلي العلمي | مؤشر: الفيزياء (الميكانيكا والحركة).", hint_key: "السرعة المتجهة هي معدل تغير الإزاحة", elim1: "A", elim2: "D" },
-                { Q: "في علم الأحياء والتصنيف الحديث، أي المخلوقات الحية التالية يُصنف ضمن الممالك البدائية؟", a: "البكتيريا الحقيقية (Eubacteria).", b: "البدائيات المنتجة للميثان (Methanogens) لقدرتها على العيش بالبيئات القاسية.", c: "الفطريات الاقترانية المتواجدة على الأطعمة.", d: "الطلائعيات الشبيهة بالحيوانات كالأميبا.", correct: "B", hint_simple: "البدائيات تعيش في ظروف قاسية جداً كالبراميل البركانية والمياه شديدة الملوحة.", hint_standard: "مسار الثانوي | المجال: التحصيلي العلمي | مؤشر: الأحياء (التنوع الحيوي والتصنيف).", hint_key: "البدائيات تعيش في البيئات القاسية", elim1: "A", elim2: "D" }
+                { Q: "في علم الأحياء والتصنيف الحديث، أي مخلوق حي مما يلي يُصنف ضمن الممالك البدائية؟", a: "البكتيريا الحقيقية (Eubacteria).", b: "البدائيات المنتجة للميثان (Methanogens) لقدرتها على العيش بالبيئات القاسية.", c: "الفطريات الاقترانية المتواجدة على الأطعمة.", d: "الطلائعيات الشبيهة بالحيوانات كالأميبا.", correct: "B", hint_simple: "البدائيات تعيش في ظروف قاسية جداً كالبراميل البركانية والمياه شديدة الملوحة.", hint_standard: "مسار الثانوي | المجال: التحصيلي العلمي | مؤشر: الأحياء (التنوع الحيوي والتصنيف).", hint_key: "البدائيات تعيش في البيئات القاسية", elim1: "A", elim2: "D" }
             ]
         },
         "إسلامية": {
@@ -214,10 +143,10 @@
                 { Q: "وفقاً للميثاق الرسمي لأخلاقيات مهنة التعليم بالمملكة، ما هو الواجب التربوي الأول للمعلم تجاه مهنته؟", a: "المطالبة المستمرة بالترقيات المهنية والمزايا المالية.", b: "الاعتزاز بالمهنة والعمل على رفع مكانتها في المجتمع وسلوكه القدوة.", c: "الاقتصار على شرح المنهج دون التدخل في السلوكيات والأخلاق.", d: "نقل كافة المشكلات الداخلية للمدرسة إلى وسائل الإعلام والمجتمع.", correct: "B", hint_simple: "الاعتزاز بالمهنة والعمل كقدوة حسنة هو أساس ميثاق أخلاقيات مهنة التعليم المعزز للقيم.", hint_standard: "المسار التربوي العام | المجال: القيم والمسؤوليات المهنية | مؤشر: الالتزام بأخلاقيات المهنة وسلوك القدوة.", hint_key: "الاعتزاز بالمهنة وسلوك القدوة", elim1: "A", elim2: "D" }
             ],
             "المعرفة": [
-                { Q: "أي من النظريات التعليمية التالية يرتكز على أن التعلم يحدث نتيجة تفاعل المتعلق وبناء معرفته بنفسه من خبراته السابقة؟", a: "النظرية السلوكية المعتمدة على المثير والاستجابة.", b: "النظرية البنائية (Constructivism) لـ جان بياجيه حيث المتعلم هو مركز العملية.", c: "النظرية المعرفية الكلاسيكية القائمة على التلقين والحفظ.", d: "النظرية الجشطالتية المعتمدة على الفهم الكلي المفاجئ للمواقف.", correct: "B", hint_simple: "النظرية البنائية تؤكد أن المتعلم يبني معرفته بنشاط من خلال تفاعله مع البيئة وخبراته السابقة.", hint_standard: "المسار التربوي العام | المجال: المعرفة المهنية | مؤشر: نظريات التعلم وتطبيقاتها الصفية.", hint_key: "البنائية تعني أن المتعلم يبني المعرفة بنفسه", elim1: "A", elim2: "D" }
+                { Q: "أي من النظريات التعليمية التالية يرتكز على أن التعلم يحدث نتيجة تفاعل المتعلم وبناء معرفته بنفسه من خبراته السابقة؟", a: "النظرية السلوكية المعتمدة على المثير والاستجابة.", b: "النظرية البنائية (Constructivism) لـ جان بياجيه حيث المتعلم هو مركز العملية.", c: "النظرية المعرفية الكلاسيكية القائمة على التلقين والحفظ.", d: "النظرية الجشطالتية المعتمدة على الفهم الكلي المفاجئ للمواقف.", correct: "B", hint_simple: "النظرية البنائية تؤكد أن المتعلم يبني معرفته بنشاط من خلال تفاعله مع البيئة وخبراته السابقة.", hint_standard: "المسار التربوي العام | المجال: المعرفة المهنية | مؤشر: نظريات التعلم وتطبيقاتها الصفية.", hint_key: "البنائية تعني أن المتعلم يبني المعرفة بنفسه", elim1: "A", elim2: "D" }
             ],
             "الممارسة": [
-                { Q: "أراد معلم استثارة دافعية طلابه في بداية الدرس عبر طرح مشكلة واقعية تطلب عصفاً ذهنياً. أي الاستراتيجيات التالية طبق المعلم؟", a: "التعليم الإلقائي التقليدي المباشر.", b: "استراتيجية التعلم القائم على المشكلات (Problem-Based Learning) المحفزة للتفكير.", c: "التعليم المبرمج الخطي الفردي الصارم.", d: "المحاكاة الافتراضية المعتمدة على البيئات الرقمية المنعزلة.", correct: "B", hint_simple: "طرح المشكلات الواقعية والعصف الذهني في البداية يقع ضمن استراتيجية التعلم القائم على المشكلات.", hint_standard: "المسار التربوي العام | المجال: الممارسة المهنية | مؤشر: التخطيط للتدريس وتطبيق استراتيجيات التعلم النشط.", hint_key: "التعلم القائم على حل المشكلات الواقعية", elim1: "A", elim2: "D" }
+                { Q: "أراد معلم استثارة دافعية طلابه في بداية الدرس عبر طرح مشكلة واقعية تتطلب عصفاً ذهنياً. أي الاستراتيجيات التالية طبق المعلم؟", a: "التعليم الإلقائي التقليدي المباشر.", b: "استراتيجية التعلم القائم على المشكلات (Problem-Based Learning) المحفزة للتفكير.", c: "التعليم المبرمج الخطي الفردي الصارم.", d: "المحاكاة الافتراضية المعتمدة على البيئات الرقمية المنعزلة.", correct: "B", hint_simple: "طرح المشكلات الواقعية والعصف الذهني في البداية يقع ضمن استراتيجية التعلم القائم على المشكلات.", hint_standard: "المسار التربوي العام | المجال: M الممارسة المهنية | مؤشر: التخطيط للتدريس وتطبيق استراتيجيات التعلم النشط.", hint_key: "التعلم القائم على حل المشكلات الواقعية", elim1: "A", elim2: "D" }
             ],
             "الكمية": [
                 { Q: "إذا كان مجموع درجات 6 طلاب في اختبار قصير يساوي 48 درجة، فما هو المتوسط الحسابي لدرجات هؤلاء الطلاب؟", a: "42، بطرح عدد الطلاب من مجموع الدرجات الإجمالي.", b: "8 درجات، ونحصل عليه بقسمة مجموع الدرجات (48) على عدد الطلاب (6).", c: "12 درجة، بافتراض تقسيم متساوٍ افتراضي خارج المعطيات.", d: "288، بضرب عدد الطلاب في مجموع الدرجات بشكل عشوائي.", correct: "B", hint_simple: "المتوسط الحسابي = مجموع القيم ÷ عددها = 48 ÷ 6 = 8 درجات.", hint_standard: "المسار التربوي العام | المجال: المهارات الكمية واللغوية | مؤشر: حساب المؤشرات الإحصائية (المتوسط الحسابي).", hint_key: "قسمة مجموع الدرجات 48 على عدد الطلاب 6", elim1: "A", elim2: "D" }
@@ -225,7 +154,6 @@
         }
     };
 
-    // المتغيرات العامة لإدارة المنصة والاختبار والوقت
     let currentIdx = 0;
     let correctAnswersCount = 0;
     let wrongAnswersCount = 0;
@@ -234,14 +162,10 @@
     let selectedQuestions = [];
     let startTime = 0;
     let finalTime = 0;
-    let timerInterval = null;
     const btnIDs = ["optA", "optB", "optC", "optD"];
-    // 2) دالة تحديث قائمة المجالات ديناميكياً حسب التخصص المختار (Conditional Inputs)
     function updateFields() {
         const takhassus = document.getElementById("ddlTakhassus").value;
         const ddlField = document.getElementById("ddlField");
-        
-        // مسح الخيارات القديمة بلمحة بصر
         ddlField.innerHTML = "";
         
         if (takhassus === "ثانوي") {
@@ -261,7 +185,6 @@
         }
     }
 
-    // الانتقال للشاشة الثانية وضمان تعبئة المجالات فوراً
     function goToScreen2() {
         const name = document.getElementById("txtName").value.trim();
         if (name === "") {
@@ -270,18 +193,15 @@
         }
         document.getElementById("screen1").classList.remove("active-screen");
         document.getElementById("screen2").classList.add("active-screen");
-        updateFields(); // تعبئة الخيارات لأول مرة تلقائياً
+        updateFields();
     }
 
-    // 3) دالة تجميع الأسئلة العشوائية وبدء الامتحان (تطابق كود ابدأ والـ On Show المطور)
     function startExamWeb() {
         const takhassus = document.getElementById("ddlTakhassus").value;
         const field = document.getElementById("ddlField").value;
         const countRequest = parseInt(document.getElementById("ddlCount").value);
-        
         let pool = [];
         
-        // تجميع الأسئلة بناءً على المجال المحدد أو الاختبار الشامل
         if (field === "all") {
             for (let f in allBankQuestions[takhassus]) {
                 pool = pool.concat(allBankQuestions[takhassus][f]);
@@ -295,27 +215,21 @@
             return;
         }
         
-        // خلط وتوزيع الأسئلة عشوائياً واختيار العدد المطلوب بدقة (منع التكرار)
         pool = pool.sort(() => Math.random() - 0.5);
         selectedQuestions = pool.slice(0, Math.min(countRequest, pool.length));
         
-        // تصفير العدادات وبدء التوقيت الصاعد المتناسق مع الجوال
         currentIdx = 0;
         correctAnswersCount = 0;
         wrongAnswersCount = 0;
         startTime = Date.now();
         
-        // نقل الطالب لشاشة الاختبار الحية بلمحة بصر
         document.getElementById("screen2").classList.remove("active-screen");
         document.getElementById("screen3").classList.add("active-screen");
-        
         showQuestionWeb();
     }
-    // 4) دالة عرض وتفصيل السؤال الحالي مع خلط الخيارات (الوميض اللوني)
     function showQuestionWeb() {
         currentQuestion = selectedQuestions[currentIdx];
         
-        // إعادة تهيئة الأزرار وتنظيف الألوان السابقة وتفعيل الضغط
         btnIDs.forEach(id => {
             const btn = document.getElementById(id);
             btn.style.visibility = "visible";
@@ -323,21 +237,15 @@
             btn.disabled = false;
         });
 
-        // إعادة تفعيل زر الحذف الخبيث
         document.getElementById("btnEliminate").disabled = false;
         document.getElementById("btnEliminate").style.opacity = "1";
 
-        // تحديث شريط التقدم والعداد بالقمة
         document.getElementById("lblCounter").innerText = `سؤال ${currentIdx + 1} من ${selectedQuestions.length}`;
         document.getElementById("lblScore").innerText = `الصح: ${correctAnswersCount}`;
         let progressPercent = ((currentIdx + 1) / selectedQuestions.length) * 100;
         document.getElementById("progBarFill").style.width = progressPercent + "%";
 
-        // عرض نص السؤال
         document.getElementById("txtQuestion").innerText = currentQuestion.Q;
-        
-        // إخفاء الصورة مؤقتاً في هذا التحديث (أو شحنها لو كان لها مسار)
-        document.getElementById("imgQuestion").style.display = "none";
 
         let initialAnswers = [
             { txt: currentQuestion.a, key: "A" },
@@ -346,20 +254,17 @@
             { txt: currentQuestion.d, key: "D" }
         ];
         
-        // خلط الخيارات عشوائياً عدا المفاتيح الأصلية لحمايتها
         mixedAnswers = initialAnswers.sort(() => Math.random() - 0.5);
 
+        // الإصلاح المضمون لعرض نصوص الخيارات الأربعة المخلّطة بدقة متناهية
         document.getElementById("optA").innerText = "أ) " + mixedAnswers[0].txt;
         document.getElementById("optB").innerText = "ب) " + mixedAnswers[1].txt;
         document.getElementById("optC").innerText = "ج) " + mixedAnswers[2].txt;
         document.getElementById("optD").innerText = "د) " + mixedAnswers[3].txt;
     }
 
-    // 5) فحص الإجابة الفلاشي بالألوان والانتقال التلقائي دون نوافذ منبثقة مزعجة
     function checkAnswer(index) {
         let correctAnswerText = currentQuestion[currentQuestion.correct.toLowerCase()];
-        
-        // قفل الأزرار الأربعة فوراً لمنع التلاعب
         btnIDs.forEach(id => document.getElementById(id).disabled = true);
 
         let clickedBtnId = btnIDs[index];
@@ -379,18 +284,15 @@
             wrongAnswersCount++;
         }
 
-        // انتظار ثانية ونصف لتأمل الإجابة بصرياً ثم الانتقال تلقائياً
         setTimeout(() => {
             if (currentIdx < selectedQuestions.length - 1) {
                 currentIdx++;
                 showQuestionWeb();
             } else {
-                showFinalResults(); // نهاية الاختبار التلقائي
+                showFinalResults();
             }
         }, 1200);
     }
-
-    // 6) كود زر حذف إجابتين المتناسق تماماً مع خلط الخيارات
     function eliminateTwoAnswers() {
         const e1 = currentQuestion.elim1;
         const e2 = currentQuestion.elim2;
@@ -405,38 +307,31 @@
         document.getElementById("btnEliminate").style.opacity = "0.5";
     }
 
-    // 7) دالة إنهاء الاختبار في أي وقت (الخروج المبكر والمنصف)
     function endExamEarly() {
         if (confirm("هل أنت متأكد من إنهاء الاختبار الحالي وعرض التحليل النهائي لمستواك؟")) {
             showFinalResults();
         }
     }
 
-    // 8) حساب النتائج والتحليل النهائي الفوري والمنصف برمجياً
     function showFinalResults() {
         finalTime = Math.floor((Date.now() - startTime) / 1000);
         
-        // قراءة المتغيرات وتجهيز الأسئلة التي واجهها وحلها المتدرب بالفعل
         const nameText = document.getElementById("txtName").value;
         const takhassusText = document.getElementById("ddlTakhassus").value;
         const fieldText = document.getElementById("ddlField").options[document.getElementById("ddlField").selectedIndex].text;
         
         let attempted = currentIdx + 1;
-        // إذا ضغط إنهاء دون الإجابة على السؤال الحالي، نخصمه من المحاولات
         if (document.getElementById("optA").disabled === false && attempted > 1) {
             attempted = currentIdx;
         }
 
-        // حساب الإجابات الخاطئة الفعلية بناءً على المحاولات لإنصاف المتدرب
         wrongAnswersCount = attempted - correctAnswersCount;
 
-        // حسبة النسبة المئوية الذكية المرنة
         let percent = 0;
         if (attempted > 0) {
             percent = Math.floor((correctAnswersCount / attempted) * 100);
         }
 
-        // التقييم التلقائي
         let evalText = "";
         if (percent >= 90) { evalText = "ممتاز جدًا 🌟"; }
         else if (percent >= 80) { evalText = "ممتاز ✨"; }
@@ -444,12 +339,10 @@
         else if (percent >= 60) { evalText = "جيد (مؤهل للرخصة) 🎯"; }
         else { evalText = "تحتاج مراجعة وتدريب 📚"; }
 
-        // تنسيق الوقت الإجمالي صعوداً بدقة بالدقائق والثواني
         let mins = Math.floor(finalTime / 60);
         let secs = finalTime % 60;
         let timeString = (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
 
-        // شحن البيانات في شاشة النتائج الرابعة
         document.getElementById("resName").innerText = nameText;
         document.getElementById("resField").innerText = takhassusText + " - " + fieldText;
         document.getElementById("resCorrect").innerText = correctAnswersCount + " سؤال";
@@ -458,18 +351,15 @@
         document.getElementById("resEval").innerText = evalText;
         document.getElementById("resTime").innerText = timeString + " دقيقة";
 
-        // نقل المتدرب لشاشة التحليل النهائي بلمحة بصر
         document.getElementById("screen3").classList.remove("active-screen");
         document.getElementById("screen4").classList.add("active-screen");
     }
 
-    // 9) زر إعادة الاختبار وتصفير العدادات والرجوع لشاشة الخيارات
     function resetAndRestart() {
         document.getElementById("screen4").classList.remove("active-screen");
         document.getElementById("screen2").classList.add("active-screen");
     }
 
-    // أزرار الرسائل المنبثقة المحفوظة للمساعدات التربوية
     function showHint() { alert("💡 تلميح بسيط لمساعدتك:\n\n" + currentQuestion.hint_simple); }
     function showKey() { alert("🔑 الكلمة المفتاحية للحل:\n\n" + currentQuestion.hint_key); }
     function showStandard() { alert("📊 تصنيف هذا السؤال في قياس:\n\n" + currentQuestion.hint_standard); }
