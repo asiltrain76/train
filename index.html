@@ -105,8 +105,8 @@ function handleLogin(event) {
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
 
-    // دعم الحساب التجريبي المفتوح (Guest) وإجباره على 10 أسئلة فوراً مهما اختار
-    if (name.toLowerCase() === 'guest' && code === '1234') {
+    // التعديل الذكي: إذا كتب المتدرب كود التجربة 1234 يدخل فوراً كـ guest مهما كان الاسم المكتوب!
+    if (code === '1234') {
         saveAndRedirect(name, field, 'guest', 10);
         return;
     }
@@ -123,7 +123,7 @@ function handleLogin(event) {
     let isValid = false;
     const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية للمنصة
 
-    // فك التشفير ومطابقة الكود
+    // فك التشفير ومطابقة الكود المشفر للمشتركين
     if (parts.length === 3 && parts[0] === expectedPrefix) {
         const randomNum = parseInt(parts[1]);
         const checkDigit = parseInt(parts[2]);
@@ -140,6 +140,7 @@ function handleLogin(event) {
         errorMsg.style.display = 'block';
     }
 }
+
 
 function saveAndRedirect(name, field, role, limit) {
     localStorage.clear(); // تنظيف الذاكرة المؤقتة لبدء اختبار جديد ونظيف
