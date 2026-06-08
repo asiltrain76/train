@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الاختبارات - الرخصة المهنية للمدربين</title>
+    <title>محاكي الاختبارات المطور - الرخصة المهنية للمدربين</title>
     <style>
         :root { 
-            --primary: #2c3e50; 
+            --primary: #2b6cb0; 
             --success: #38a169; 
             --danger: #e53e3e; 
-            --bg: #f4f6f7; 
-            --accent: #d35400;
+            --bg: #f7fafc; 
+            --accent: #8e44ad;
         }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -63,7 +63,7 @@
     </div>
 
     <div class="footer-actions" style="justify-content: flex-end;">
-        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة Nتيجة</button>
     </div>
 </div>
 
@@ -76,7 +76,7 @@
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
 <script>
-// بنك أسئلة رخصة المدربين المستقلة
+// بنك أسئلة رخصة المدربين المبدئي للتجربة والتحقق اللحظي من الميزات
 const questions = [
     { 
         q: "أي من الأساليب التدريبية التالية يُعد الأنسب عند رغبة المدرب في إكساب المتدربين مهارات عملية حركية دقيقة داخل بيئة العمل؟", 
@@ -97,7 +97,7 @@ window.onload = function() {
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    const sIdx = localStorage.getItem('trn_idx'), sScr = localStorage.getItem('trn_scr');
+    const sIdx = localStorage.getItem('trn_idx'), sScr = localStorage.getItem('trn_score');
     if (sIdx && sScr) { 
         currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
         document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
@@ -119,13 +119,13 @@ function loadQuestion() {
     document.getElementById('standard-box').style.display = 'none';
 
     if (isGuest && currentIndex >= 10) { 
-        alert("انتهت الأسئلة التجريبية! يرجى التفعيل لفتح كامل بنوك الأسئلة الفاخرة."); 
+        alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح كامل البنك الفاخر."); 
         showResults(); return; 
     }
     if (currentIndex >= questions.length) { showResults(); return; }
 
     localStorage.setItem('trn_idx', currentIndex); 
-    localStorage.setItem('trn_scr', correctCount);
+    localStorage.setItem('trn_score', correctCount);
 
     const qData = questions[currentIndex];
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
@@ -176,10 +176,10 @@ function showResults() {
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerText = `🎯 النتيجة النهائية للتحليل: ${correctCount} من أصل ${total} أسئلة بنسبة مرنة موثقة (${pct}%)`;
-    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    document.getElementById('final-score').innerText = `🎯 النتيجة: ${correctCount} من ${total} بنسبة مرنة موثقة (${pct}%)`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    localStorage.removeItem('trn_idx'); localStorage.removeItem('trn_scr');
+    localStorage.removeItem('trn_idx'); localStorage.removeItem('trn_score');
 }
 
 function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }

@@ -3,100 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الاختبارات - الدراسات الإسلامية</title>
+    <title>محاكي الاختبارات المطور - تخصص الدراسات الإسلامية</title>
     <style>
-        :root { --primary: #2b6cb0; --success: #38a169; --danger: #e53e3e; --bg: #f7fafc; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+        :root { 
+            --primary: #2b6cb0; 
+            --success: #38a169; 
+            --danger: #e53e3e; 
+            --bg: #f7fafc; 
+            --accent: #8e44ad;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-        .question-card { font-size: 1.2rem; font-weight: bold; margin-bottom: 25px; padding: 15px; border-right: 5px solid var(--primary); background: #ebf8ff; text-align: right; }
-        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer; text-align: right; transition: all 0.2s; }
+        .meta-info { display: flex; justify-content: space-between; font-size: 0.95rem; color: #4a5568; font-weight: bold; margin-bottom: 15px; }
+        .help-panel { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #cbd5e0; }
+        .help-btn { background: none; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #4a5568; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .help-btn:hover { color: var(--primary); transform: scale(1.05); }
+        .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
+        .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
+        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
         .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
-        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
-        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); font-weight: bold; }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); font-weight: bold; }
         .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; }
-        .btn-action { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-action { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
         .btn-end { background: #718096; color: white; }
-        .btn-elim { background: #ed8936; color: white; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 <div class="container" id="exam-container">
-    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #4a5568;">
+    <div class="meta-info">
         <span id="student-info">المتدرب: جاري التحميل...</span>
+        <span style="color: var(--accent);" id="timer-info">⏱️ الوقت: 00:00</span>
         <span id="score-info">الصح: 0</span>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
-    <div class="question-card" id="question-text">جاري التحميل...</div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="help-panel">
+        <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
+        <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
+        <button class="help-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
+    </div>
+
+    <div id="hint-box" class="popup-info"></div>
+    <div id="standard-box" class="popup-info"></div>
+
+    <div class="question-card" id="question-text">جاري تحميل السؤال...</div>
+
     <div id="options-container">
         <button class="btn-opt" id="optA" onclick="checkAnswer('A')"></button>
         <button class="btn-opt" id="optB" onclick="checkAnswer('B')"></button>
         <button class="btn-opt" id="optC" onclick="checkAnswer('C')"></button>
         <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
     </div>
-    <div class="footer-actions">
-        <button class="btn-action btn-elim" onclick="eliminateTwo()">حذف إجابتين</button>
-        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء مبكر</button>
+
+    <div class="footer-actions" style="justify-content: flex-end;">
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
+
 <div class="container hidden" id="result-container">
-    <h2>انتهى الاختبار 🎉</h2>
-    <p id="final-name" style="font-size: 1.2rem; font-weight: bold;"></p>
-    <p id="final-score" style="font-size: 1.5rem; color: var(--primary);"></p>
-    <p id="final-time"></p>
-    <button class="btn-action btn-end" onclick="exitToMain()">العودة للرئيسية</button>
+    <h2>التحليل النهائي للاختبار 🎉</h2>
+    <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
+    <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
+    <p id="final-score" style="font-size: 1.4rem; color: var(--primary); text-align: right; font-weight: bold;"></p>
+    <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
+    <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
 <script>
+// بنك أسئلة الدراسات الإسلامية المبدئي للتجربة والفحص المباشر للميزات
 const questions = [
-    { q: "المراد بـ الإدغام الصغير في أحكام التجويد هو أن يكون التداخل بين:", a: "حرف ساكن ويليه حرف متحرك", b: "حرفين متحركين متتاليين", c: "حرفين ساكنين متتاليين", d: "حرف متحرك ويليه حرف ساكن", correct: "A", elim1: "B", elim2: "C" },
-    { q: "مذهب جمهور الفقهاء في حكم بيع الفضولي هو أنه بيع:", a: "موقوف على إجازة المالك", b: "باطل من أصله ولا يصح", c: "نافذ ولازم فوراً", d: "مكروه كراهة تحريمية", correct: "A", elim1: "C", elim2: "D" }
+    { 
+        q: "ما حكم المسبوق في صلاة الجماعة إذا أدرك الإمام في الركوع، هل تُحتسب له هذه الركعة؟", 
+        a: "تُحتسب له الركعة وتجزئه", b: "لا تُحتسب له ويقضيها بعد السلام", c: "تبطل صلاته ويجب عليه الإعادة", d: "تُحتسب له بشرط إدراك الرفع من الركوع", 
+        correct: "A", elim1: "B", elim2: "C",
+        hint: "من أدرك الركوع مع الإمام فقد أدرك الركعة كما ثبت في السنة المطهرة.",
+        standard: "المعيار 4: الفقه وأصوله - المؤشر 4.3 أحكام صلاة الجماعة والإمامة والمسامحة فيها."
+    },
+    { 
+        q: "نوع من أنواع التوحيد يفرد الله سبحانه وتعالى بصفات الخلق، والرزق، والتدبير، والإحياء، والإماتة، هو توحيد:", 
+        a: "الربوبية", b: "الألوهية", c: "الأسماء والصفات", d: "الاتباع", 
+        correct: "A", elim1: "B", elim2: "D",
+        hint: "يتعلق هذا النوع بأفعال الرب سبحانه وتعالى تجاه خلقه.",
+        standard: "المعيار 1: العقيدة الإسلامية - المؤشر 1.2 تمييز أنواع التوحيد الثلاثة وما يضادها."
+    }
 ];
-let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false;
+
+let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
+
 window.onload = function() {
     const user = localStorage.getItem('activeUser');
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
-    document.getElementById('student-info').innerText = `المتدرب: ${user} (${isGuest ? 'تجريبي' : 'مشترك'})`;
-    const sIdx = localStorage.getItem('isl_idx'), sScr = localStorage.getItem('isl_scr');
-    if (sIdx && sScr) { currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); document.getElementById('score-info').innerText = `الصح: ${correctCount}`; }
+    
+    document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
+    startTimer();
+
+    const sIdx = localStorage.getItem('isl_idx'), sScr = localStorage.getItem('isl_score');
+    if (sIdx && sScr) { 
+        currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
+        document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
+    }
     loadQuestion();
 };
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+        const secs = String(diff % 60).padStart(2, '0');
+        document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
+    }, 1000);
+}
+
 function loadQuestion() {
-    if (isGuest && currentIndex >= 10) { alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح البنك كاملاً."); showResults(); return; }
+    document.getElementById('hint-box').style.display = 'none';
+    document.getElementById('standard-box').style.display = 'none';
+
+    if (isGuest && currentIndex >= 10) { 
+        alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح كامل البنك الفاخر."); 
+        showResults(); return; 
+    }
     if (currentIndex >= questions.length) { showResults(); return; }
-    localStorage.setItem('isl_idx', currentIndex); localStorage.setItem('isl_scr', correctCount);
+
+    localStorage.setItem('isl_idx', currentIndex); 
+    localStorage.setItem('isl_score', correctCount);
+
     const qData = questions[currentIndex];
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
-    ['A', 'B', 'C', 'D'].forEach(opt => { const b = document.getElementById(`opt${opt}`); b.innerText = qData[opt.toLowerCase()]; b.className = "btn-opt"; b.disabled = false; });
+    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.hint || 'عام.'}`;
+    document.getElementById('standard-box').innerText = `🎯 الرابط المهني: ${qData.standard || 'عام.'}`;
+
+    ['A', 'B', 'C', 'D'].forEach(opt => { 
+        const b = document.getElementById(`opt${opt}`); 
+        b.innerText = qData[opt.toLowerCase()]; b.className = "btn-opt"; b.disabled = false; 
+    });
+
     const total = isGuest ? 10 : questions.length;
     document.getElementById('progress').style.width = `${(currentIndex / total) * 100}%`;
 }
+
+function togglePopup(type) {
+    const box = document.getElementById(`${type}-box`);
+    box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+}
+
 function checkAnswer(sel) {
     const qData = questions[currentIndex], corr = qData.correct;
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
-    if (sel === corr) { document.getElementById(`opt${sel}`).classList.add('correct'); correctCount++; document.getElementById('score-info').innerText = `الصح: ${correctCount}`; }
-    else { document.getElementById(`opt${sel}`).classList.add('wrong'); document.getElementById(`opt${corr}`).classList.add('correct'); }
+    
+    if (sel === corr) { 
+        document.getElementById(`opt${sel}`).classList.add('correct'); correctCount++; 
+        document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
+    } else { 
+        document.getElementById(`opt${sel}`).classList.add('wrong'); 
+        document.getElementById(`opt${corr}`).classList.add('correct'); 
+    }
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
+
 function eliminateTwo() {
     const qData = questions[currentIndex];
     if(qData.elim1) document.getElementById(`opt${qData.elim1}`).innerText = "---";
     if(qData.elim2) document.getElementById(`opt${qData.elim2}`).innerText = "---";
 }
+
 function showResults() {
+    clearInterval(timerInterval);
     document.getElementById('exam-container').classList.add('hidden');
     document.getElementById('result-container').classList.remove('hidden');
+    
     const total = isGuest ? 10 : questions.length;
     const pct = ((correctCount / total) * 100).toFixed(1);
     const diff = Math.floor((Date.now() - startTime) / 1000);
-    document.getElementById('final-name').innerText = `المتدرب: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerText = `النتيجة: ${correctCount} من ${total} (${pct}%)`;
-    document.getElementById('final-time').innerText = `الوقت: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
-    localStorage.removeItem('isl_idx'); localStorage.removeItem('isl_scr');
+
+    document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
+    document.getElementById('final-score').innerText = `🎯 النتيجة: ${correctCount} من ${total} بنسبة مرنة موثقة (${pct}%)`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    
+    localStorage.removeItem('isl_idx'); localStorage.removeItem('isl_score');
 }
-function endExamEarly() { if(confirm("هل تريد إنهاء الاختبار مبكراً؟")) showResults(); }
+
+function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }
 function exitToMain() { window.location.href = "index.html"; }
 </script>
 </body>
