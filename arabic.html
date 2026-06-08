@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الاختبارات - لغة عربية</title>
+    <style>
+        :root { --primary: #2b6cb0; --success: #38a169; --danger: #e53e3e; --bg: #f7fafc; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        .question-card { font-size: 1.2rem; font-weight: bold; margin-bottom: 25px; padding: 15px; border-right: 5px solid var(--primary); background: #ebf8ff; text-align: right; }
+        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1rem; cursor: pointer; text-align: right; transition: all 0.2s; }
+        .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); }
+        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; }
+        .btn-action { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-end { background: #718096; color: white; }
+        .btn-elim { background: #ed8936; color: white; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="container" id="exam-container">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; color: #4a5568;">
+        <span id="student-info">المتدرب: جاري التحميل...</span>
+        <span id="score-info">الصح: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+    <div class="question-card" id="question-text">جاري التحميل...</div>
+    <div id="options-container">
+        <button class="btn-opt" id="optA" onclick="checkAnswer('A')"></button>
+        <button class="btn-opt" id="optB" onclick="checkAnswer('B')"></button>
+        <button class="btn-opt" id="optC" onclick="checkAnswer('C')"></button>
+        <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
+    </div>
+    <div class="footer-actions">
+        <button class="btn-action btn-elim" onclick="eliminateTwo()">حذف إجابتين</button>
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء مبكر</button>
+    </div>
+</div>
+<div class="container hidden" id="result-container">
+    <h2>انتهى الاختبار 🎉</h2>
+    <p id="final-name" style="font-size: 1.2rem; font-weight: bold;"></p>
+    <p id="final-score" style="font-size: 1.5rem; color: var(--primary);"></p>
+    <p id="final-time"></p>
+    <button class="btn-action btn-end" onclick="exitToMain()">العودة للرئيسية</button>
+</div>
+<script>
+const questions = [
+    { q: "ما هي الجملة التي تحتوي على فعل مضارع مجزوم بعلامة فرعية؟", a: "المعلمون لم يقصروا في أداء الرسالة", b: "الطالب لم يكتب الدرس اليوم", c: "لا تدعُ إلى شر أبداً", d: "لتسعَ في الخير دائماً", correct: "A", elim1: "B", elim2: "C" },
+    { q: "البيت الشعري الذي يمثل أسلوب التشبيه الضمني هو:", a: "ويظهر عيب المرء في الناس بخله ... ويستره عنهم جميعاً سخاؤه", b: "تهون علينا في المعالي نفوسنا ... ومن يخطب الحسناء لم يغلها المهر", c: "كأنك شمس والملوك كواكب ... إذا طلعت لم يبدُ منهن كوكب", d: "الخيل والليل والبيداء تعرفني ... والسيف والرمح والقرطاس والقلم", correct: "B", elim1: "C", elim2: "D" }
+];
+let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false;
+window.onload = function() {
+    const user = localStorage.getItem('activeUser');
+    isGuest = (localStorage.getItem('userRole') === 'guest');
+    if (!user) { window.location.href = "index.html"; return; }
+    document.getElementById('student-info').innerText = `المتدرب: ${user} (${isGuest ? 'تجريبي' : 'مشترك'})`;
+    const sIdx = localStorage.getItem('ara_idx'), sScr = localStorage.getItem('ara_scr');
+    if (sIdx && sScr) { currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); document.getElementById('score-info').innerText = `الصح: ${correctCount}`; }
+    loadQuestion();
+};
+function loadQuestion() {
+    if (isGuest && currentIndex >= 10) { alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح البنك كاملاً."); showResults(); return; }
+    if (currentIndex >= questions.length) { showResults(); return; }
+    localStorage.setItem('ara_idx', currentIndex); localStorage.setItem('ara_scr', correctCount);
+    const qData = questions[currentIndex];
+    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
+    ['A', 'B', 'C', 'D'].forEach(opt => { const b = document.getElementById(`opt${opt}`); b.innerText = qData[opt.toLowerCase()]; b.className = "btn-opt"; b.disabled = false; });
+    const total = isGuest ? 10 : questions.length;
+    document.getElementById('progress').style.width = `${(currentIndex / total) * 100}%`;
+}
+function checkAnswer(sel) {
+    const qData = questions[currentIndex], corr = qData.correct;
+    ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
+    if (sel === corr) { document.getElementById(`opt${sel}`).classList.add('correct'); correctCount++; document.getElementById('score-info').innerText = `الصح: ${correctCount}`; }
+    else { document.getElementById(`opt${sel}`).classList.add('wrong'); document.getElementById(`opt${corr}`).classList.add('correct'); }
+    setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
+}
+function eliminateTwo() {
+    const qData = questions[currentIndex];
+    if(qData.elim1) document.getElementById(`opt${qData.elim1}`).innerText = "---";
+    if(qData.elim2) document.getElementById(`opt${qData.elim2}`).innerText = "---";
+}
+function showResults() {
+    document.getElementById('exam-container').classList.add('hidden');
+    document.getElementById('result-container').classList.remove('hidden');
+    const total = isGuest ? 10 : questions.length;
+    const pct = ((correctCount / total) * 100).toFixed(1);
+    const diff = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById('final-name').innerText = `المتدرب: ${localStorage.getItem('activeUser')}`;
+    document.getElementById('final-score').innerText = `النتيجة: ${correctCount} من ${total} (${pct}%)`;
+    document.getElementById('final-time').innerText = `الوقت: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    localStorage.removeItem('ara_idx'); localStorage.removeItem('ara_scr');
+}
+function endExamEarly() { if(confirm("هل تريد إنهاء الاختبار مبكراً؟")) showResults(); }
+function exitToMain() { window.location.href = "index.html"; }
+</script>
+</body>
+</html>

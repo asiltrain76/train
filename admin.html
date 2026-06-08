@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم السرية - منصة asiltrain</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #2980b9; --success: #27ae60; --bg: #ecf0f1; }
+        body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        .admin-box { max-width: 700px; background: white; margin: 30px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; text-align: right; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        input:focus, select:focus { border-color: var(--accent); outline: none; }
+        .btn { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 10px; }
+        .btn:hover { background: #2471a3; }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #1e8449; }
+        .result-box { margin-top: 25px; display: none; text-align: right; }
+        textarea { width: 100%; height: 200px; font-family: monospace; font-size: 15px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; direction: ltr; text-align: left; }
+        .hidden { display: none; }
+        .lock-screen { max-width: 400px; background: white; margin: 100px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+    </style>
+</head>
+<body>
+
+<!-- شاشة الحماية البرمجية لمنع المتطفلين -->
+<div id="lockScreen" class="lock-screen">
+    <h3 style="color: var(--primary);">قفل الأمان للمنصة 🔒</h3>
+    <div class="form-group">
+        <label>أدخل الرقم السري للمطور (أبو إبراهيم):</label>
+        <input type="password" id="adminPass" placeholder="••••••••">
+    </div>
+    <button class="btn" onclick="checkAdminPass()">فتح لوحة التحكم</button>
+</div>
+
+<!-- لوحة التحكم الفعلية (تظهر فقط بعد كتابة الرمز الصحيح) -->
+<div id="adminPanel" class="admin-box hidden">
+    <h2>مولد أكواد التفعيل والاشتراكات الذكي 🚀</h2>
+    <p style="color: #7f8c8d; font-size: 14px;">حدد التخصص والعدد لتوليد أكواد مشفرة تتوافق مع نظام المنصة الحية تلقائياً.</p>
+    
+    <div class="form-group">
+        <label>اختر التخصص المطلوب توليد أكواد له:</label>
+        <select id="targetField">
+            <option value="TAR">الرخصة المهنية - العام (التربوي/المدربين)</option>
+            <option value="COM">الرخصة المهنية - حاسب آلي</option>
+            <option value="ISL">الرخصة المهنية - دراسات إسلامية</option>
+            <option value="ARA">الرخصة المهنية - لغة عربية</option>
+            <option value="MAT">الرخصة المهنية - رياضيات</option>
+            <option value="SCI">الرخصة المهنية - علوم</option>
+            <option value="SOC">الرخصة المهنية - اجتماعيات</option>
+            <option value="SPO">الرخصة المهنية - تربية بدنية (رياضة)</option>
+            <option value="ART">الرخصة المهنية - تربية فنية</option>
+            <option value="SEC">مسار الثانوي - القدرات والتحصيلي</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>عدد الأكواد المطلوبة (مثلاً: 50 أو 100):</label>
+        <input type="number" id="codesCount" value="50" min="1" max="500">
+    </div>
+
+    <button class="btn" onclick="generateSecureCodes()">توليد الأكواد المشفرة الآن</button>
+
+    <!-- منطقة النتائج والتصدير للمفكرة -->
+    <div id="resultArea" class="result-box">
+        <label>الأكواد الجاهزة (قم بنسخها أو تحميلها مباشرة):</label>
+        <textarea id="codesOutput" readonly></textarea>
+        <button class="btn btn-success" onclick="downloadTxtFile()">📥 تحميل الأكواد في ملف مفكرة (.txt)</button>
+    </div>
+</div>
+
+<script>
+// 1. رمز الحماية الخاص بك كأدمن (يمكنك تعديل 'asiltrain2026' لأي رمز تحبه)
+const SECRET_ADMIN_KEY = 'asiltrain2026'; 
+
+// مفتاح خوارزمية التشفير الرياضية (ثابت لحساب المعادلة في الموقع)
+const CRYPTO_SALT = 743; 
+
+function checkAdminPass() {
+    const enteredPass = document.getElementById('adminPass').value;
+    if (enteredPass === SECRET_ADMIN_KEY) {
+        document.getElementById('lockScreen').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+    } else {
+        alert("❌ الرمز السري غير صحيح! الوصول مرفوض.");
+    </div>
+}
+
+// 2. دالة توليد الأكواد بالمعادلة الشفرية الخفيفة
+function generateSecureCodes() {
+    const prefix = document.getElementById('targetField').value;
+    const count = parseInt(document.getElementById('codesCount').value);
+    let outputText = `--- قائمة أكواد تفعيل تخصص (${prefix}) ---\n`;
+    
+    for (let i = 0; i < count; i++) {
+        // توليد رقم عشوائي فريد مكون من 5 خانات
+        const randomNum = Math.floor(10000 + Math.random() * 90000);
+        
+        // حساب الرقم السري الشفري (معادلة رياضية بسيطة للتحقق)
+        const checkDigit = (randomNum + CRYPTO_SALT) % 9;
+        
+        // تركيب الكود النهائي المشفر (مثل: TAR-54129-3)
+        const finalCode = `${prefix}-${randomNum}-${checkDigit}`;
+        outputText += finalCode + "\n";
+    }
+    
+    document.getElementById('codesOutput').value = outputText;
+    document.getElementById('resultArea').style.display = 'block';
+}
+
+// 3. دالة تحميل الملف تلقائياً للمفكرة
+function downloadTxtFile() {
+    const prefix = document.getElementById('targetField').value;
+    const text = document.getElementById('codesOutput').value;
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `اشتراكات_${prefix}_${new Date().toLocaleDateString('en-US')}.txt`;
+    link.click();
+}
+</script>
+
+</body>
+</html>
