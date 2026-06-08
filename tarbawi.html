@@ -92,7 +92,8 @@ function getRankText(pct) {
 
 window.onload = function() {
     if (typeof examQuestions !== 'undefined') {
-        questions = examQuestions;
+        // 🎯 التكتيك العشوائي الحصري لخلط الـ 650 سؤالاً في ثانية واحدة
+        questions = [...examQuestions].sort(() => 0.5 - Math.random());
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (questionstar.js) في المجلد الحالي!");
         return;
@@ -108,11 +109,12 @@ window.onload = function() {
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    const sIdx = localStorage.getItem('tarbawi_idx'), sScr = localStorage.getItem('tarbawi_scr');
-    if (sIdx && sScr) { 
-        currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
-        document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
-    }
+    // مسح تتبع حفظ التقدم القديم عند الدخول لضمان عدم حدوث لخبطة وبدء جولة جديدة
+    localStorage.removeItem('tarbawi_idx');
+    localStorage.removeItem('tarbawi_scr');
+    currentIndex = 0;
+    correctCount = 0;
+
     loadQuestion();
 };
 
@@ -140,7 +142,7 @@ function loadQuestion() {
     const qData = questions[currentIndex];
     
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
+    document.getElementById('hint-box').innerText = `💡 تلميح ومميزات الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط المهني الفني: ${qData.standard_hint || 'المعيار والمؤشر العام المعتمد.'}`;
 
     ['A', 'B', 'C', 'D'].forEach(opt => { 
@@ -207,7 +209,7 @@ function exitToMain() {
 }
 </script>
 
-<!-- استدعاء ملف كنز بنك الأسئلة الـ 650 الشامل والمولد من الـ Node.js تلقائياً -->
+<!-- استدعاء ملف كنز بنك الأسئلة الـ 650 الشامل والمولد تلقائياً -->
 <script src="questionstar.js"></script>
 
 </body>
