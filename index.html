@@ -17,6 +17,11 @@
         .btn-submit:hover { background-color: #219653; }
         .alert { background-color: #fadbd8; color: #78281f; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; text-align: right; font-size: 14px; }
         .hint { font-size: 13px; color: #7f8c8d; margin-top: 20px; line-height: 1.5; }
+        
+        /* تصميم الرابط الإغراقي الجديد المضاف للأسفل بطلبك */
+        .register-link-box { margin-top: 18px; border-top: 1px dashed #cbd5e0; padding-top: 15px; font-size: 14px; }
+        .register-link-box a { color: #2980b9; font-weight: bold; text-decoration: none; }
+        .register-link-box a:hover { text-decoration: underline; color: #1a5276; }
     </style>
 </head>
 <body>
@@ -36,7 +41,6 @@
             <label>اختر التخصص المطلوب:</label>
             <select id="examField" required>
                 <option value="">-- اختر القسم الحالي --</option>
-                <!-- تم فصل التخصصات هنا بنجاح وتوجيه كل قسم لملفه المستقل -->
                 <option value="tarbawi">الرخصة المهنية - العام (التربوي)</option>
                 <option value="trainers">الرخصة المهنية - المدربين</option>
                 <option value="computer">الرخصة المهنية - حاسب آلي</option>
@@ -53,6 +57,11 @@
         <button type="submit" class="btn-submit">دخول المحاكي وبدء الاختبار</button>
     </form>
     <p class="hint">💡 <b>للتجربة (10 أسئلة):</b> الاسم: <b>guest</b> والرمز: <b>1234</b></p>
+    
+    <!-- الرابط المضاف للحصول على الكود الفول الفاخر -->
+    <div class="register-link-box">
+        🔑 ليس لديك كود؟ <a href="subscribe.html">للحصول على كود التفعيل الكامل وإرسال إيصال السداد اضغط هنا</a>
+    </div>
 </div>
 <script>
 function handleLogin(event) {
@@ -63,13 +72,11 @@ function handleLogin(event) {
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
 
-    // 1. فحص الحساب التجريبي العام لجميع التخصصات (10 أسئلة)
     if (name.toLowerCase() === 'guest' && code === '1234') {
         saveAndRedirect(name, field, 'guest');
         return;
     }
 
-    // 2. قائمة البادئات المعتمدة لكل تخصص للربط الرياضي بعد إضافة TRN
     const codePrefixes = {
         'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
         'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
@@ -77,24 +84,19 @@ function handleLogin(event) {
     };
 
     const expectedPrefix = codePrefixes[field];
-    
-    // تفكيك الكود المشفر المولد بناءً على علامة الشرطة (-)
     const parts = code.split('-'); 
     let isValid = false;
-    const CRYPTO_SALT = 743; // نفس الثابت الرياضي البرمجي الموجود في صفحة الأدمن
+    const CRYPTO_SALT = 743;
 
-    // التأكد من أن الكود يتكون من 3 أجزاء متكاملة، وأن بادئته تطابق التخصص المختار
     if (parts.length === 3 && parts[0] === expectedPrefix) {
         const randomNum = parseInt(parts[1]);
         const checkDigit = parseInt(parts[2]);
         
-        // التحقق من المعادلة الرياضية الشفرية لمنع التلاعب والأكواد العشوائية
         if (!isNaN(randomNum) && !isNaN(checkDigit) && (randomNum + CRYPTO_SALT) % 9 === checkDigit) {
             isValid = true;
         }
     }
 
-    // 3. اتخاذ القرار والتوجه لصفحة التخصص
     if (isValid) {
         saveAndRedirect(name, field, 'member');
     } else {
