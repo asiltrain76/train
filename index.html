@@ -3,80 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة asiltrain - محاكي الاختبارات</title>
+    <title>بوابة الدخول الذكية - منصة asiltrain</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #27ae60; --bg: #f4f6f7; }
-        body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .login-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
-        h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; }
-        .form-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        :root { 
+            --primary: #2c3e50; 
+            --accent: #2980b9; 
+            --success: #27ae60; 
+            --danger: #e74c3c;
+            --bg: #ecf0f1; 
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        .login-box { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; text-align: right; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #34495e; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-        .btn-submit { background-color: var(--accent); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-submit:hover { background-color: #219653; }
-        .alert { background-color: #fadbd8; color: #78281f; padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; text-align: right; font-size: 14px; }
-        .hint { font-size: 13px; color: #7f8c8d; margin-top: 20px; line-height: 1.5; }
-        
-        /* تصميم الرابط الإغراقي الجديد المضاف للأسفل بطلبك */
-        .register-link-box { margin-top: 18px; border-top: 1px dashed #cbd5e0; padding-top: 15px; font-size: 14px; }
-        .register-link-box a { color: #2980b9; font-weight: bold; text-decoration: none; }
-        .register-link-box a:hover { text-decoration: underline; color: #1a5276; }
+        .btn { background: var(--accent); color: white; border: none; padding: 14px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 15px; }
+        .btn:hover { background: #2471a3; }
+        .error-msg { background: #fff5f5; color: var(--danger); border: 1px solid #fed7d7; padding: 12px; border-radius: 6px; margin-bottom: 15px; text-align: right; font-weight: 500; display: none; }
+        .footer-links { margin-top: 20px; text-align: center; font-size: 15px; }
+        .footer-links a { color: var(--accent); text-decoration: none; font-weight: bold; }
+        .footer-links a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-<div class="login-card">
-    <h2>منصة محاكي الاختبارات الذكي</h2>
-    <div id="errorMsg" class="alert"></div>
+
+<div class="login-box">
+    
+    <!-- 1. صندوق التشويق والتحفيز الحصري للمنصة -->
+    <div style="background: linear-gradient(135deg, #ebf8ff 0%, #e2e8f0 100%); border-right: 6px solid #2b6cb0; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        <h3 style="margin: 0 0 8px 0; color: #2b6cb0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">🚀 ركب التميز لا ينتظر.. حان وقت حلمك!</h3>
+        <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
+            أهلاً بك في منصة <b style="color: #8e44ad;">asiltrain</b> الحية. آلاف المعلمين والمدربين الذين سبقوك عبر هذا المحاكي الذكي، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
+            <br>
+            <span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة.
+        </p>
+    </div>
+
+    <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
+
+    <!-- رسائل الأخطاء اللحظية -->
+    <div id="errorMsg" class="error-msg"></div>
+
+    <!-- 2. استمارة الدخول الرسمية -->
     <form onsubmit="handleLogin(event)">
         <div class="form-group">
-            <label>اسم المتدرب / المتدربة:</label>
-            <input type="text" id="studentName" required placeholder="أدخل اسمك الثلاثي">
+            <label>اسم المتدرب / المتدربة الكامل:</label>
+            <input type="text" id="studentName" required placeholder="أدخل اسمك الكريم">
         </div>
+
         <div class="form-group">
-            <label>كود التفعيل أو الرمز السري:</label>
-            <input type="password" id="activationCode" required placeholder="أدخل كود التفعيل">
+            <label>كود التفعيل المشفر (أو اكتب 1234 للتجربة):</label>
+            <input type="text" id="activationCode" required placeholder="مثال: TAR-12345-6">
         </div>
+
         <div class="form-group">
-            <label>اختر التخصص المطلوب:</label>
-            <select id="examField" required>
-                <option value="">-- اختر القسم الحالي --</option>
+            <label>اختر التخصص / المادة المستهدفة:</label>
+            <select id="examField">
                 <option value="tarbawi">الرخصة المهنية - العام (التربوي)</option>
-                <option value="trainers">الرخصة المهنية - المدربين</option>
-                <option value="computer">الرخصة المهنية - حاسب آلي</option>
-                <option value="islamic">الرخصة المهنية - دراسات إسلامية</option>
-                <option value="arabic">الرخصة المهنية - لغة عربية</option>
-                <option value="math">الرخصة المهنية - رياضيات</option>
-                <option value="science">الرخصة المهنية - علوم</option>
                 <option value="ejtemaeyat">الرخصة المهنية - اجتماعيات</option>
-                <option value="sport">الرخصة المهنية - تربية بدنية (رياضة)</option>
+                <option value="computer">الرخصة المهنية - حاسب آلي</option>
                 <option value="art">الرخصة المهنية - تربية فنية</option>
+                <option value="arabic">الرخصة المهنية - لغة عربية</option>
+                <option value="science">الرخصة المهنية - علوم</option>
+                <option value="math">الرخصة المهنية - رياضيات</option>
+                <option value="islamic">الرخصة المهنية - دراسات إسلامية</option>
+                <option value="trainers">الرخصة المهنية - المدربين</option>
+                <option value="sport">الرخصة المهنية - تربية بدنية (رياضة)</option>
                 <option value="qodrat_tahsili">مسار الثانوي - القدرات والتحصيلي</option>
             </select>
         </div>
-        <button type="submit" class="btn-submit">دخول المحاكي وبدء الاختبار</button>
+
+        <div class="form-group">
+            <label>حدد عدد أسئلة المحاكاة المطلوبة لرحلتك 🎯:</label>
+            <select id="questionsLimit">
+                <option value="10">10 أسئلة (اختبار سريع)</option>
+                <option value="20">20 سؤالاً (مراجعة خفيفة)</option>
+                <option value="30">30 سؤالاً (تعزيز مهارات)</option>
+                <option value="80">80 سؤالاً (محاكاة قياسية)</option>
+                <option value="100">100 سؤال (اختبار شامل مكثف)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn">🚀 ابدأ رحلة التميز الآن</button>
     </form>
-    <p class="hint">💡 <b>للتجربة (10 أسئلة):</b> الاسم: <b>guest</b> والرمز: <b>1234</b></p>
-    
-    <!-- الرابط المضاف للحصول على الكود الفول الفاخر -->
-    <div class="register-link-box">
-        🔑 ليس لديك كود؟ <a href="subscribe.html">للحصول على كود التفعيل الكامل وإرسال إيصال السداد اضغط هنا</a>
+
+    <div class="footer-links">
+        لا تملك كود تفعيل؟ <a href="subscribe.html">اشترك معنا وارفع الإيصال من هنا 💳</a>
     </div>
 </div>
+
+<!-- 3. منطق التحكم البرمجي والتوجيه الذكي -->
 <script>
 function handleLogin(event) {
     event.preventDefault();
     const name = document.getElementById('studentName').value.trim();
     const code = document.getElementById('activationCode').value.trim().toUpperCase();
     const field = document.getElementById('examField').value;
+    let limit = parseInt(document.getElementById('questionsLimit').value);
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
 
+    // دعم الحساب التجريبي المفتوح (Guest) وإجباره على 10 أسئلة فوراً مهما اختار
     if (name.toLowerCase() === 'guest' && code === '1234') {
-        saveAndRedirect(name, field, 'guest');
+        saveAndRedirect(name, field, 'guest', 10);
         return;
     }
 
+    // مصفوفة البوادئ المتطابقة تماماً مع كود لوحة التحكم ونظام المنصة الحية
     const codePrefixes = {
         'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
         'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
@@ -86,8 +121,9 @@ function handleLogin(event) {
     const expectedPrefix = codePrefixes[field];
     const parts = code.split('-'); 
     let isValid = false;
-    const CRYPTO_SALT = 743;
+    const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية للمنصة
 
+    // فك التشفير ومطابقة الكود
     if (parts.length === 3 && parts[0] === expectedPrefix) {
         const randomNum = parseInt(parts[1]);
         const checkDigit = parseInt(parts[2]);
@@ -98,17 +134,18 @@ function handleLogin(event) {
     }
 
     if (isValid) {
-        saveAndRedirect(name, field, 'member');
+        saveAndRedirect(name, field, 'member', limit);
     } else {
         errorMsg.textContent = `❌ كود التفعيل غير صحيح أو لا يطابق التخصص المختار! تأكد من الكود المخصص لـ (${expectedPrefix})`;
         errorMsg.style.display = 'block';
     }
 }
 
-function saveAndRedirect(name, field, role) {
-    localStorage.clear();
+function saveAndRedirect(name, field, role, limit) {
+    localStorage.clear(); // تنظيف الذاكرة المؤقتة لبدء اختبار جديد ونظيف
     localStorage.setItem('activeUser', name);
     localStorage.setItem('userRole', role);
+    localStorage.setItem('examLimit', limit); // تمرير حجم الأسئلة المطلوب لصفحة المادة
     window.location.href = field + '.html';
 }
 </script>
