@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الاختبارات الذكي - نسخة الويب التفاعلية بالألوان</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-content: center;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            box-sizing: border-box;
+        }
+        
+        /* تنسيق علوي لعداد الأسئلة وعداد الإجابات الصحيحة التراكمي الجديد */
+        .progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        .score-badge {
+            background-color: #ebf8ff;
+            color: #2b6cb0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid #bee3f8;
+        }
+        .progress-bar-bg {
+            background-color: #e2e8f0;
+            width: 50%;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #cbd5e0;
+        }
+        .progress-bar-fill {
+            background-color: #3182ce;
+            width: 0%;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+        
+        .question-box {
+            font-size: 1.2rem;
+            font-weight: bold;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #1a365d;
+        }
+        .image-box {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .option-btn {
+            background-color: #fff;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1rem;
+            text-align: right;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            border-color: #3182ce;
+            background-color: #ebf8ff;
+        }
+        
+        /* كلاسات التلوين الفلاشي التفاعلي للأزرار */
+        .btn-correct {
+            background-color: #c6f6d5 !important; /* أخضر ناعم مريح للعين */
+            border-color: #38a169 !important;
+            color: #22543d !important;
+            font-weight: bold;
+        }
+        .btn-wrong {
+            background-color: #fed7d7 !important; /* أحمر ناعم للتنبيه بالخطأ */
+            border-color: #e53e3e !important;
+            color: #742a2a !important;
+        }
+        
+        .tools-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .tool-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .tool-btn:hover {
+            opacity: 0.9;
+        }
+        .btn-eliminate { background-color: #e53e3e; }
+        .btn-hint { background-color: #38a169; }
+        .btn-key { background-color: #805ad5; }
+        .btn-standard { background-color: #2b6cb0; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="progress-container">
+        <span id="lblCounter">سؤال 1 من 3</span>
+        <div class="progress-bar-bg">
+            <div id="progBarFill" class="progress-bar-fill"></div>
+        </div>
+        <!-- عداد الإجابات الصحيحة التراكمي المطور -->
+        <span id="lblScore" class="score-badge">الصح: 0</span>
+    </div>
+
+    <div id="txtQuestion" class="question-box">جاري تحميل السؤال...</div>
+    <img id="imgQuestion" class="image-box" src="" alt="سؤال مصور">
+    
+    <div class="options-container">
+        <button id="optA" class="option-btn" onclick="checkAnswer(0)"></button>
+        <button id="optB" class="option-btn" onclick="checkAnswer(1)"></button>
+        <button id="optC" class="option-btn" onclick="checkAnswer(2)"></button>
+        <button id="optD" class="option-btn" onclick="checkAnswer(3)"></button>
+    </div>
+    
+    <div class="tools-container">
+        <button id="btnEliminate" class="tool-btn btn-eliminate" onclick="eliminateTwoAnswers()">حذف إجابتين</button>
+        <button id="btnHint" class="tool-btn btn-hint" onclick="showHint()">تلميح بسيط</button>
+        <button id="btnKey" class="tool-btn btn-key" onclick="showKey()">مفتاح الحل</button>
+        <button id="btnStandard" class="tool-btn btn-standard" onclick="showStandard()">المعيار والمؤشر</button>
+    </div>
+</div>
+<script>
+    const examQuestions = [
+        {
+            Q: "لاحظ مدرب إلكتروني أثناء إدارة جلسة تدريبية مباشرة على نظام إدارة التعلم (LMS) أن جودة الصوت والصورة بدأت تنخفض بشكل حاد لدى معظم المتدربين. ما الإجراء التقني الفوري الأكثر ملاءمة؟",
+            image: "",
+            a: "إلغاء الجلسة التدريبية الحالية فوراً وتأجيلها إلى يوم آخر.",
+            b: "إيقاف بث كاميرته الشخصية والطلب من المتدربين إغلاق كاميراتهم لتقليل استهلاك النطاق الترددي.",
+            c: "الاستمرار بنفس الإعدادات الحالية وتوجيه المتدربين بالخروج والدخول المتكرر.",
+            d: "توجيه المتدربين للتواصل المباشر مع الدعم الفني للمنصة لحل مشكلاتهم.",
+            correct: "B",
+            hint_simple: "إيقاف بث الفيديو يقلل بشكل كبير من الضغط على شبكة الإنترنت ويضمن استقرار جودة الصوت.",
+            hint_standard: "الكفايات التقنية والتشريعية | كفاية: الإلمام بالمهارات الرقمية وأنظمة إدارة التعلم.",
+            hint_key: "تقليل استهلاك النطاق الترددي",
+            elim1: "A",
+            elim2: "D"
+        },
+        {
+            Q: "أي من الرموز التالية في المخطط الانسيابي (Flowchart) يُستخدم لتمثيل عمليات اتخاذ القرار (Decision) والتحقق من الشروط؟",
+            image: "", 
+            a: "المستطيل (Process)",
+            b: "المعين (Decision)",
+            c: "متوازي الأضلاع (Input/Output)",
+            d: "الشكل البيضاوي (Terminal)",
+            correct: "B",
+            hint_simple: "رمز المعين يُستخدم دائماً للتفريع الشرطي واختيار المسار بناءً على تحقق الشرط (نعم/لا).",
+            hint_standard: "المجال: البرمجة وحل المشكلات | مؤشر: تصميم المخططات الانسيابية.",
+            hint_key: "المعين لاتخاذ القرار",
+            elim1: "A",
+            elim2: "D"
+        },
+        {
+            Q: "حصل خمسة طلاب في اختبار قصير على الدرجات التالية: (5، 7، 8، 9، 11). ما هو \"المتوسط الحسابي\" لدرجات هؤلاء الطلاب؟",
+            image: "",
+            a: "24، وهو المجموع الكلي للدرجات دون قسمتها على العدد.",
+            b: "8، ويمثل القيمة الوسطى للدرجات بعد ترتيبها تصاعدياً.",
+            c: "8، ونحصل عليه بجمع القيم (40) وقسمتها على عددها (5).",
+            d: "6، وهي القيمة الأكثر تكراراً وشيوعاً بين الدرجات.",
+            correct: "C",
+            hint_simple: "المتوسط الحسابي يساوي مجموع القيم مقسوماً على عددها: (5+7+8+9+11) ÷ 5 = 40 ÷ 5 = 8.",
+            hint_standard: "القسم الكمي | مؤشر: حساب المؤشرات الإحصائية الأساسية (المتوسط الحسابي).",
+            hint_key: "جمع القيم وقسمتها على عددها",
+            elim1: "A",
+            elim2: "D"
+        }
+    ];
+
+    let currentIdx = 0;
+    let correctAnswersCount = 0; // عداد الإجابات الصحيحة التراكمي
+    let mixedAnswers = [];
+    let currentQuestion = {};
+    const btnIDs = ["optA", "optB", "optC", "optD"];
+
+    function showQuestionWeb() {
+        currentQuestion = examQuestions[currentIdx];
+        
+        // إعادة تهيئة الأزرار (إظهارها، تنظيف الألوان، تفعيل الضغط)
+        btnIDs.forEach(id => {
+            const btn = document.getElementById(id);
+            btn.style.visibility = "visible";
+            btn.className = "option-btn"; // إزالة كلاسات الألوان السابقة
+            btn.disabled = false;
+        });
+
+        // تفعيل زر الحذف وإعادة لونه الطبيعي
+        document.getElementById("btnEliminate").disabled = false;
+        document.getElementById("btnEliminate").style.opacity = "1";
+
+        // تحديث العداد والتقدم والدرجة التراكمية في القمة
+        document.getElementById("lblCounter").innerText = `سؤال ${currentIdx + 1} من ${examQuestions.length}`;
+        document.getElementById("lblScore").innerText = `الصح: ${correctAnswersCount}`;
+        let progressPercent = ((currentIdx + 1) / examQuestions.length) * 100;
+        document.getElementById("progBarFill").style.width = progressPercent + "%";
+
+        // عرض نص السؤال والصورة
+        document.getElementById("txtQuestion").innerText = currentQuestion.Q;
+        const imgElement = document.getElementById("imgQuestion");
+        if (currentQuestion.image !== "" && currentQuestion.image !== "none") {
+            imgElement.src = currentQuestion.image;
+            imgElement.style.display = "block";
+        } else {
+            imgElement.style.display = "none";
+        }
+
+        // خلط الخيارات عشوائياً
+        let initialAnswers = [
+            { txt: currentQuestion.a, key: "A" },
+            { txt: currentQuestion.b, key: "B" },
+            { txt: currentQuestion.c, key: "C" },
+            { txt: currentQuestion.d, key: "D" }
+        ];
+        mixedAnswers = initialAnswers.sort(() => Math.random() - 0.5);
+
+        document.getElementById("optA").innerText = "أ) " + mixedAnswers[0].txt;
+        document.getElementById("optB").innerText = "ب) " + mixedAnswers[1].txt;
+        document.getElementById("optC").innerText = "ج) " + mixedAnswers[2].txt;
+        document.getElementById("optD").innerText = "د) " + mixedAnswers[3].txt;
+    }
+
+    function checkAnswer(index) {
+        let correctAnswerText = currentQuestion[currentQuestion.correct.toLowerCase()];
+        
+        // قفل جميع خيارات الإجابة فوراً لمنع الضغط المتعدد أثناء التلوين
+        btnIDs.forEach(id => document.getElementById(id).disabled = true);
+
+        let clickedBtnId = btnIDs[index];
+        let correctBtnId = "";
+
+        // البحث عن المعرّف البرمجي للزر الذي يحمل الإجابة الصحيحة لتلوينه بالأخضر
+        mixedAnswers.forEach((ans, idx) => {
+            if (ans.txt === correctAnswerText) {
+                correctBtnId = btnIDs[idx];
+            }
+        });
+
+        if (mixedAnswers[index].txt === correctAnswerText) {
+            // إجابة صحيحة: تلوين الزر المضغوط بالأخضر فوراً وزيادة العداد
+            document.getElementById(clickedBtnId).classList.add("btn-correct");
+            correctAnswersCount++;
+            document.getElementById("lblScore").innerText = `الصح: ${correctAnswersCount}`;
+        } else {
+            // إجابة خاطئة: تلوين الزر المضغوط بالأحمر، وتلوين الصح بالأخضر للتعليم البصري
+            document.getElementById(clickedBtnId).classList.add("btn-wrong");
+            document.getElementById(correctBtnId).classList.add("btn-correct");
+        }
+
+        // تأخير تلقائي بمقدار ثانية واحدة (1000 ملي ثانية) لرؤية الألوان ثم الانتقال
+        setTimeout(() => {
+            if (currentIdx < examQuestions.length - 1) {
+                currentIdx++;
+                showQuestionWeb(); // شحن السؤال التالي
+            } else {
+                alert(`انتهى الاختبار التجريبي بنجاح! 🎉\n\nدرجتك النهائية: ${correctAnswersCount} من ${examQuestions.length}`);
+            }
+        }, 1200); // 1.2 ثانية تعطي الطالب وقتاً مريحاً لتأمل النتيجة بصرياً
+    }
+
+    function eliminateTwoAnswers() {
+        const e1 = currentQuestion.elim1;
+        const e2 = currentQuestion.elim2;
+
+        mixedAnswers.forEach((ans, idx) => {
+            if (ans.key === e1 || ans.key === e2) {
+                document.getElementById(btnIDs[idx]).style.visibility = "hidden";
+            }
+        });
+        
+        document.getElementById("btnEliminate").disabled = true;
+        document.getElementById("btnEliminate").style.opacity = "0.5";
+    }
+
+    function showHint() {
+        alert("💡 تلميح بسيط لمساعدتك:\n\n" + currentQuestion.hint_simple);
+    }
+
+    function showKey() {
+        alert("🔑 الكلمة المفتاحية للحل:\n\n" + currentQuestion.hint_key);
+    }
+
+    function showStandard() {
+        alert("📊 تصنيف هذا السؤال في قياس:\n\n" + currentQuestion.hint_standard);
+    }
+
+    showQuestionWeb();
+</script>
+</body>
+</html>
