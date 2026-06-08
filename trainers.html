@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الاختبارات المطور - منصة asiltrain</title>
+    <title>محاكي الاختبارات - الرخصة المهنية للمدربين</title>
     <style>
         :root { 
-            --primary: #2b6cb0; 
+            --primary: #2c3e50; 
             --success: #38a169; 
             --danger: #e53e3e; 
-            --bg: #f7fafc; 
-            --accent: #8e44ad;
+            --bg: #f4f6f7; 
+            --accent: #d35400;
         }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
         .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -44,7 +44,6 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
-    <!-- لوحة المساعدات التفاعلية المخصصة للإغراء والجذب -->
     <div class="help-panel">
         <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
         <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
@@ -77,21 +76,14 @@
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
 <script>
-// مصفوفة بنك أسئلة تخصص التربوي العام المستقلة
+// بنك أسئلة رخصة المدربين المستقلة
 const questions = [
     { 
-        q: "من مستشعرات الروبوت التي تقيس المسافة المحيطة بينه وبين الأجسام لمنعه من الاصطدام الخارجي:", 
-        a: "مستشعر الموجات فوق الصوتية (Ultrasonic)", b: "مستشعر الألوان والضوء الرقمي", c: "مستشعر اللمس والضغط الميكانيكي", d: "مستشعر الصوت والترددات العالية", 
-        correct: "A", elim1: "B", elim2: "D",
-        hint: "تذكر أن هذا المستشعر يعتمد على إرسال موجات صوتية ترتد إليه لحساب فجوة المسافة الفاصلة.",
-        standard: "المعيار 3: تصميم المكونات الإلكترونية والروبوتية - المؤشر 3.2 تحديد كفاءة المستشعرات الحركية."
-    },
-    { 
-        q: "المرحلة الأولى والركيزة الأساسية من مراحل رحلة التصميم الهندسي المتكامل للمشاريع هي:", 
-        a: "العصف الذهني والبحث عن حلول مبتكرة", b: "تحديد المشكلة وصياغة المتطلبات بدقة", c: "بناء النموذج الأولي واختبار المواد", d: "تقييم الكفاءة وإصدار التقرير الفني النهائي", 
-        correct: "B", elim1: "A", elim2: "C",
-        hint: "لا يمكن هندسة أي حل ناجح في الحياة قبل معرفة وفهم أبعاد التحدي أو العائق الأساسي أولاً.",
-        standard: "المعيار 1: أسس الهندسة والتصميم - المؤشر 1.1 تطبيق خطوات المنهج الهندسي في حل المشكلات."
+        q: "أي من الأساليب التدريبية التالية يُعد الأنسب عند رغبة المدرب في إكساب المتدربين مهارات عملية حركية دقيقة داخل بيئة العمل؟", 
+        a: "البيان العملي (المحاكاة التطبيقية)", b: "المحاضرة التقليدية المباشرة", c: "العصف الذهني الجماعي", d: "دراسة الحالات النظرية المستقلة", 
+        correct: "A", elim1: "B", elim2: "C",
+        hint: "إكساب المهارة الحركية يتطلب دائماً رؤية وتطبيق الخطوات عملياً أمام المستهدفين.",
+        standard: "المعيار 4: أساليب وتقنيات التدريب - المؤشر 4.1 اختيار الاستراتيجية التدريبية المناسبة لنوع المهارة."
     }
 ];
 
@@ -105,7 +97,7 @@ window.onload = function() {
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    const sIdx = localStorage.getItem('tarbawi_idx'), sScr = localStorage.getItem('tarbawi_scr');
+    const sIdx = localStorage.getItem('trn_idx'), sScr = localStorage.getItem('trn_scr');
     if (sIdx && sScr) { 
         currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
         document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
@@ -132,13 +124,13 @@ function loadQuestion() {
     }
     if (currentIndex >= questions.length) { showResults(); return; }
 
-    localStorage.setItem('tarbawi_idx', currentIndex); 
-    localStorage.setItem('tarbawi_scr', correctCount);
+    localStorage.setItem('trn_idx', currentIndex); 
+    localStorage.setItem('trn_scr', correctCount);
 
     const qData = questions[currentIndex];
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.hint || 'عام.'}`;
-    document.getElementById('standard-box').innerText = `🎯 الرابط المهني: ${qData.standard || 'عام.'}`;
+    document.getElementById('standard-box').innerText = `🎯 الرابط التدريبي: ${qData.standard || 'عام.'}`;
 
     ['A', 'B', 'C', 'D'].forEach(opt => { 
         const b = document.getElementById(`opt${opt}`); 
@@ -187,7 +179,7 @@ function showResults() {
     document.getElementById('final-score').innerText = `🎯 النتيجة النهائية للتحليل: ${correctCount} من أصل ${total} أسئلة بنسبة مرنة موثقة (${pct}%)`;
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    localStorage.removeItem('tarbawi_idx'); localStorage.removeItem('tarbawi_scr');
+    localStorage.removeItem('trn_idx'); localStorage.removeItem('trn_scr');
 }
 
 function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }

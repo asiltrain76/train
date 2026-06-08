@@ -36,7 +36,9 @@
             <label>اختر التخصص المطلوب:</label>
             <select id="examField" required>
                 <option value="">-- اختر القسم الحالي --</option>
-                <option value="tarbawi">الرخصة المهنية - العام (التربوي/المدربين)</option>
+                <!-- تم فصل التخصصات هنا بنجاح وتوجيه كل قسم لملفه المستقل -->
+                <option value="tarbawi">الرخصة المهنية - العام (التربوي)</option>
+                <option value="trainers">الرخصة المهنية - المدربين</option>
                 <option value="computer">الرخصة المهنية - حاسب آلي</option>
                 <option value="islamic">الرخصة المهنية - دراسات إسلامية</option>
                 <option value="arabic">الرخصة المهنية - لغة عربية</option>
@@ -67,11 +69,11 @@ function handleLogin(event) {
         return;
     }
 
-    // 2. قائمة البادئات المعتمدة لكل تخصص للربط الرياضي
+    // 2. قائمة البادئات المعتمدة لكل تخصص للربط الرياضي بعد إضافة TRN
     const codePrefixes = {
-        'tarbawi': 'TAR', 'computer': 'COM', 'islamic': 'ISL', 'arabic': 'ARA',
-        'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 'sport': 'SPO',
-        'art': 'ART', 'qodrat_tahsili': 'SEC'
+        'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
+        'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
+        'sport': 'SPO', 'art': 'ART', 'qodrat_tahsili': 'SEC'
     };
 
     const expectedPrefix = codePrefixes[field];
