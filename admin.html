@@ -20,22 +20,29 @@
         .result-box { margin-top: 25px; display: none; text-align: right; }
         textarea { width: 100%; height: 200px; font-family: monospace; font-size: 15px; padding: 10px; border: 2px solid #cbd5e0; border-radius: 6px; box-sizing: border-box; background: #f8f9fa; direction: ltr; text-align: left; }
         .hidden { display: none; }
-        .lock-screen { max-width: 400px; background: white; margin: 100px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .lock-screen { max-width: 400px; background: white; margin: 80px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
     </style>
 </head>
 <body>
 
-<!-- شاشة الحماية البرمجية لمنع المتطفلين -->
+<!-- شاشة الحماية البرمجية المعدلة -->
 <div id="lockScreen" class="lock-screen">
-    <h3 style="color: var(--primary);">قفل الأمان للمنصة 🔒</h3>
+    <h3 style="color: var(--primary); margin-bottom: 20px;">قفل الأمان للمنصة 🔒</h3>
+    
     <div class="form-group">
-        <label>أدخل الرقم السري للمطور (أبو إبراهيم):</label>
+        <label>اسم المستخدم:</label>
+        <input type="text" id="adminUser" placeholder="أدخل اسم المستخدم">
+    </div>
+    
+    <div class="form-group">
+        <label>الرقم السري للمطور (أبو إبراهيم):</label>
         <input type="password" id="adminPass" placeholder="••••••••">
     </div>
+    
     <button class="btn" onclick="checkAdminPass()">فتح لوحة التحكم</button>
 </div>
 
-<!-- لوحة التحكم الفعلية (تظهر فقط بعد كتابة الرمز الصحيح) -->
+<!-- لوحة التحكم الفعلية -->
 <div id="adminPanel" class="admin-box hidden">
     <h2>مولد أكواد التفعيل والاشتراكات الذكي 🚀</h2>
     <p style="color: #7f8c8d; font-size: 14px;">حدد التخصص والعدد لتوليد أكواد مشفرة تتوافق مع نظام المنصة الحية تلقائياً.</p>
@@ -72,36 +79,35 @@
 </div>
 
 <script>
-// 1. رمز الحماية الخاص بك كأدمن (يمكنك تعديل 'asiltrain2026' لأي رمز تحبه)
-const SECRET_ADMIN_KEY = 'asiltrain2026'; 
+// بيانات الدخول الخاصة بك المعتمدة الآن في النظام لقفل الأمان
+const EXPECTED_USER = 'asiltrain76';
+const EXPECTED_PASS = 'I1396#z1398'; 
 
-// مفتاح خوارزمية التشفير الرياضية (ثابت لحساب المعادلة في الموقع)
+// مفتاح خوارزمية التشفير الرياضية اللحظية لصفحة الدخول
 const CRYPTO_SALT = 743; 
 
 function checkAdminPass() {
+    const enteredUser = document.getElementById('adminUser').value.trim();
     const enteredPass = document.getElementById('adminPass').value;
-    if (enteredPass === SECRET_ADMIN_KEY) {
+
+    // التحقق المطابق والكامل من الحساب والرقم السري
+    if (enteredUser === EXPECTED_USER && enteredPass === EXPECTED_PASS) {
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
     } else {
-        alert("❌ الرمز السري غير صحيح! الوصول مرفوض.");
-    </div>
+        alert("❌ اسم المستخدم أو الرقم السري غير صحيح! الوصول مرفوض.");
+    }
 }
 
-// 2. دالة توليد الأكواد بالمعادلة الشفرية الخفيفة
+// دالة توليد الأكواد بالمعادلة الشفرية
 function generateSecureCodes() {
     const prefix = document.getElementById('targetField').value;
     const count = parseInt(document.getElementById('codesCount').value);
     let outputText = `--- قائمة أكواد تفعيل تخصص (${prefix}) ---\n`;
     
     for (let i = 0; i < count; i++) {
-        // توليد رقم عشوائي فريد مكون من 5 خانات
         const randomNum = Math.floor(10000 + Math.random() * 90000);
-        
-        // حساب الرقم السري الشفري (معادلة رياضية بسيطة للتحقق)
         const checkDigit = (randomNum + CRYPTO_SALT) % 9;
-        
-        // تركيب الكود النهائي المشفر (مثل: TAR-54129-3)
         const finalCode = `${prefix}-${randomNum}-${checkDigit}`;
         outputText += finalCode + "\n";
     }
@@ -110,7 +116,7 @@ function generateSecureCodes() {
     document.getElementById('resultArea').style.display = 'block';
 }
 
-// 3. دالة تحميل الملف تلقائياً للمفكرة
+// دالة تحميل الملف تلقائياً للمفكرة
 function downloadTxtFile() {
     const prefix = document.getElementById('targetField').value;
     const text = document.getElementById('codesOutput').value;
