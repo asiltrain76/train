@@ -190,8 +190,16 @@ function showResults() {
     localStorage.removeItem('tarbawi_idx'); localStorage.removeItem('tarbawi_scr');
 }
 
-function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }
-function exitToMain() { window.location.href = "index.html"; }
+function endExamEarly() { 
+    if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); 
+}
+function exitToMain() { 
+    window.location.href = "index.html"; 
+}
 </script>
+
+<!-- 🎯 ضعه هنا بالضبط بين وسم الـ script القديم ووسم الـ body -->
+<script src="questionstar.js"></script>
+
 </body>
 </html>
