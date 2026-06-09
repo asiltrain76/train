@@ -80,7 +80,12 @@
 <script>
 let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
-let maxQuestions = 10; 
+let maxQuestions = 20; // القيمة الافتراضية المحدثة للحساب التجريبي
+
+// متغيرات الذاكرة لتتبع الإجابة والخيارات المبعثرة لحظياً لكل سؤال مستقل
+let currentCorrectLetter = "";
+let currentElim1Letter = "";
+let currentElim2Letter = "";
 
 function getRankText(pct) {
     if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
@@ -91,7 +96,7 @@ function getRankText(pct) {
 }
 
 window.onload = function() {
-    // 🎯 الإصلاح هنا: المطابقة المباشرة مع المصفوفة الناتجة من ملف qtadreb.js الفعلي
+    // التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qtadreb.js الفعلي للمدربين
     if (typeof trainersQuestions !== 'undefined') {
         questions = [...trainersQuestions].sort(() => 0.5 - Math.random());
     } else {
@@ -103,8 +108,9 @@ window.onload = function() {
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
-    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 10;
-    maxQuestions = isGuest ? 10 : Math.min(savedLimit, questions.length);
+    // إذا كان قوست يجبر على 20 سؤالاً للتنشيط والتشويق، والمشترك يتبع اختياره المخصص
+    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
+    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
@@ -131,7 +137,7 @@ function loadQuestion() {
     document.getElementById('elim-btn').disabled = false;
 
     if (currentIndex >= maxQuestions) { 
-        if (isGuest) alert("انتهت الأسئلة التجريبية! يرجى التفعيل لفتح كامل بنوك الأسئلة الفاخر."); 
+        if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح كامل بنوك الأسئلة الفاخرة وتأمين معدلك."); 
         showResults(); return; 
     }
 
@@ -141,14 +147,34 @@ function loadQuestion() {
     const qData = questions[currentIndex];
     
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل الممارسات التدريبية المعطاة جيداً.'}`;
+    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل الحقيبة التدريبية والأسلوب التدريبي الأمثل.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
-    ['A', 'B', 'C', 'D'].forEach(opt => { 
-        const b = document.getElementById(`opt${opt}`); 
-        b.innerText = qData.options[opt.toLowerCase()] || "---"; 
-        b.className = "btn-opt"; 
-        b.disabled = false; 
+    // 🎯 اقتناص نصوص الإجابات الحقيقية والخيارات المراد حذفها من مصفوفة التحرير قبل الخلط
+    const originalCorrectText = qData.options[qData.correct.toLowerCase()];
+    const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
+    const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
+
+    // بناء وتفكيك مصفوفة نصوص الخيارات الأربعة وبعثرتها عشوائياً بشكل كامل لكل سؤال مستقل
+    let optArray = [
+        { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
+        { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
+        { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
+        { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
+    ].sort(() => 0.5 - Math.random());
+
+    // ضخ الخيارات عشوائياً بداخل أزرار الواجهة وتعيين دلالات الحروف اللحظية الجديدة
+    const targetLetters = ['A', 'B', 'C', 'D'];
+    optArray.forEach((item, index) => {
+        const letter = targetLetters[index];
+        const b = document.getElementById(`opt${letter}`);
+        b.innerText = item.text || "---";
+        b.className = "btn-opt";
+        b.disabled = false;
+
+        if (item.isCorrect) currentCorrectLetter = letter;
+        if (item.isElim1) currentElim1Letter = letter;
+        if (item.isElim2) currentElim2Letter = letter;
     });
 
     document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
@@ -160,8 +186,8 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    const qData = questions[currentIndex];
-    const corr = qData.correct.toUpperCase();
+    // فحص الإجابة ومطابقتها بالحرف العشوائي اللحظي الجديد المخصص للإجابة الصحيحة
+    const corr = currentCorrectLetter;
     
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
     
@@ -176,11 +202,11 @@ function checkAnswer(sel) {
 }
 
 function eliminateTwo() {
-    const qData = questions[currentIndex];
     document.getElementById('elim-btn').disabled = true;
 
-    if(qData.elim1) document.getElementById(`opt${qData.elim1.toUpperCase()}`).innerText = "---";
-    if(qData.elim2) document.getElementById(`opt${qData.elim2.toUpperCase()}`).innerText = "---";
+    // تصفير الخيارات المحذوفة بناءً على حروفها المبعثرة الجديدة ديناميكياً للسؤال الحالي
+    if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
+    if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
 
 function showResults() {
@@ -208,7 +234,7 @@ function exitToMain() {
 }
 </script>
 
-<!-- 🎯 ربط ملف بنك أسئلة المدربين الفعلي المولد باسم qtadreb.js -->
+<!-- 🎯 ربط ملف بنك أسئلة رخصة المدربين المولد والمحدث باسم qtadreb.js -->
 <script src="qtadreb.js"></script>
 
 </body>

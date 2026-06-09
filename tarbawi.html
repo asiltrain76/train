@@ -80,7 +80,12 @@
 <script>
 let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
-let maxQuestions = 20; // 🎯 القيمة الافتراضية المحدثة للحساب التجريبي
+let maxQuestions = 20; 
+
+// متغيران سحريان لحفظ الإجابة الصحيحة الفعلية والخيارات المحذوفة بعد البعثرة العشوائية لكل سؤال
+let currentCorrectLetter = "";
+let currentElim1Letter = "";
+let currentElim2Letter = "";
 
 function getRankText(pct) {
     if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
@@ -92,7 +97,6 @@ function getRankText(pct) {
 
 window.onload = function() {
     if (typeof examQuestions !== 'undefined') {
-        // 🎯 خلط كامل بنك الـ 650 سؤالاً عشوائياً ليظهر للمتدرب أسئلة تربوية عامة ومتنوعة وشيقة في محاولته الـ 20!
         questions = [...examQuestions].sort(() => 0.5 - Math.random());
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (questionstar.js) في المجلد الحالي!");
@@ -103,7 +107,6 @@ window.onload = function() {
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
-    // 🎯 التعديل الفاخر: إذا كان قوست يجبر على 20 سؤالاً مشوقاً، والمشترك يتبع اختياره المخصص
     let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
     maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
@@ -131,7 +134,6 @@ function loadQuestion() {
     document.getElementById('standard-box').style.display = 'none';
     document.getElementById('elim-btn').disabled = false;
 
-    // 🎯 الصمام الصارم: عند الوصول للسؤال 20 للحساب التجريبي ينتهي الاختبار فوراً لإثارة تشويقه
     if (currentIndex >= maxQuestions) { 
         if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح بنك الـ 650 سؤالاً بالكامل وتأمين رخصتك المهنية."); 
         showResults(); return; 
@@ -146,11 +148,32 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط المهني الفني: ${qData.standard_hint || 'المعيار والمؤشر العام المعتمد.'}`;
 
-    ['A', 'B', 'C', 'D'].forEach(opt => { 
-        const b = document.getElementById(`opt${opt}`); 
-        b.innerText = qData.options[opt.toLowerCase()] || "---"; 
-        b.className = "btn-opt"; 
-        b.disabled = false; 
+    // 🎯 السحر والعبقرية هنا: نأخذ نص الإجابة الصحيحة الأصلية قبل البعثرة
+    const originalCorrectText = qData.options[qData.correct.toLowerCase()];
+    const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
+    const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
+
+    // بناء مصفوفة تحتوي على النصوص الأربعة وبعثرتها عشوائياً كالكوتشينة تماماً لكل سؤال مستقل!
+    let optArray = [
+        { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
+        { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
+        { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
+        { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
+    ].sort(() => 0.5 - Math.random());
+
+    // حقن الخيارات الأربعة المبعثرة داخل الواجهات وتحديد المعرفات الجديدة ديناميكياً
+    const targetLetters = ['A', 'B', 'C', 'D'];
+    optArray.forEach((item, index) => {
+        const letter = targetLetters[index];
+        const b = document.getElementById(`opt${letter}`);
+        b.innerText = item.text || "---";
+        b.className = "btn-opt";
+        b.disabled = false;
+
+        // تتبع الحرف الجديد المخصص للإجابة الصحيحة والخيارات المراد حذفها
+        if (item.isCorrect) currentCorrectLetter = letter;
+        if (item.isElim1) currentElim1Letter = letter;
+        if (item.isElim2) currentElim2Letter = letter;
     });
 
     document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
@@ -162,8 +185,8 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    const qData = questions[currentIndex];
-    const corr = qData.correct.toUpperCase();
+    // نقارن الاختيار بالحرف الديناميكي الجديد المحفوظ في الذاكرة للسؤال الحالي
+    const corr = currentCorrectLetter;
     
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
     
@@ -178,11 +201,11 @@ function checkAnswer(sel) {
 }
 
 function eliminateTwo() {
-    const qData = questions[currentIndex];
     document.getElementById('elim-btn').disabled = true;
 
-    if(qData.elim1) document.getElementById(`opt${qData.elim1.toUpperCase()}`).innerText = "---";
-    if(qData.elim2) document.getElementById(`opt${qData.elim2.toUpperCase()}`).innerText = "---";
+    // إخفاء الرموز المبعثرة الجديدة المخصصة للحذف ديناميكياً
+    if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
+    if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
 
 function showResults() {
@@ -190,14 +213,13 @@ function showResults() {
     document.getElementById('exam-container').classList.add('hidden');
     document.getElementById('result-container').classList.remove('hidden');
     
-    // 🎯 حساب دقيق بناءً على الـ 20 سؤالاً المحلولة فعلياً للـ Guest ليعرف مستواه بدقة ويتحمس للتطوير
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب الكريم: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerHTML = `🎯 التحليل التجريبي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة من أصل <b>${solvedCount}</b> سؤالاً تم حلها بمحاكاتك السريعة.<br>📊 النسبة والتقدير المهني اللحظي: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-score').innerHTML = `🎯 التحليل الرقمي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة من أصل <b>${solvedCount}</b> سؤالاً تم حلها بمحاكاتك السريعة.<br>📊 النسبة والتقدير المهني اللحظي: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     localStorage.removeItem('tarbawi_idx'); localStorage.removeItem('tarbawi_scr');
