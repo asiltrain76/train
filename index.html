@@ -149,6 +149,10 @@ function saveAndRedirect(name, field, role, limit) {
     localStorage.setItem('examLimit', limit); // تمرير العدد المستهدف لصفحات المواد المخصصة
     window.location.href = field + '.html';
 }
+
+// سطر مخفي يرسل إشارة للسيرفر السحابي لزيادة العداد مع كل زائر جديد للمنصة
+fetch('https://countapi.xyz').catch(e => {});
+
 </script>
 </body>
 </html>
