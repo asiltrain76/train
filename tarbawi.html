@@ -80,7 +80,7 @@
 <script>
 let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
-let maxQuestions = 10; 
+let maxQuestions = 20; // 🎯 القيمة الافتراضية المحدثة للحساب التجريبي
 
 function getRankText(pct) {
     if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
@@ -92,7 +92,7 @@ function getRankText(pct) {
 
 window.onload = function() {
     if (typeof examQuestions !== 'undefined') {
-        // 🎯 التكتيك العشوائي الحصري لخلط الـ 650 سؤالاً في ثانية واحدة
+        // 🎯 خلط كامل بنك الـ 650 سؤالاً عشوائياً ليظهر للمتدرب أسئلة تربوية عامة ومتنوعة وشيقة في محاولته الـ 20!
         questions = [...examQuestions].sort(() => 0.5 - Math.random());
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (questionstar.js) في المجلد الحالي!");
@@ -103,13 +103,13 @@ window.onload = function() {
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
-    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 10;
-    maxQuestions = isGuest ? 10 : Math.min(savedLimit, questions.length);
+    // 🎯 التعديل الفاخر: إذا كان قوست يجبر على 20 سؤالاً مشوقاً، والمشترك يتبع اختياره المخصص
+    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
+    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    // مسح تتبع حفظ التقدم القديم عند الدخول لضمان عدم حدوث لخبطة وبدء جولة جديدة
     localStorage.removeItem('tarbawi_idx');
     localStorage.removeItem('tarbawi_scr');
     currentIndex = 0;
@@ -131,8 +131,9 @@ function loadQuestion() {
     document.getElementById('standard-box').style.display = 'none';
     document.getElementById('elim-btn').disabled = false;
 
+    // 🎯 الصمام الصارم: عند الوصول للسؤال 20 للحساب التجريبي ينتهي الاختبار فوراً لإثارة تشويقه
     if (currentIndex >= maxQuestions) { 
-        if (isGuest) alert("انتهت الأسئلة التجريبية المحددة! يرجى التفعيل لفتح كامل بنوك الأسئلة الفاخرة المعتمدة."); 
+        if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح بنك الـ 650 سؤالاً بالكامل وتأمين رخصتك المهنية."); 
         showResults(); return; 
     }
 
@@ -142,7 +143,7 @@ function loadQuestion() {
     const qData = questions[currentIndex];
     
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومميزات الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
+    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط المهني الفني: ${qData.standard_hint || 'المعيار والمؤشر العام المعتمد.'}`;
 
     ['A', 'B', 'C', 'D'].forEach(opt => { 
@@ -189,13 +190,14 @@ function showResults() {
     document.getElementById('exam-container').classList.add('hidden');
     document.getElementById('result-container').classList.remove('hidden');
     
+    // 🎯 حساب دقيق بناءً على الـ 20 سؤالاً المحلولة فعلياً للـ Guest ليعرف مستواه بدقة ويتحمس للتطوير
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب الكريم: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerHTML = `🎯 التحليل الرقمي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم حلها واستهدافها بمحاكاتك.<br>📊 النسبة والتقدير المهني: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-score').innerHTML = `🎯 التحليل التجريبي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة من أصل <b>${solvedCount}</b> سؤالاً تم حلها بمحاكاتك السريعة.<br>📊 النسبة والتقدير المهني اللحظي: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     localStorage.removeItem('tarbawi_idx'); localStorage.removeItem('tarbawi_scr');
@@ -209,7 +211,7 @@ function exitToMain() {
 }
 </script>
 
-<!-- استدعاء ملف كنز بنك الأسئلة الـ 650 الشامل والمولد تلقائياً -->
+<!-- استدعاء ملف كنز بنك أسئلة التربوي العام الـ 650 الشامل والمولد تلقائياً -->
 <script src="questionstar.js"></script>
 
 </body>

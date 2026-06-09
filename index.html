@@ -105,9 +105,9 @@ function handleLogin(event) {
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
 
-    // التعديل المصحح: الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) بصرف النظر عن الاسم المكتوب
+    // التعديل الذكي: الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) وإعطائه 20 سؤالاً ليتحمس!
     if (code === '1234') {
-        saveAndRedirect(name, field, 'guest', 10);
+        saveAndRedirect(name, field, 'guest', 20);
         return;
     }
 
