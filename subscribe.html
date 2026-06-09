@@ -3,27 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باقة الأسعار والتفعيل - منصة asiltrain</title>
+    <title>باقات الاشتراك والتفعيل - منصة asiltrain</title>
     <style>
         :root { 
             --primary: #2c3e50; 
             --accent: #27ae60; 
             --bg: #f4f6f7; 
             --danger: #e53e3e; 
+            --info: #1da1f2;
         }
         body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .form-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 600px; text-align: right; }
         h2 { color: var(--primary); text-align: center; margin-bottom: 10px; font-size: 1.5rem; }
         p.subtitle { text-align: center; color: #7f8c8d; font-size: 14px; margin-bottom: 25px; line-height: 1.6; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; }
-        .price-list-group { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; }
-        .price-item { display: flex; align-items: center; padding: 8px 0; font-size: 14px; line-height: 1.5; border-bottom: 1px dashed #e2e8f0; color: #2d3748; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #4a5568; font-size: 0.95rem; }
+        .price-list-group { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e0e0e0; margin-bottom: 15px; }
+        .price-item { display: flex; align-items: center; padding: 10px 0; font-size: 14px; line-height: 1.5; border-bottom: 1px dashed #e2e8f0; color: #2d3748; font-weight: 500; }
         .price-item:last-child { border-bottom: none; margin-bottom: 0; }
-        .contact-box { background-color: #ebf8ff; border: 2px solid #bee3f8; padding: 20px; border-radius: 10px; text-align: center; margin-top: 25px; }
-        .whatsapp-number { font-size: 1.6rem; font-weight: bold; color: #2b6cb0; letter-spacing: 1px; display: block; margin: 10px 0; direction: ltr; }
-        .instructions-text { font-size: 14px; color: #4a5568; line-height: 1.6; font-weight: 500; text-align: right; margin-top: 10px; padding-right: 10px; border-right: 4px solid #2b6cb0; }
-        .back-link { display: block; text-align: center; margin-top: 20px; font-size: 14px; color: var(--primary); text-decoration: none; font-weight: bold; }
+        
+        /* صندوق التخصصات القادمة الفاخر */
+        .upcoming-group { background: #fffaf0; padding: 15px; border-radius: 8px; border: 1px dashed #fbd38d; }
+        .upcoming-item { display: flex; align-items: center; padding: 8px 0; font-size: 13.5px; color: #dd6b20; font-weight: bold; border-bottom: 1px dotted #feebc8; }
+        .upcoming-item:last-child { border-bottom: none; }
+
+        /* صناديق التواصل الفخمة المحدثة */
+        .contact-box { background-color: #f7fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-top: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .sub-contact { display: flex; align-items: center; justify-content: space-between; background: white; padding: 12px 15px; border-radius: 8px; border: 1px solid #edf2f7; margin-bottom: 12px; }
+        .sub-contact:last-child { margin-bottom: 0; }
+        .contact-label { font-size: 14px; font-weight: bold; color: #4a5568; display: flex; align-items: center; gap: 6px; }
+        .contact-value { font-size: 1.25rem; font-weight: bold; direction: ltr; letter-spacing: 0.5px; }
+        .whatsapp-style { color: #25D366; }
+        .x-style { color: #000000; font-family: sans-serif; font-size: 1.15rem; }
+        
+        .instructions-text { font-size: 13.5px; color: #4a5568; line-height: 1.6; font-weight: 500; text-align: right; margin-top: 15px; padding-right: 12px; border-right: 4px solid #2b6cb0; }
+        .back-link { display: block; text-align: center; margin-top: 25px; font-size: 14px; color: var(--primary); text-decoration: none; font-weight: bold; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
@@ -31,30 +45,52 @@
 
 <div class="form-card">
     <h2>باقات الاشتراك وتفعيل الحساب 💳</h2>
-    <p class="subtitle">اطلع على قائمة الأسعار المخفضة الحالية للمنصة، ثم تواصل معنا عبر الرقم الموضح بالأسفل لإصدار كودك فوراً.</p>
+    <p class="subtitle">اطلع على العروض المخفضة الحالية للمنصة، ثم تواصل معنا عبر قنوات الاتصال الرسمية بالأسفل لإصدار كود تفعيلك اللحظي.</p>
     
+    <!-- باقات التفعيل الفوري الحالية -->
     <div class="form-group">
-        <label>قائمة التخصصات المتاحة والعروض الحالية 🔥:</label>
+        <label>⚡ باقات التفعيل الفوري والمحاكاة الكاملة المتوفرة الآن:</label>
         <div class="price-list-group">
-            <div class="price-item">✨ الرخصة المهنية - العام (التربوي) <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
-            <div class="price-item">✨ الرخصة المهنية - المدربين <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
-            <div class="price-item">✨ الرخصة المهنية - حاسب آلي <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
-            <div class="price-item">✨ الرخصة المهنية - دراسات إسلامية <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
-            <div class="price-item">✨ مسار الثانوي - القدرات والتحصيلي <del style="color: #000; margin-right: 8px;">100 ريال</del> <b style="color: var(--danger); margin-right: 8px;">40 ريال لفترة محدودة</b></div>
+            <div class="price-item">✨ الرخصة المهنية - العام (التربوي) <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
+            <div class="price-item">✨ الرخصة المهنية - المدربين <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
+            <div class="price-item">✨ الرخصة المهنية - دراسات إسلامية <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
+            <div class="price-item">✨ مسار الثانوي - القدرات والتحصيلي <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
+        </div>
+    </div>
+    <!-- صندوق التخصصات القادمة لرفع التشويق -->
+    <div class="form-group">
+        <label>📚 تخصصات ومسارات قادمة ومحدثة قريباً (انتظروا تحديثاتنا):</label>
+        <div class="upcoming-group">
+            <div class="upcoming-item">⏳ الرخصة المهنية - حاسب آلي (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - لغة عربية (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - رياضيات (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - علوم (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - اجتماعيات (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - تربية بدنية (رياضة) (قريباً جداً ⏱️)</div>
+            <div class="upcoming-item">⏳ الرخصة المهنية - تربية فنية (قريباً جداً ⏱️)</div>
         </div>
     </div>
 
-    <!-- صندوق رقم التواصل النصي والإرشادات -->
+    <!-- لوحة تواصل المطور الفاخرة المحدثة والمحمية ضد التداخل -->
     <div class="contact-box">
-        <h3 style="margin: 0; color: #2c3e50; font-size: 1.15rem;">🟢 رقم تواصل واتساب المطور:</h3>
-        <span class="whatsapp-number">+966 55 527 3630</span>
-        <h3 style="margin: 0; color: #2c3e50; font-size: 1.15rem;">🟢 تابعنا على منصة إكس لمعرفة كل جديد:</h3>
-        <span class="حسابنا">@asiltrain76</span>
+        
+        <!-- قناة الواتساب النصية المباشرة -->
+        <div class="sub-contact">
+            <span class="contact-label">🟢 تواصل واتساب الرسمي:</span>
+            <span class="contact-value whatsapp-style">+966 55 527 3630</span>
+        </div>
+        
+        <!-- قناة منصة إكس الفاخرة -->
+        <div class="sub-contact">
+            <span class="contact-label">𝕏 تابعنا على منصة إكس:</span>
+            <span class="contact-value x-style">@asiltrain76</span>
+        </div>
+        
         <div class="instructions-text">
-            💡 <b>طريقة التفعيل السريع:</b>
+            💡 <b>طريقة التفعيل المهني السريع:</b>
             <br>
-            يرجى نسخ هذا الرقم والتواصل معنا عبر تطبيق الواتساب، مع إرسال رسالة تحتوي على:
-            <b>(الاسم الكريم، رقم الجوال، وصورة واضحة من إيصال أو وصل الحوالة البنكية)</b> لتوليد كود تفعيلك فوراً.
+            يرجى حفظ الرقم بالأعلى والتواصل معنا عبر تطبيق الواتساب، مع إرسال رسالة نصية تشتمل على:
+            <b>(الاسم الكريم، رقم الجوال الفعال، وصورة واضحة من إيصال أو وصل الحوالة البنكية)</b> ليقوم النظام بتوليد وتصدير كود تفعيلك الفاخر فوراً.
         </div>
     </div>
 
