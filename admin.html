@@ -36,17 +36,14 @@
 <!-- شاشة الحماية البرمجية لمنع المتطفلين -->
 <div id="lockScreen" class="lock-screen">
     <h3 style="color: var(--primary); margin-bottom: 20px;">قفل الأمان للمنصة 🔒</h3>
-    
     <div class="form-group">
         <label>اسم المستخدم:</label>
         <input type="text" id="adminUser" placeholder="أدخل اسم المستخدم">
     </div>
-    
     <div class="form-group">
         <label>الرقم السري للمطور (أبو إبراهيم):</label>
         <input type="password" id="adminPass" placeholder="••••••••">
     </div>
-    
     <button class="btn" onclick="checkAdminPass()">فتح لوحة التحكم</button>
 </div>
 
@@ -55,9 +52,14 @@
     <!-- زر تسجيل الخروج الآمن المطور -->
     <button class="btn-logout" onclick="adminLogout()">🚪 خروج آمن</button>
 
+    <!-- 🎯 حقن العداد السري التراكمي لزيارات متجرك الفعلي وحجبه تماماً عن المتطفلين -->
+    <div style="background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%); padding: 15px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 1px solid #4a5568;">
+        <h4 style="margin: 0 0 10px 0; color: #cbd5e0; font-size: 0.95rem; font-weight: 600;">📊 إحصائيات زوار منصة asiltrain الحية (سري):</h4>
+        <img src="https://laobi.icu" alt="عداد الزوار" style="border-radius: 4px; max-width: 100%;">
+    </div>
+
     <h2>مولد أكواد التفعيل والاشتراكات الذكي 🚀</h2>
     <p style="color: #7f8c8d; font-size: 14px;">حدد التخصص والعدد لتوليد أكواد مشفرة تتوافق مع نظام المنصة الحية تلقائياً.</p>
-    
     <div class="form-group">
         <label>اختر التخصص المطلوب توليد أكواد له:</label>
         <select id="targetField">
@@ -106,7 +108,6 @@ window.onload = function() {
         document.getElementById('adminPanel').classList.remove('hidden');
     }
 };
-
 function checkAdminPass() {
     const enteredUser = document.getElementById('adminUser').value.trim();
     const enteredPass = document.getElementById('adminPass').value;
@@ -114,7 +115,6 @@ function checkAdminPass() {
     if (enteredUser === EXPECTED_USER && enteredPass === EXPECTED_PASS) {
         // حفظ حالة الدخول بثبات داخل ذاكرة المتصفح
         localStorage.setItem('adminLoggedIn', 'true');
-        
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
     } else {
