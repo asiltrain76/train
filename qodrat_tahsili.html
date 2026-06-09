@@ -91,12 +91,11 @@ function getRankText(pct) {
 }
 
 window.onload = function() {
-    // التحقق الآمن والمباشر من تحميل بنك الأسئلة من ملف الجافاسكربت المولد للقدرات
+    // 🎯 مطابقة الربط المباشر مع مصفوفة الأسئلة المتولدة من ملف qqodrat.js الفعلي للقدرات
     if (typeof qudratQuestions !== 'undefined') {
-        // خلط وبث الأسئلة عشوائياً بشكل كامل لمنع تكرار وحفظ الترتيب
         questions = [...qudratQuestions].sort(() => 0.5 - Math.random());
     } else {
-        alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qqudrat.js) في المجلد الحالي!");
+        alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qqodrat.js) في المجلد الحالي!");
         return;
     }
 
@@ -110,7 +109,6 @@ window.onload = function() {
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    // تنظيف مؤشرات الحفظ لتفادي اللخبطة وبدء جولة اختبار عشوائية نقية ونظيفة
     localStorage.removeItem('sec_idx');
     localStorage.removeItem('sec_scr');
     currentIndex = 0;
@@ -142,7 +140,6 @@ function loadQuestion() {
 
     const qData = questions[currentIndex];
     
-    // مطابقة حقول سكريبت التحويل المطور لملف الـ Node.js المحدث للقدرات والتحصيلي
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل السؤال والعلاقة المنطقية جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 التصنيف الفني: ${qData.standard_hint || 'مسار القدرات العامة والتحصيلي.'}`;
@@ -211,8 +208,8 @@ function exitToMain() {
 }
 </script>
 
-<!-- استدعاء ملف بنك أسئلة القدرات والتحصيلي المولد من الـ Node.js تلقائياً -->
-<script src="qqudrat.js"></script>
+<!-- 🎯 ربط ملف بنك أسئلة القدرات المولد والمحدث باسم qqodrat.js -->
+<script src="qqodrat.js"></script>
 
 </body>
 </html>
