@@ -85,23 +85,124 @@ const questions = [
         hint: "إكساب المهارة الحركية يتطلب دائماً رؤية وتطبيق الخطوات عملياً أمام المستهدفين.",
         standard: "المعيار 4: أساليب وتقنيات التدريب - المؤشر 4.1 اختيار الاستراتيجية التدريبية المناسبة لنوع المهارة."
     }
-];
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاكي الاختبارات المطور - الرخصة المهنية للمدربين</title>
+    <style>
+        :root { 
+            --primary: #2b6cb0; 
+            --success: #38a169; 
+            --danger: #e53e3e; 
+            --bg: #f7fafc; 
+            --accent: #8e44ad;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
+        .meta-info { display: flex; justify-content: space-between; font-size: 0.95rem; color: #4a5568; font-weight: bold; margin-bottom: 15px; }
+        .help-panel { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #cbd5e0; }
+        .help-btn { background: none; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #4a5568; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .help-btn:hover { color: var(--primary); transform: scale(1.05); }
+        .help-btn:disabled { color: #cbd5e0; cursor: not-allowed; transform: none; }
+        .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
+        .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
+        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
+        .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); font-weight: bold; }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); font-weight: bold; }
+        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; }
+        .btn-action { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .btn-end { background: #718096; color: white; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
 
+<div class="container" id="exam-container">
+    <div class="meta-info">
+        <span id="student-info">المتدرب: جاري التحميل...</span>
+        <span style="color: var(--accent);" id="timer-info">⏱️ الوقت: 00:00</span>
+        <span id="score-info">الصح: 0</span>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <div class="help-panel">
+        <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
+        <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
+        <button class="help-btn" id="elim-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
+    </div>
+
+    <div id="hint-box" class="popup-info"></div>
+    <div id="standard-box" class="popup-info"></div>
+
+    <div class="question-card" id="question-text">جاري تحميل السؤال...</div>
+
+    <div id="options-container">
+        <button class="btn-opt" id="optA" onclick="checkAnswer('A')"></button>
+        <button class="btn-opt" id="optB" onclick="checkAnswer('B')"></button>
+        <button class="btn-opt" id="optC" onclick="checkAnswer('C')"></button>
+        <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
+    </div>
+
+    <div class="footer-actions" style="justify-content: flex-end;">
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
+    </div>
+</div>
+
+<div class="container hidden" id="result-container">
+    <h2>التحليل النهائي للاختبار 🎉</h2>
+    <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
+    <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
+    <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
+    <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
+</div>
+<script>
+let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
+let maxQuestions = 10; 
+
+function getRankText(pct) {
+    if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
+    if (pct >= 80) return "🥇 ممتاز (مؤهل بجدارة للرخصة المتقدمة)";
+    if (pct >= 70) return "🥈 جيد جداً (مسار متمكن وثابت)";
+    if (pct >= 50) return "🥉 جيد (مقبول ويحتاج لمزيد من التدريب العشوائي)";
+    return "⚠️ يحتاج إلى تطوير مكثف (ننصح بإعادة مراجعة بنوك الأسئلة الفاخرة)";
+}
 
 window.onload = function() {
+    // التحقق الآمن والمباشر من تحميل بنك الأسئلة من ملف الجافاسكربت المولد
+    if (typeof trainersQuestions !== 'undefined') {
+        // خلط وبث الأسئلة عشوائياً بشكل كامل لمنع تكرار وحفظ الترتيب
+        questions = [...trainersQuestions].sort(() => 0.5 - Math.random());
+    } else {
+        alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qtadreb.js) في المجلد الحالي!");
+        return;
+    }
+
     const user = localStorage.getItem('activeUser');
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
+    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 10;
+    maxQuestions = isGuest ? 10 : Math.min(savedLimit, questions.length);
+
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    const sIdx = localStorage.getItem('trn_idx'), sScr = localStorage.getItem('trn_score');
-    if (sIdx && sScr) { 
-        currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
-        document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
-    }
+    // تنظيف مؤشرات الحفظ لتفادي اللخبطة وبدء جولة اختبار عشوائية نقية ونظيفة
+    localStorage.removeItem('trn_idx');
+    localStorage.removeItem('trn_score');
+    currentIndex = 0;
+    correctCount = 0;
+
     loadQuestion();
 };
 
@@ -113,32 +214,34 @@ function startTimer() {
         document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
     }, 1000);
 }
-
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
+    document.getElementById('elim-btn').disabled = false;
 
-    if (isGuest && currentIndex >= 10) { 
-        alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح كامل البنك الفاخر."); 
+    if (currentIndex >= maxQuestions) { 
+        if (isGuest) alert("انتهت الأسئلة التجريبية! يرجى التفعيل لفتح كامل بنوك الأسئلة الفاخرة."); 
         showResults(); return; 
     }
-    if (currentIndex >= questions.length) { showResults(); return; }
 
     localStorage.setItem('trn_idx', currentIndex); 
     localStorage.setItem('trn_score', correctCount);
 
     const qData = questions[currentIndex];
-    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.hint || 'عام.'}`;
-    document.getElementById('standard-box').innerText = `🎯 الرابط التدريبي: ${qData.standard || 'عام.'}`;
+    
+    // مطابقة حقول سكريبت التحويل المطور لملف الـ Node.js
+    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
+    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل الممارسات التدريبية المعطاة جيداً.'}`;
+    document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
     ['A', 'B', 'C', 'D'].forEach(opt => { 
         const b = document.getElementById(`opt${opt}`); 
-        b.innerText = qData[opt.toLowerCase()]; b.className = "btn-opt"; b.disabled = false; 
+        b.innerText = qData.options[opt.toLowerCase()] || "---"; 
+        b.className = "btn-opt"; 
+        b.disabled = false; 
     });
 
-    const total = isGuest ? 10 : questions.length;
-    document.getElementById('progress').style.width = `${(currentIndex / total) * 100}%`;
+    document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
 }
 
 function togglePopup(type) {
@@ -147,7 +250,9 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    const qData = questions[currentIndex], corr = qData.correct;
+    const qData = questions[currentIndex];
+    const corr = qData.correct.toUpperCase();
+    
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
     
     if (sel === corr) { 
@@ -162,8 +267,10 @@ function checkAnswer(sel) {
 
 function eliminateTwo() {
     const qData = questions[currentIndex];
-    if(qData.elim1) document.getElementById(`opt${qData.elim1}`).innerText = "---";
-    if(qData.elim2) document.getElementById(`opt${qData.elim2}`).innerText = "---";
+    document.getElementById('elim-btn').disabled = true;
+
+    if(qData.elim1) document.getElementById(`opt${qData.elim1.toUpperCase()}`).innerText = "---";
+    if(qData.elim2) document.getElementById(`opt${qData.elim2.toUpperCase()}`).innerText = "---";
 }
 
 function showResults() {
@@ -171,19 +278,28 @@ function showResults() {
     document.getElementById('exam-container').classList.add('hidden');
     document.getElementById('result-container').classList.remove('hidden');
     
-    const total = isGuest ? 10 : questions.length;
-    const pct = ((correctCount / total) * 100).toFixed(1);
+    const solvedCount = Math.min(currentIndex, maxQuestions);
+    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerText = `🎯 النتيجة: ${correctCount} من ${total} بنسبة مرنة موثقة (${pct}%)`;
-    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    document.getElementById('final-score').innerHTML = `🎯 التحليل الرقمي للرحلة: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     localStorage.removeItem('trn_idx'); localStorage.removeItem('trn_score');
 }
 
-function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }
-function exitToMain() { window.location.href = "index.html"; }
+function endExamEarly() { 
+    if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
+}
+function exitToMain() { 
+    window.location.href = "index.html"; 
+}
 </script>
+
+<!-- استدعاء ملف بنك أسئلة رخصة المدربين المولد من الـ Node.js تلقائياً -->
+<script src="qtadreb.js"></script>
+
 </body>
 </html>
