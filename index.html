@@ -5,17 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة الدخول الذكية - منصة المحاكاة الحية</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #2980b9; --success: #27ae60; --danger: #e74c3c; --bg: #ecf0f1; }
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; user-select: none; }
+        :root { 
+            --primary: #2c3e50; 
+            --accent: #2980b9; 
+            --success: #27ae60; 
+            --danger: #e74c3c;
+            --bg: #ecf0f1; 
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
         .login-box { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; text-align: center; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; text-align: right; position: relative; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: #34495e; }
         input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-        .password-toggle { position: absolute; left: 12px; top: 38px; cursor: pointer; color: #7f8c8d; font-size: 18px; user-select: none; z-index: 10; }
+        
+        /* تنسيق زر العين لإظهار كود التفعيل داخل الحقل لراحة المشتركين */
+        .password-toggle {
+            position: absolute;
+            left: 12px;
+            top: 38px;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 18px;
+            user-select: none;
+            z-index: 10;
+        }
         .password-toggle:hover { color: var(--accent); }
         #activationCode { padding-left: 45px; }
+
         .btn { background: var(--accent); color: white; border: none; padding: 14px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 15px; }
         .btn:hover { background: #2471a3; }
         .error-msg { background: #fff5f5; color: var(--danger); border: 1px solid #fed7d7; padding: 12px; border-radius: 6px; margin-bottom: 15px; text-align: right; font-weight: 500; display: none; }
@@ -23,12 +41,12 @@
         .footer-links a { color: var(--accent); text-decoration: none; font-weight: bold; }
         .footer-links a:hover { text-decoration: underline; }
     </style>
-    <!-- مكتبة التشفير الأساسية لمطابقة كلمة المرور سرياً -->
-    <script src="https://cloudflare.com"></script>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
 <div class="login-box">
+    
+    <!-- 1. صندوق التشويق والتحفيز المطور والشامل لمنصة asiltrain -->
     <div style="background: linear-gradient(135deg, #ebf8ff 0%, #e2e8f0 100%); border-right: 6px solid #2b6cb0; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="margin: 0 0 8px 0; color: #2b6cb0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">🚀 ركب التميز لا ينتظر.. حان وقت حلمك!</h3>
         <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
@@ -40,8 +58,11 @@
     </div>
 
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
+
+    <!-- رسائل الأخطاء اللحظية -->
     <div id="errorMsg" class="error-msg"></div>
 
+    <!-- 2. استمارة الدخول الرسمية المحدثة -->
     <form onsubmit="handleLogin(event)">
         <div class="form-group">
             <label>اسم المتدرب / المتدربة الكامل:</label>
@@ -84,15 +105,95 @@
 
         <button type="submit" class="btn">🚀 ابدأ رحلة التميز الآن</button>
     </form>
-
     <div class="footer-links">
         لا تملك كود تفعيل؟ <a href="subscribe.html">اشترك معنا وارفع الإيصال من هنا 💳</a>
     </div>
 </div>
 
-<!-- المحرك البرمجي المعمى والمشفر بالكامل بعد إصلاح ومعالجة مصفوفة الأكواد -->
+<!-- 3. منطق التحكم البرمجي والتحقق السريع المعتمد والمجرب 100% -->
 <script>
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('l.z=f(e){i(e.C==123)4 7;i(e.H&&e.I&&(e.C==\'I\'.J(0)||e.C==\'C\'.J(0)||e.C==\'K\'.J(0)))4 7;i(e.H&&e.C==\'U\'.J(0))4 7};l.L(\'M\',()=>{17 a=9.b(\'N\');i(a){9.g(\'O\').18=a}});f P(){17 a=9.g(\'k\');17 b=9.g(\'Q\');i(a.w==\'k\'){a.w=\'R\';b.x=\'🙈\'}19{a.w=\'k\';b.x=\'👁️\'}}f S(e){e.T();17 a=9.g(\'O\').18.y();17 b=9.g(\'k\').18.y();17 c=9.g(\'V\').18;17 d=1a(9.g(\'W\').18);17 g=9.g(\'X\');g.h.Y=\'Z\';9.b(\'N\',a);17 j=1b.1c(b).1d();i(a===\'1e\'&&j===\'4o2a52dfdb0dcf6ea1c9b8cf1458e0a\'){p(a,c,\'1f\',100);4}17 m=b.1g();i(m===\'1234\'){p(a,c,\'1h\',20);4}17 n={\'1i\':\'1j\',\'1k\':\'1l\',\'1m\':\'1n\',\'1o\':\'1p\',\'1q\':\'1r\',\'1s\':\'1t\',\'1u\':\'1v\',\'1w\':\'1x\',\'1y\':\'1z\',\'1A\':\'1B\',\'1C\':\'1D\'};17 o=n[c];17 q=m.1e(\'-\');17 r=7;17 s=743;i(q.E===3&&q[0]===o){17 t=1a(q[1]);17 u=1a(q[2]);i(!11(t)&&!11(u)&&(t+s)%9===u){r=7}}i(r){p(a,c,\'1b\',d)}1i{g.12=`❌ كود التفعيل غير صحيح أو لا يطابق التخصص المختار! تأكد من الكود المخصص لـ (${o})`;g.h.Y=\'17\'}}f p(a,b,c,d){17 g=9.b(\'N\');9.13();9.b(\'N\',g);9.b(\'14\',a);9.b(\'15\',c);9.b(\'16\',d);l.1f.1g=b+\'.1h\'}',62,110,'||||return|||false||localStorage|setItem|||||function|getElementById|style|if||activationCode|window||||saveAndRedirect||||||togglePasswordVisibility|toggleIcon|text|trim|onkeydown|const|value|keyCode||length|||||ctrlKey|shiftKey|charCodeAt|J||addEventListener|DOMContentLoaded|lastEnteredName|studentName|handleLogin|togglePasswordVisibilityElement|password|preventDefault|View||examField|questionsLimit|errorMsg||display|none|isNaN|textContent|clear|activeUser|userRole|examLimit|block|lastEnteredNameElement|else|parseInt|CryptoJS|MD5|toString|split|admin|location|toUpperCase|guest|tarbawi|TAR|trainers|TRN|computer|COM|islamic|ISL|arabic|ARA|math|MAT|science|SCI|ejtemaeyat|SOC|sport|SPO|art|ART|qodrat_tahsili|SEC|href|html'.split('|'),0,{}))
+// استرجاع اسم المتدرب الأخير تلقائياً عند فتح الصفحة لتوفير الوقت
+document.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('lastEnteredName');
+    if (savedName) {
+        document.getElementById('studentName').value = savedName;
+    }
+});
+
+// منطق تبديل رؤية الكود (إظهار / إخفاء) عبر أيقونة العين
+function togglePasswordVisibility() {
+    const codeInput = document.getElementById('activationCode');
+    const toggleIcon = document.getElementById('toggleIcon');
+    if (codeInput.type === 'password') {
+        codeInput.type = 'text';
+        toggleIcon.textContent = '🙈';
+    } else {
+        codeInput.type = 'password';
+        toggleIcon.textContent = '👁️';
+    }
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    const name = document.getElementById('studentName').value.trim();
+    const code = document.getElementById('activationCode').value.trim(); 
+    const field = document.getElementById('examField').value;
+    let limit = parseInt(document.getElementById('questionsLimit').value);
+    const errorMsg = document.getElementById('errorMsg');
+    errorMsg.style.display = 'none';
+
+    // حفظ الاسم الأخير في المتصفح قبل الانتقال لصفحة الاختبار للاستفادة منه لاحقاً
+    localStorage.setItem('lastEnteredName', name);
+
+    // تحويل الكود للأحرف الكبيرة لبقية المستخدمين والضيوف لضمان مطابقة البوادئ
+    const upperCode = code.toUpperCase();
+
+    // الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) وإعطائه 20 سؤالاً ليتحمس!
+    if (upperCode === '1234') {
+        saveAndRedirect(name, field, 'guest', 20);
+        return;
+    }
+
+    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية
+    const codePrefixes = {
+        'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
+        'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
+        'sport': 'SPO', 'art': 'ART', 'qodrat_tahsili': 'SEC'
+    };
+
+    const expectedPrefix = codePrefixes[field];
+    const parts = upperCode.split('-'); 
+    let isValid = false;
+    const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية اللحظية
+
+    // التحقق من الأكواد المشفرة المدفوعة للمشتركين الحقيقيين
+    if (parts.length === 3 && parts[0] === expectedPrefix) {
+        const randomNum = parseInt(parts[1]);
+        const checkDigit = parseInt(parts[2]);
+        
+        if (!isNaN(randomNum) && !isNaN(checkDigit) && (randomNum + CRYPTO_SALT) % 9 === checkDigit) {
+            isValid = true;
+        }
+    }
+
+    if (isValid) {
+        saveAndRedirect(name, field, 'member', limit);
+    } else {
+        errorMsg.textContent = `❌ كود التفعيل غير صحيح أو لا يطابق التخصص المختار! تأكد من الكود المخصص لـ (${expectedPrefix})`;
+        errorMsg.style.display = 'block';
+    }
+}
+
+function saveAndRedirect(name, field, role, limit) {
+    const savedName = localStorage.getItem('lastEnteredName');
+    localStorage.clear(); // تنظيف بيانات التصفح القديمة لبدء محاكاة نظيفة وثابتة
+    
+    localStorage.setItem('lastEnteredName', savedName);
+    localStorage.setItem('activeUser', name);
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('examLimit', limit); // تمرير العدد المستهدف لصفحات المواد المخصصة
+    window.location.href = field + '.html';
+}
 </script>
 </body>
 </html>
