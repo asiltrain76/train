@@ -5,53 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بوابة الدخول الذكية - منصة المحاكاة الحية</title>
     <style>
-        :root { 
-            --primary: #2c3e50; 
-            --accent: #2980b9; 
-            --success: #27ae60; 
-            --danger: #e74c3c;
-            --bg: #ecf0f1; 
-        }
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        :root { --primary: #2c3e50; --accent: #2980b9; --success: #27ae60; --danger: #e74c3c; --bg: #ecf0f1; }
+        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; user-select: none; }
         .login-box { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; text-align: center; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; text-align: right; position: relative; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: #34495e; }
         input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
-        
-        /* تنسيق زر العين لإظهار كلمة المرور داخل الحقل */
-        .password-toggle {
-            position: absolute;
-            left: 12px;
-            top: 38px;
-            cursor: pointer;
-            color: #7f8c8d;
-            font-size: 18px;
-            user-select: none;
-            z-index: 10;
-        }
+        .password-toggle { position: absolute; left: 12px; top: 38px; cursor: pointer; color: #7f8c8d; font-size: 18px; user-select: none; z-index: 10; }
         .password-toggle:hover { color: var(--accent); }
-        /* زيادة الحشوة اليسارية لحقل الكود حتى لا يغطي النص أيقونة العين */
         #activationCode { padding-left: 45px; }
-
         .btn { background: var(--accent); color: white; border: none; padding: 14px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 15px; }
         .btn:hover { background: #2471a3; }
         .error-msg { background: #fff5f5; color: var(--danger); border: 1px solid #fed7d7; padding: 12px; border-radius: 6px; margin-bottom: 15px; text-align: right; font-weight: 500; display: none; }
         .footer-links { margin-top: 20px; text-align: center; font-size: 15px; }
         .footer-links a { color: var(--accent); text-decoration: none; font-weight: bold; }
         .footer-links a:hover { text-decoration: underline; }
+        .reviews-section { max-width: 600px; margin: 30px auto; text-align: center; }
+        .reviews-title { color: var(--primary); font-size: 1.2rem; margin-bottom: 15px; font-weight: bold; }
+        .reviews-container { display: flex; gap: 15px; overflow-x: auto; padding: 10px 5px; scroll-behavior: smooth; }
+        .reviews-container::-webkit-scrollbar { height: 6px; }
+        .reviews-container::-webkit-scrollbar-thumb { background: #bdc3c7; border-radius: 4px; }
+        .review-card { min-width: 180px; flex: 1; background: white; padding: 8px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
+        .review-card img { width: 100%; height: auto; border-radius: 6px; display: block; object-fit: cover; }
+        .review-caption { font-size: 13px; color: #7f8c8d; margin-top: 6px; font-weight: 500; }
     </style>
+    <script src="https://cloudflare.com"></script>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <div class="login-box">
-    
-    <!-- 1. صندوق التشويق والتحفيز المطور والشامل لمنصة asiltrain -->
     <div style="background: linear-gradient(135deg, #ebf8ff 0%, #e2e8f0 100%); border-right: 6px solid #2b6cb0; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="margin: 0 0 8px 0; color: #2b6cb0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">🚀 ركب التميز لا ينتظر.. حان وقت حلمك!</h3>
         <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
-            أهلاً بك في منصة <b style="color: #8e44ad;">المحاكاة الحية</b>. الكثير من المعلمين والمدربين والطلاب الذين سبقوك عبر this المحاكي الحي والذكي الذي يضم <span style="color: #2b6cb0; font-weight: bold;">أكثر من 650 سؤال شاملة لكل معايير الرخصة المهنية للتربوي العام</span> و<span style="color: #27ae60; font-weight: bold;">أكثر من 300 سؤال شاملة للتخصصات</span>، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
+            أهلاً بك في منصة <b style="color: #8e44ad;">المحاكاة الحية</b>. الكثير من المعلمين والمدربين والطلاب الذين سبقوك عبر هذا المحاكي الحي والذكي الذي يضم <span style="color: #2b6cb0; font-weight: bold;">أكثر من 650 سؤال شاملة لكل معايير الرخصة المهنية للتربوي العام</span> و<span style="color: #27ae60; font-weight: bold;">أكثر من 300 سؤال شاملة للتخصصات</span>، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
             <br>
             <span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة. لمعرفة جديد الموقع تابعنا على منصة إكس 
             <a href="https://x.com" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
@@ -59,11 +47,8 @@
     </div>
 
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
-
-    <!-- رسائل الأخطاء اللحظية -->
     <div id="errorMsg" class="error-msg"></div>
 
-    <!-- 2. استمارة الدخول الرسمية المحدثة -->
     <form onsubmit="handleLogin(event)">
         <div class="form-group">
             <label>اسم المتدرب / المتدربة الكامل:</label>
@@ -72,7 +57,6 @@
 
         <div class="form-group">
             <label>كود التفعيل المشفر (أو اكتب 1234 للتجربة اللحظية):</label>
-            <!-- تغيير نوع الإدخال إلى password للسماح بالإخفاء والظهور المخصص -->
             <input type="password" id="activationCode" required placeholder="مثال: TAR-12345-6">
             <span class="password-toggle" id="toggleIcon" onclick="togglePasswordVisibility()">👁️</span>
         </div>
@@ -107,101 +91,33 @@
 
         <button type="submit" class="btn">🚀 ابدأ رحلة التميز الآن</button>
     </form>
+
     <div class="footer-links">
         لا تملك كود تفعيل؟ <a href="subscribe.html">اشترك معنا وارفع الإيصال من هنا 💳</a>
     </div>
 </div>
 
+<div class="reviews-section">
+    <div class="reviews-title">💬 من رسائل وقصص نجاح مبدعينا (+90)</div>
+    <div class="reviews-container">
+        <div class="review-card">
+            <img src="images/review1.png" alt="تجربة مشترك">
+            <div class="review-caption">تميز في التربوي العام 🎯</div>
+        </div>
+        <div class="review-card">
+            <img src="images/review2.png" alt="تجربة مشترك">
+            <div class="review-caption">لوحة شرف التخصصات 🌟</div>
+        </div>
+        <div class="review-card">
+            <img src="images/review3.png" alt="تجربة مشترك">
+            <div class="review-caption">قصة نجاح بالرخصة 🚀</div>
+        </div>
+    </div>
+</div>
+
+<!-- المحرك البرمجي المعمى والمشفر بالكامل لمنع التجسس وقراءة المنطق -->
 <script>
-// ميزة مضافة: استرجاع اسم المتدرب الأخير تلقائياً عند فتح الصفحة لتوفير الوقت
-document.addEventListener('DOMContentLoaded', () => {
-    const savedName = localStorage.getItem('lastEnteredName');
-    if (savedName) {
-        document.getElementById('studentName').value = savedName;
-    }
-});
-
-// ميزة مضافة: منطق تبديل رؤية الكود (إظهار / إخفاء) عبر أيقونة العين
-function togglePasswordVisibility() {
-    const codeInput = document.getElementById('activationCode');
-    const toggleIcon = document.getElementById('toggleIcon');
-    if (codeInput.type === 'password') {
-        codeInput.type = 'text';
-        toggleIcon.textContent = '🙈';
-    } else {
-        codeInput.type = 'password';
-        toggleIcon.textContent = '👁️';
-    }
-}
-
-function handleLogin(event) {
-    event.preventDefault();
-    const name = document.getElementById('studentName').value.trim();
-    const code = document.getElementById('activationCode').value.trim(); 
-    const field = document.getElementById('examField').value;
-    let limit = parseInt(document.getElementById('questionsLimit').value);
-    const errorMsg = document.getElementById('errorMsg');
-    errorMsg.style.display = 'none';
-
-    // حفظ الاسم الأخير في المتصفح قبل الانتقال لصفحة الاختبار للاستفادة منه لاحقاً
-    localStorage.setItem('lastEnteredName', name);
-
-    // أولاً: ميزة دخول المدير الخاصة بك - تفتح كامل الأسئلة (100) لأي قسم مباشرة وبدون قيود
-    if (name === 'asiltrain76' && code === 'I1396#z1398') {
-        saveAndRedirect(name, field, 'admin', 100); 
-        return;
-    }
-
-    // تحويل الكود للأحرف الكبيرة لبقية المشتركين والضيوف لضمان مطابقة الرموز والبوادئ
-    const upperCode = code.toUpperCase();
-
-    // ثانياً: الدخول التجريبي للضيوف بالرمز 1234 وإعطائهم 20 سؤالاً فقط للتجربة
-    if (upperCode === '1234') {
-        saveAndRedirect(name, field, 'guest', 20);
-        return;
-    }
-
-    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية للمشتركين
-    const codePrefixes = {
-        'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
-        'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
-        'sport': 'SPO', 'art': 'ART', 'qodrat_tahsili': 'SEC'
-    };
-
-    const expectedPrefix = codePrefixes[field];
-    const parts = upperCode.split('-'); 
-    let isValid = false;
-    const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية اللحظية
-
-    // التحقق من الأكواد المشفرة المدفوعة للمشتركين الحقيقيين
-    if (parts.length === 3 && parts[0] === expectedPrefix) {
-        const randomNum = parseInt(parts[1]);
-        const checkDigit = parseInt(parts[2]);
-        
-        if (!isNaN(randomNum) && !isNaN(checkDigit) && (randomNum + CRYPTO_SALT) % 9 === checkDigit) {
-            isValid = true;
-        }
-    }
-
-    if (isValid) {
-        saveAndRedirect(name, field, 'member', limit);
-    } else {
-        errorMsg.textContent = `❌ كود التفعيل غير صحيح أو لا يطابق التخصص المختار! تأكد من الكود المخصص لـ (${expectedPrefix})`;
-        errorMsg.style.display = 'block';
-    }
-}
-
-function saveAndRedirect(name, field, role, limit) {
-    // نقوم بتنظيف الـ localStorage ولكن نستثني الاسم المحفوظ لكي لا يضيع التذكر التلقائي
-    const savedName = localStorage.getItem('lastEnteredName');
-    localStorage.clear(); 
-    
-    localStorage.setItem('lastEnteredName', savedName);
-    localStorage.setItem('activeUser', name);
-    localStorage.setItem('userRole', role);
-    localStorage.setItem('examLimit', limit); // تمرير العدد المستهدف لصفحات المواد المخصصة
-    window.location.href = field + '.html';
-}
+eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('o.11=f(e){i(e.18==123)4 7;i(e.22&&e.2c&&(e.18==\'I\'.1e(0)||e.18==\'C\'.1e(0)||e.18==\'J\'.1e(0)))4 7;i(e.22&&e.18==\'U\'.1e(0))4 7};o.Q(\'R\',()=>{1a a=9.b(\'S\');i(a){9.h(\'1f\').1b=a}});f T(){1a a=9.h(\'k\');1a b=9.h(\'1g\');i(a.w==\'k\'){a.w=\'1h\';b.z=\'🙈\'}1i{a.w=\'k\';b.z=\'👁️\'}}f X(e){e.1j();1a a=9.h(\'1f\').1b.A();1a b=9.h(\'k\').1b.A();1a c=9.h(\'1k\').1b;1a d=1l(9.h(\'1m\').1b);1a g=9.h(\'1n\');g.12.1o=\'1p\';9.b(\'S\',a);1a j=1q.1r(b).1s();i(a===\'1t\'&&j===\'4o2a52dfdb0dcf6ea1c9b8cf1458e0a\'){p(a,c,\'1u\',100);4}1a l=b.1v();i(l===\'1234\'){p(a,c,\'1w\',20);4}1a m={\'1x\':\'1y\',\'1z\':\'1A\',\'1B\':\'1C\',\'1D\':\'1E\',\'1F\':\'1G\',\'1H\':\'1I\',\'1J\':\'1K\',\'1L\':\'1M\',\'1N\':\'1O\',\'1P\':\'1Q\',\'1R\':\'1S\'};1a n=m[c];1a q=l.V(\'-\');1a r=7;1a s=743;i(q.B===3&&q[0]===n){1a t=1l(q[1]);1a u=1l(q[2]);i(!13(t)&&!13(u)&&(t+s)%9===u){r=7}}i(r){p(a,c,\'1b\',d)}1i{g.14=`❌ كود التفعيل غير صحيح أو لا يطابق التخصص المختار! تأكد من الكود المخصص لـ (${n})`;g.12.1o=\'1a\'}}f p(a,b,c,d){1a g=9.b(\'S\');9.23();9.b(\'S\',g);9.b(\'25\',a);9.b(\'26\',c);9.b(\'27\',d);o.2b.2d=b+\'.2e\'}',62,141,'||||return|||false||localStorage|setItem||||||||getElementById|if||password||||saveAndRedirect||||||togglePasswordVisibility|||type|handleLogin||text||display|errorMsg|parseInt|questionsLimit|errorMsgElement|style|isNaN|textContent||||||const|value|||charCodeAt|studentName|toggleIcon|text|else|preventDefault|examField|parseInt|questionsLimit|errorMsg|display|block|CryptoJS|MD5|toString|asiltrain76|admin|toUpperCase|guest|tarbawi|TAR|trainers|TRN|computer|COM|islamic|ISL|arabic|ARA|math|MAT|science|SCI|ejtemaeyat|SOC|sport|SPO|art|ART|qodrat_tahsili|SEC|onkeydown|ctrlKey|clear|activeUser|userRole|examLimit|shiftKey|location|href|html'.split('|'),0,{}))
 </script>
 </body>
 </html>
