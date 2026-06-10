@@ -15,10 +15,26 @@
         body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
         .login-box { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; text-align: center; margin-bottom: 25px; }
-        .form-group { margin-bottom: 18px; text-align: right; }
+        .form-group { margin-bottom: 18px; text-align: right; position: relative; }
         label { display: block; margin-bottom: 6px; font-weight: bold; color: #34495e; }
         input, select { width: 100%; padding: 12px; border: 2px solid #bdc3c7; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         input:focus, select:focus { border-color: var(--accent); outline: none; }
+        
+        /* تنسيق زر العين لإظهار كلمة المرور داخل الحقل */
+        .password-toggle {
+            position: absolute;
+            left: 12px;
+            top: 38px;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-size: 18px;
+            user-select: none;
+            z-index: 10;
+        }
+        .password-toggle:hover { color: var(--accent); }
+        /* زيادة الحشوة اليسارية لحقل الكود حتى لا يغطي النص أيقونة العين */
+        #activationCode { padding-left: 45px; }
+
         .btn { background: var(--accent); color: white; border: none; padding: 14px 20px; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 15px; }
         .btn:hover { background: #2471a3; }
         .error-msg { background: #fff5f5; color: var(--danger); border: 1px solid #fed7d7; padding: 12px; border-radius: 6px; margin-bottom: 15px; text-align: right; font-weight: 500; display: none; }
@@ -35,7 +51,7 @@
     <div style="background: linear-gradient(135deg, #ebf8ff 0%, #e2e8f0 100%); border-right: 6px solid #2b6cb0; padding: 20px; border-radius: 10px; margin-bottom: 25px; text-align: right; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
         <h3 style="margin: 0 0 8px 0; color: #2b6cb0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">🚀 ركب التميز لا ينتظر.. حان وقت حلمك!</h3>
         <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
-            أهلاً بك في منصة <b style="color: #8e44ad;">المحاكاة الحية</b>. الكثير من المعلمين والمدربين والطلاب الذين سبقوك عبر هذا المحاكي الحي والذكي الذي يضم <span style="color: #2b6cb0; font-weight: bold;">أكثر من 650 سؤال شاملة لكل معايير الرخصة المهنية للتربوي العام</span> و<span style="color: #27ae60; font-weight: bold;">أكثر من 300 سؤال شاملة للتخصصات</span>، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
+            أهلاً بك في منصة <b style="color: #8e44ad;">المحاكاة الحية</b>. الكثير من المعلمين والمدربين والطلاب الذين سبقوك عبر this المحاكي الحي والذكي الذي يضم <span style="color: #2b6cb0; font-weight: bold;">أكثر من 650 سؤال شاملة لكل معايير الرخصة المهنية للتربوي العام</span> و<span style="color: #27ae60; font-weight: bold;">أكثر من 300 سؤال شاملة للتخصصات</span>، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
             <br>
             <span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة. لمعرفة جديد الموقع تابعنا على منصة إكس 
             <a href="https://x.com" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
@@ -56,7 +72,9 @@
 
         <div class="form-group">
             <label>كود التفعيل المشفر (أو اكتب 1234 للتجربة اللحظية):</label>
-            <input type="text" id="activationCode" required placeholder="مثال: TAR-12345-6">
+            <!-- تغيير نوع الإدخال إلى password للسماح بالإخفاء والظهور المخصص -->
+            <input type="password" id="activationCode" required placeholder="مثال: TAR-12345-6">
+            <span class="password-toggle" id="toggleIcon" onclick="togglePasswordVisibility()">👁️</span>
         </div>
 
         <div class="form-group">
@@ -94,8 +112,28 @@
     </div>
 </div>
 
-<!-- 3. منطق التحكم البرمجي والتحقق السريع المعدل بدون عداد وبميزة دخول المدير -->
 <script>
+// ميزة مضافة: استرجاع اسم المتدرب الأخير تلقائياً عند فتح الصفحة لتوفير الوقت
+document.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('lastEnteredName');
+    if (savedName) {
+        document.getElementById('studentName').value = savedName;
+    }
+});
+
+// ميزة مضافة: منطق تبديل رؤية الكود (إظهار / إخفاء) عبر أيقونة العين
+function togglePasswordVisibility() {
+    const codeInput = document.getElementById('activationCode');
+    const toggleIcon = document.getElementById('toggleIcon');
+    if (codeInput.type === 'password') {
+        codeInput.type = 'text';
+        toggleIcon.textContent = '🙈';
+    } else {
+        codeInput.type = 'password';
+        toggleIcon.textContent = '👁️';
+    }
+}
+
 function handleLogin(event) {
     event.preventDefault();
     const name = document.getElementById('studentName').value.trim();
@@ -104,6 +142,9 @@ function handleLogin(event) {
     let limit = parseInt(document.getElementById('questionsLimit').value);
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
+
+    // حفظ الاسم الأخير في المتصفح قبل الانتقال لصفحة الاختبار للاستفادة منه لاحقاً
+    localStorage.setItem('lastEnteredName', name);
 
     // أولاً: ميزة دخول المدير الخاصة بك - تفتح كامل الأسئلة (100) لأي قسم مباشرة وبدون قيود
     if (name === 'asiltrain76' && code === 'I1396#z1398') {
@@ -151,7 +192,11 @@ function handleLogin(event) {
 }
 
 function saveAndRedirect(name, field, role, limit) {
-    localStorage.clear(); // تنظيف بيانات التصفح القديمة لبدء محاكاة نظيفة وثابتة
+    // نقوم بتنظيف الـ localStorage ولكن نستثني الاسم المحفوظ لكي لا يضيع التذكر التلقائي
+    const savedName = localStorage.getItem('lastEnteredName');
+    localStorage.clear(); 
+    
+    localStorage.setItem('lastEnteredName', savedName);
     localStorage.setItem('activeUser', name);
     localStorage.setItem('userRole', role);
     localStorage.setItem('examLimit', limit); // تمرير العدد المستهدف لصفحات المواد المخصصة
