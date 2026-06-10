@@ -20,6 +20,7 @@
         .help-panel { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #cbd5e0; }
         .help-btn { background: none; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #4a5568; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .help-btn:hover { color: var(--primary); transform: scale(1.05); }
+        .help-btn:disabled { color: #cbd5e0; cursor: not-allowed; transform: none; }
         .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
         .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
         .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
@@ -33,6 +34,7 @@
     </style>
 </head>
 <body>
+
 <div class="container" id="exam-container">
     <div class="meta-info">
         <span id="student-info">المتدرب: جاري التحميل...</span>
@@ -47,7 +49,7 @@
     <div class="help-panel">
         <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
         <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
-        <button class="help-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
+        <button class="help-btn" id="elim-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
     </div>
 
     <div id="hint-box" class="popup-info"></div>
@@ -66,49 +68,59 @@
         <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
-
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
     <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
-    <p id="final-score" style="font-size: 1.4rem; color: var(--primary); text-align: right; font-weight: bold;"></p>
+    <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
-<script>
-// بنك أسئلة الاجتماعيات المبدئي للتجربة والفحص
-const questions = [
-    { 
-        q: "وقعت معركة عين جالوت التاريخية الخالدة بقيادة السلطان سيف الدين قطز ضد المغول (التتار) في عام:", 
-        a: "658 هـ", b: "656 هـ", c: "660 هـ", d: "650 هـ", 
-        correct: "A", elim1: "B", elim2: "D",
-        hint: "حدثت المعركة بعد عامين من سقوط بغداد التاريخي على يد هولاكو.",
-        standard: "المعيار 4: التاريخ الإسلامي - المؤشر 4.5 تمييز معارك الدول الإسلامية المستقلة ضد الأخطار الخارجية."
-    },
-    { 
-        q: "أكبر قارات العالم من حيث المساحة الجغرافية وعدد السكان الإجمالي هي قارة:", 
-        a: "آسيا", b: "أفريقيا", c: "أوروبا", d: "أمريكا الشمالية", 
-        correct: "A", elim1: "C", elim2: "D",
-        hint: "تضم هذه القارة دولاً ذات كثافة سكانية هائلة مثل الصين والهند وتغطي ثلث مساحة اليابسة.",
-        standard: "المعيار 7: الجغرافيا الإقليمية - المؤشر 7.1 تمييز الخصائص الطبيعية والبشرية لقارات العالم."
-    }
-];
 
+<script>
+let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
+let maxQuestions = 20; 
+
+// متغيرات ديناميكية لحفظ الحروف اللحظية بعد البعثرة العشوائية
+let currentCorrectLetter = "";
+let currentElim1Letter = "";
+let currentElim2Letter = "";
+
+function getRankText(pct) {
+    if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
+    if (pct >= 80) return "🥇 ممتاز (مؤهل بجدارة للرخصة المتقدمة)";
+    if (pct >= 70) return "🥈 جيد جداً (مسار متمكن وثابت)";
+    if (pct >= 50) return "🥉 جيد (مقبول ويحتاج لمزيد من التدريب العشوائي)";
+    return "⚠️ يحتاج إلى تطوير مكثف (ننصح بإعادة مراجعة بنوك الأسئلة الفاخرة)";
+}
 
 window.onload = function() {
+    if (typeof ejtemaeyatQuestions !== 'undefined') {
+        // خلط الـ 320 سؤالاً عشوائياً للبنك بالكامل لمنع التكرار والحفظ الظاهري
+        questions = [...ejtemaeyatQuestions].sort(() => 0.5 - Math.random());
+    } else {
+        alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qejtemaeyat.js) في المجلد الحالي!");
+        return;
+    }
+
     const user = localStorage.getItem('activeUser');
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
+    // سحب حد الأسئلة وإجبار الـ Guest على 20 سؤالاً لفتح شهيته للتفعيل الفوري
+    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
+    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
+
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     startTimer();
 
-    const sIdx = localStorage.getItem('soc_idx'), sScr = localStorage.getItem('soc_scr');
-    if (sIdx && sScr) { 
-        currentIndex = parseInt(sIdx); correctCount = parseInt(sScr); 
-        document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`; 
-    }
+    // فرز وتصفير مفاتيح حفظ جلسة التصفح الفريدة لقسم الاجتماعيات
+    localStorage.removeItem('soc_idx');
+    localStorage.removeItem('soc_score');
+    currentIndex = 0;
+    correctCount = 0;
+
     loadQuestion();
 };
 
@@ -120,32 +132,53 @@ function startTimer() {
         document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
     }, 1000);
 }
-
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
+    document.getElementById('elim-btn').disabled = false;
 
-    if (isGuest && currentIndex >= 10) { 
-        alert("انتهت الأسئلة التجريبية! يرجى الاشتراك لفتح كامل البنك."); 
+    if (currentIndex >= maxQuestions) { 
+        if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح بنك الأسئلة بالكامل وتأمين رخصتك المهنية."); 
         showResults(); return; 
     }
-    if (currentIndex >= questions.length) { showResults(); return; }
 
     localStorage.setItem('soc_idx', currentIndex); 
-    localStorage.setItem('soc_scr', correctCount);
+    localStorage.setItem('soc_score', correctCount);
 
     const qData = questions[currentIndex];
-    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.hint || 'عام.'}`;
-    document.getElementById('standard-box').innerText = `🎯 الرابط المهني: ${qData.standard || 'عام.'}`;
+    
+    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
+    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المظاهر الجغرافية أو التاريخية بدقة.'}`;
+    document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد في قياس.'}`;
 
-    ['A', 'B', 'C', 'D'].forEach(opt => { 
-        const b = document.getElementById(`opt${opt}`); 
-        b.innerText = qData[opt.toLowerCase()]; b.className = "btn-opt"; b.disabled = false; 
+    // سحب نصوص الإجابات الأصلية قبل البعثرة للحرف اللحظي
+    const originalCorrectText = qData.options[qData.correct.toLowerCase()];
+    const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
+    const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
+
+    // بناء وبعثرة الخيارات الأربعة عشوائياً بداخل كتل الواجهة
+    let optArray = [
+        { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
+        { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
+        { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
+        { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
+    ].sort(() => 0.5 - Math.random());
+
+    // حقن الخيارات ديناميكياً داخل الأزرار وتحديث رموز الذاكرة اللحظية
+    const targetLetters = ['A', 'B', 'C', 'D'];
+    optArray.forEach((item, index) => {
+        const letter = targetLetters[index];
+        const b = document.getElementById(`opt${letter}`);
+        b.innerText = item.text || "---";
+        b.className = "btn-opt";
+        b.disabled = false;
+
+        if (item.isCorrect) currentCorrectLetter = letter;
+        if (item.isElim1) currentElim1Letter = letter;
+        if (item.isElim2) currentElim2Letter = letter;
     });
 
-    const total = isGuest ? 10 : questions.length;
-    document.getElementById('progress').style.width = `${(currentIndex / total) * 100}%`;
+    document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
 }
 
 function togglePopup(type) {
@@ -154,7 +187,7 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    const qData = questions[currentIndex], corr = qData.correct;
+    const corr = currentCorrectLetter;
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
     
     if (sel === corr) { 
@@ -168,9 +201,11 @@ function checkAnswer(sel) {
 }
 
 function eliminateTwo() {
-    const qData = questions[currentIndex];
-    if(qData.elim1) document.getElementById(`opt${qData.elim1}`).innerText = "---";
-    if(qData.elim2) document.getElementById(`opt${qData.elim2}`).innerText = "---";
+    document.getElementById('elim-btn').disabled = true;
+
+    // تصفير الخيارات المحذوفة بناءً على حروفها المبعثرة اللحظية
+    if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
+    if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
 
 function showResults() {
@@ -178,19 +213,28 @@ function showResults() {
     document.getElementById('exam-container').classList.add('hidden');
     document.getElementById('result-container').classList.remove('hidden');
     
-    const total = isGuest ? 10 : questions.length;
-    const pct = ((correctCount / total) * 100).toFixed(1);
+    const solvedCount = Math.min(currentIndex, maxQuestions);
+    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
-    document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerText = `🎯 النتيجة: ${correctCount} من ${total} بنسبة مرنة موثقة (${pct}%)`;
-    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    document.getElementById('final-name').innerText = `👤 اسم المتدرب الكريم: ${localStorage.getItem('activeUser')}`;
+    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    localStorage.removeItem('soc_idx'); localStorage.removeItem('soc_scr');
+    localStorage.removeItem('soc_idx'); localStorage.removeItem('soc_score');
 }
 
-function endExamEarly() { if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً؟")) showResults(); }
-function exitToMain() { window.location.href = "index.html"; }
+function endExamEarly() { 
+    if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
+}
+function exitToMain() { 
+    window.location.href = "index.html"; 
+}
 </script>
+
+<!-- 🎯 ربط ملف بنك أسئلة الاجتماعيات المولد تلقائياً لتشغيل الصفحة بنجاح غامر -->
+<script src="qejtemaeyat.js"></script>
+
 </body>
 </html>
