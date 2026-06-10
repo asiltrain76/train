@@ -51,15 +51,6 @@
 <div id="adminPanel" class="admin-box hidden">
     <button class="btn-logout" onclick="adminLogout()">🚪 خروج آمن</button>
 
-    <!-- 🎯 صندوق العداد السحابي الحقيقي المحدث والمريح جداً للعين (بدون صور مكسورة) -->
-    <div style="background-color: #ffffff; padding: 18px; border-radius: 10px; margin-bottom: 25px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 2px solid #e2e8f0;">
-        <h4 style="margin: 0 0 10px 0; color: #2c3e50; font-size: 1rem; font-weight: bold;">
-            📊 إحصائيات زوار منصة asiltrain الحية (سحابي حقيقي)
-        </h4>
-        <div style="display: inline-block; background-color: #7f8c8d; color: white; padding: 6px 12px; border-radius: 4px 0 0 4px; font-weight: bold; font-size: 14px;">إجمالي الزيارات الفعلي</div>
-        <div id="cloudVisitorCount" style="display: inline-block; background-color: #27ae60; color: white; padding: 6px 18px; border-radius: 0 4px 4px 0; font-weight: bold; font-size: 14px;">جاري المزامنة...</div>
-    </div>
-
     <h2>مولد أكواد التفعيل والاشتراكات الذكي 🚀</h2>
     <p style="color: #7f8c8d; font-size: 14px;">حدد التخصص والعدد لتوليد أكواد مشفرة تتوافق مع نظام المنصة الحية تلقائياً.</p>
     <div class="form-group">
@@ -98,27 +89,14 @@ const EXPECTED_USER = 'asiltrain76';
 const EXPECTED_PASS = 'I1396#z1398'; 
 const CRYPTO_SALT = 743; 
 
-// 🎯 التكتيك السحابي الحقيقي: جلب الإحصائية الحية من قاعدة البيانات المخفية فور فتح الصفحة
 window.onload = function() {
     const isLogin = localStorage.getItem('adminLoggedIn');
     if (isLogin === 'true') {
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('adminPanel').classList.remove('hidden');
     }
-
-    // استدعاء السيرفر السحابي الآمن لجلب عدد الزوار الحقيقي بدون صور
-    fetch('https://countapi.xyz')
-        .then(res => res.json())
-        .then(data => {
-            // إضافة رقم تأسيسي قوي (مثلاً +340) فوق الإحصائية الفعلية لأغراض التسويق والهيبة
-            const realVisits = (data.value || 0) + 342;
-            document.getElementById('cloudVisitorCount').innerText = realVisits + " زائر";
-        })
-        .catch(err => {
-            // حل احتياطي ذكي وسريع في حال انقطاع السيرفر لكي لا تقف اللوحة أبداً
-            document.getElementById('cloudVisitorCount').innerText = "345 زائر";
-        });
 };
+
 function checkAdminPass() {
     const enteredUser = document.getElementById('adminUser').value.trim();
     const enteredPass = document.getElementById('adminPass').value;
