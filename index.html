@@ -37,9 +37,9 @@
         <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
             أهلاً بك في منصة <b style="color: #8e44ad;">المحاكاة الحية</b>. الكثير من المعلمين والمدربين والطلاب الذين سبقوك عبر هذا المحاكي الحي والذكي الذي يضم <span style="color: #2b6cb0; font-weight: bold;">أكثر من 650 سؤال شاملة لكل معايير الرخصة المهنية للتربوي العام</span> و<span style="color: #27ae60; font-weight: bold;">أكثر من 300 سؤال شاملة للتخصصات</span>، حققوا طموحهم واعتلوا منصات التميز بالدرجات العالية (+90)! 
             <br>
-<span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة. لمعرفة جديد الموقع تابعنا على منصة إكس 
-<a href="https://x.com/asiltrain76" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
-
+            <span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة. لمعرفة جديد الموقع تابعنا على منصة إكس 
+            <a href="https://x.com" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
+        </p>
     </div>
 
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
@@ -89,30 +89,38 @@
 
         <button type="submit" class="btn">🚀 ابدأ رحلة التميز الآن</button>
     </form>
-
     <div class="footer-links">
         لا تملك كود تفعيل؟ <a href="subscribe.html">اشترك معنا وارفع الإيصال من هنا 💳</a>
     </div>
 </div>
 
-<!-- 3. منطق التحكم البرمجي والتحقق السريع المعدل -->
+<!-- 3. منطق التحكم البرمجي والتحقق السريع المعدل بدون عداد وبميزة دخول المدير -->
 <script>
 function handleLogin(event) {
     event.preventDefault();
     const name = document.getElementById('studentName').value.trim();
-    const code = document.getElementById('activationCode').value.trim().toUpperCase();
+    const code = document.getElementById('activationCode').value.trim(); 
     const field = document.getElementById('examField').value;
     let limit = parseInt(document.getElementById('questionsLimit').value);
     const errorMsg = document.getElementById('errorMsg');
     errorMsg.style.display = 'none';
 
-    // التعديل الذكي: الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) وإعطائه 20 سؤالاً ليتحمس!
-    if (code === '1234') {
+    // أولاً: ميزة دخول المدير الخاصة بك - تفتح كامل الأسئلة (100) لأي قسم مباشرة وبدون قيود
+    if (name === 'asiltrain76' && code === 'I1396#z1398') {
+        saveAndRedirect(name, field, 'admin', 100); 
+        return;
+    }
+
+    // تحويل الكود للأحرف الكبيرة لبقية المشتركين والضيوف لضمان مطابقة الرموز والبوادئ
+    const upperCode = code.toUpperCase();
+
+    // ثانياً: الدخول التجريبي للضيوف بالرمز 1234 وإعطائهم 20 سؤالاً فقط للتجربة
+    if (upperCode === '1234') {
         saveAndRedirect(name, field, 'guest', 20);
         return;
     }
 
-    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية
+    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية للمشتركين
     const codePrefixes = {
         'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
         'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
@@ -120,7 +128,7 @@ function handleLogin(event) {
     };
 
     const expectedPrefix = codePrefixes[field];
-    const parts = code.split('-'); 
+    const parts = upperCode.split('-'); 
     let isValid = false;
     const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية اللحظية
 
@@ -149,10 +157,6 @@ function saveAndRedirect(name, field, role, limit) {
     localStorage.setItem('examLimit', limit); // تمرير العدد المستهدف لصفحات المواد المخصصة
     window.location.href = field + '.html';
 }
-
-// سطر مخفي يرسل إشارة للسيرفر السحابي لزيادة العداد مع كل زائر جديد للمنصة
-fetch('https://countapi.xyz').catch(e => {});
-
 </script>
 </body>
 </html>
