@@ -12,7 +12,18 @@
             --bg: #f7fafc; 
             --accent: #8e44ad;
         }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            margin: 0; 
+            padding: 20px; 
+            text-align: center; 
+            /* 🔒 منع تحديد النصوص لحماية محتوى المنصة من النسخ */
+            user-select: none; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
         .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
@@ -95,6 +106,10 @@ function getRankText(pct) {
     return "⚠️ يحتاج إلى تطوير مكثف (ننصح بإعادة مراجعة بنوك الأسئلة الفاخرة)";
 }
 
+// 🔒 حماية إضافية: إيقاف النقر بالزر الأيمن (Right-Click) لحماية الأسئلة من الفحص والنسخ
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
 window.onload = function() {
     if (typeof examQuestions !== 'undefined') {
         questions = [...examQuestions].sort(() => 0.5 - Math.random());
@@ -107,6 +122,16 @@ window.onload = function() {
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
+    // 🛡️ فحص صمام الأمان التراكمي فور تحميل الصفحة لمنع المستخدم الضيف المتذاكي من الالتفاف بالتحديث
+    if (isGuest) {
+        const persistentGuestCount = parseInt(localStorage.getItem('asiltrain_guest_persistent_counter') || '0');
+        if (persistentGuestCount >= 20) {
+            alert("انتهت الفترة التجريبية المتاحة لك (20 سؤالاً) بالكامل! يرجى الاشتراك الكامل لتأمين رخصتك المهنية.");
+            window.location.href = "index.html";
+            return;
+        }
+    }
+
     let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
     maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
@@ -129,6 +154,7 @@ function startTimer() {
         document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -148,12 +174,10 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المعطيات والخيارات جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط المهني الفني: ${qData.standard_hint || 'المعيار والمؤشر العام المعتمد.'}`;
 
-    // 🎯 السحر والعبقرية هنا: نأخذ نص الإجابة الصحيحة الأصلية قبل البعثرة
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
     const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
     const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
 
-    // بناء مصفوفة تحتوي على النصوص الأربعة وبعثرتها عشوائياً كالكوتشينة تماماً لكل سؤال مستقل!
     let optArray = [
         { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
         { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
@@ -161,7 +185,6 @@ function loadQuestion() {
         { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
     ].sort(() => 0.5 - Math.random());
 
-    // حقن الخيارات الأربعة المبعثرة داخل الواجهات وتحديد المعرفات الجديدة ديناميكياً
     const targetLetters = ['A', 'B', 'C', 'D'];
     optArray.forEach((item, index) => {
         const letter = targetLetters[index];
@@ -170,7 +193,6 @@ function loadQuestion() {
         b.className = "btn-opt";
         b.disabled = false;
 
-        // تتبع الحرف الجديد المخصص للإجابة الصحيحة والخيارات المراد حذفها
         if (item.isCorrect) currentCorrectLetter = letter;
         if (item.isElim1) currentElim1Letter = letter;
         if (item.isElim2) currentElim2Letter = letter;
@@ -185,7 +207,6 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    // نقارن الاختيار بالحرف الديناميكي الجديد المحفوظ في الذاكرة للسؤال الحالي
     const corr = currentCorrectLetter;
     
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
@@ -197,13 +218,31 @@ function checkAnswer(sel) {
         document.getElementById(`opt${sel}`).classList.add('wrong'); 
         document.getElementById(`opt${corr}`).classList.add('correct'); 
     }
+
+    // 🛡️ صمام الأمان الفوري المستقل: تسجيل الإجابة داخل عداد المادة المفتوحة حالياً تلقائياً
+    if (isGuest) {
+        // جلب اسم الصفحة الحالية من الرابط تلقائياً لزيادة عدادها الخاص (مثال: tarbawi)
+        const currentField = window.location.pathname.split("/").pop().replace(".html", "");
+        
+        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentField}`) || '0');
+        persistentCounter++;
+        localStorage.setItem(`asiltrain_guest_counter_${currentField}`, persistentCounter);
+
+        // إذا استهلك الـ 20 سؤالاً الخاصة بهذا التخصص، يطرده فوراً للرئيسية المحدثة
+        if (persistentCounter >= 20) {
+            setTimeout(() => {
+                alert("انتهت الجولة التجريبية المكونة من 20 سؤالاً في هذا التخصص! يمكنك تجربة مادة أخرى أو تفعيل الاشتراك لفتح كافة الأسئلة والامتيازات 🔑");
+                window.location.href = "index.html";
+            }, 1200);
+            return;
+        }
+    }
+
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
 
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
-
-    // إخفاء الرموز المبعثرة الجديدة المخصصة للحذف ديناميكياً
     if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
     if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
@@ -228,6 +267,7 @@ function showResults() {
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من رغبتك في إنهاء المحاكاة مبكراً ومراجعة التحليل النهائي لما تم حله؟")) showResults(); 
 }
+
 function exitToMain() { 
     window.location.href = "index.html"; 
 }

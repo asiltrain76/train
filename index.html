@@ -12,7 +12,17 @@
             --danger: #e74c3c;
             --bg: #ecf0f1; 
         }
-        body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 20px; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            padding: 20px; 
+            /* 🔒 تأمين حماية المحتوى والأسئلة من تحديد النصوص والنسخ */
+            user-select: none; 
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
         .login-box { max-width: 600px; background: white; margin: 40px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
         h2 { color: var(--primary); border-bottom: 2px solid #bdc3c7; padding-bottom: 10px; text-align: center; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; text-align: right; position: relative; }
@@ -59,7 +69,7 @@
 
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
 
-    <!-- رسائل الأخطاء اللحظية -->
+    <!-- رسائل الأخطاء اللحظية والتنبيهات التلقائية -->
     <div id="errorMsg" class="error-msg"></div>
 
     <!-- 2. استمارة الدخول الرسمية المحدثة -->
@@ -68,7 +78,6 @@
             <label>اسم المتدرب / المتدربة الكامل:</label>
             <input type="text" id="studentName" required placeholder="أدخل اسمك الكريم">
         </div>
-
         <div class="form-group">
             <label>كود التفعيل المشفر (أو اكتب 1234 للتجربة اللحظية):</label>
             <input type="password" id="activationCode" required placeholder="مثال: TAR-12345-6">
@@ -96,7 +105,7 @@
             <label>حدد عدد أسئلة المحاكاة المطلوبة لرحلتك 🎯:</label>
             <select id="questionsLimit">
                 <option value="10">10 أسئلة (اختبار سريع)</option>
-                <option value="20">20 سؤالاً (مراجعة خفيفة)</option>
+                <option value="20" selected>20 سؤالاً (مراجعة خفيفة)</option>
                 <option value="30">30 سؤالاً (تعزيز مهارات)</option>
                 <option value="80">80 سؤالاً (محاكاة قياسية)</option>
                 <option value="100">100 سؤال (اختبار شامل مكثف)</option>
@@ -120,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// 🔒 حماية إضافية: منع استخدام زر الفأرة الأيمن (Right-Click) لحماية الأكواد ومحتوى الأسئلة
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
+
 // منطق تبديل رؤية الكود (إظهار / إخفاء) عبر أيقونة العين
 function togglePasswordVisibility() {
     const codeInput = document.getElementById('activationCode');
@@ -132,7 +146,6 @@ function togglePasswordVisibility() {
         toggleIcon.textContent = '👁️';
     }
 }
-
 function handleLogin(event) {
     event.preventDefault();
     const name = document.getElementById('studentName').value.trim();
@@ -145,16 +158,40 @@ function handleLogin(event) {
     // حفظ الاسم الأخير في المتصفح قبل الانتقال لصفحة الاختبار للاستفادة منه لاحقاً
     localStorage.setItem('lastEnteredName', name);
 
-    // تحويل الكود للأحرف الكبيرة لبقية المستخدمين والضيوف لضمان مطابقة البوادئ
+    // تحويل الكود للأحرف الكبيرة لضمان مطابقة البوادئ بشكل صحيح
     const upperCode = code.toUpperCase();
 
-    // الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) وإعطائه 20 سؤالاً ليتحمس!
+    // 🛡️ الدخول المباشر بالرمز 1234 كحساب تجريبي (Guest) للـ 20 سؤالاً
     if (upperCode === '1234') {
+        // فحص العداد المستقل للمادة المحددة تلقائياً في جهاز الزائر
+        const currentFieldCount = parseInt(localStorage.getItem(`asiltrain_guest_counter_${field}`) || '0');
+        
+        if (currentFieldCount >= 20) {
+            // 🎨 حقن الشاشة المستقلة الفاخرة بالخطوط الكبيرة والواضحة التي تليق بمنصتك
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f7fafc; padding: 40px; font-family: system-ui, -apple-system, sans-serif; direction: rtl;">
+                    <div style="max-width: 750px; background: white; padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border-top: 8px solid var(--danger, #e53e3e);">
+                        <h1 style="font-size: 32px; color: #e53e3e; margin-bottom: 25px; font-weight: 800;">عذراً، انتهت الفترة التجريبية لهذا التخصص! 🛑</h1>
+                        <p style="font-size: 22px; color: #2d3748; line-height: 1.8; margin-bottom: 35px; font-weight: 500;">
+                            لقد استهلكت الحد الأقصى المسموح به للتجربة المجانية في هذا القسم وهو <b>20 سؤالاً</b> بنجاح.
+                        </p>
+                        <a href="subscribe.html" style="display: block; text-decoration: none; background: #27ae60; color: white; padding: 20px 35px; border-radius: 12px; font-size: 22px; font-weight: bold; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3); transition: 0.3s; margin-bottom: 20px;">
+                            🔑 اشترك الآن وافتح أكثر من 650 سؤال للتربوي العام وأكثر من 320 سؤال للتخصصات
+                        </a>
+                        <button onclick="window.location.reload()" style="background: #718096; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                            ↩️ العودة لتجربة تخصص آخر
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
         saveAndRedirect(name, field, 'guest', 20);
         return;
     }
 
-    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية
+    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية للمشتركين
     const codePrefixes = {
         'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
         'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
@@ -166,7 +203,7 @@ function handleLogin(event) {
     let isValid = false;
     const CRYPTO_SALT = 743; // ثابت معادلة التشفير الرياضية اللحظية
 
-    // التحقق من الأكواد المشفرة المدفوعة للمشتركين الحقيقيين
+    // التحقق من الأكواد المشفرة المدفوعة للمشتركين الحقيقيين (تفتح فوراً وتتخطى قفل الـ 20 سؤال)
     if (parts.length === 3 && parts[0] === expectedPrefix) {
         const randomNum = parseInt(parts[1]);
         const checkDigit = parseInt(parts[2]);
@@ -186,7 +223,21 @@ function handleLogin(event) {
 
 function saveAndRedirect(name, field, role, limit) {
     const savedName = localStorage.getItem('lastEnteredName');
-    localStorage.clear(); // تنظيف بيانات التصفح القديمة لبدء محاكاة نظيفة وثابتة
+    
+    // 🛡️ التكتيك السحري: سحب وحفظ جميع العدادات المستقلة للمواد في ذاكرة المتصفح المؤقتة قبل تنظيف الذاكرة
+    const savedCounters = {};
+    const examFields = ['tarbawi', 'ejtemaeyat', 'computer', 'art', 'arabic', 'science', 'math', 'islamic', 'trainers', 'sport', 'qodrat_tahsili'];
+    
+    examFields.forEach(f => {
+        savedCounters[f] = localStorage.getItem(`asiltrain_guest_counter_${f}`) || '0';
+    });
+    
+    localStorage.clear(); // تنظيف بيانات التصفح القديمة لبدء محاكاة نظيفة وثابتة للمادة المحددة
+    
+    // 🛡️ إعادة زرع العدادات المستقلة لكل مادة في الـ localStorage لضمان عدم تصفيرها بالتحديث
+    examFields.forEach(f => {
+        localStorage.setItem(`asiltrain_guest_counter_${f}`, savedCounters[f]);
+    });
     
     localStorage.setItem('lastEnteredName', savedName);
     localStorage.setItem('activeUser', name);

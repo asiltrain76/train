@@ -186,7 +186,6 @@ function togglePopup(type) {
 }
 
 function checkAnswer(sel) {
-    // مضاهاة الاختيار برمز الحرف اللحظي المتولد عشوائياً للإجابة الصحيحة الحالية
     const corr = currentCorrectLetter;
     
     ['A', 'B', 'C', 'D'].forEach(opt => document.getElementById(`opt${opt}`).disabled = true);
@@ -198,6 +197,25 @@ function checkAnswer(sel) {
         document.getElementById(`opt${sel}`).classList.add('wrong'); 
         document.getElementById(`opt${corr}`).classList.add('correct'); 
     }
+
+    // 🛡️ صمام الأمان الفوري المستقل: تسجيل الإجابة داخل عداد المادة المفتوحة حالياً تلقائياً
+    if (isGuest) {
+        // جلب اسم الصفحة الحالية من الرابط تلقائياً لزيادة عدادها الخاص
+        const currentField = window.location.pathname.split("/").pop().replace(".html", "");
+        
+        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentField}`) || '0');
+        persistentCounter++;
+        localStorage.setItem(`asiltrain_guest_counter_${currentField}`, persistentCounter);
+
+        // 🚀 التعديل الفخم: إذا استهلك الـ 20 سؤالاً، يحوله فوراً وبنعومة للرئيسية لتظهر له الشاشة الكبيرة مباشرة بدون أي alert منبثق
+        if (persistentCounter >= 20) {
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1200);
+            return;
+        }
+    }
+
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
 
