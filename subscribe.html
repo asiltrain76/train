@@ -39,6 +39,31 @@
         .instructions-text { font-size: 13.5px; color: #4a5568; line-height: 1.6; font-weight: 500; text-align: right; margin-top: 15px; padding-right: 12px; border-right: 4px solid #2b6cb0; }
         .back-link { display: block; text-align: center; margin-top: 25px; font-size: 14px; color: var(--primary); text-decoration: none; font-weight: bold; }
         .back-link:hover { text-decoration: underline; }
+
+        /* 🔥 صندوق المؤقت التنازلي التفاعلي المصمم بدقة */
+        .flash-timer-box {
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            border: 2px dashed var(--danger);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+            color: #c53030;
+            box-shadow: 0 4px 6px rgba(229, 62, 62, 0.05);
+        }
+        .timer-display {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--danger);
+            display: inline-block;
+            direction: ltr;
+            margin-top: 5px;
+            background: #ffffff;
+            padding: 2px 15px;
+            border-radius: 6px;
+            border: 1px solid #feb2b2;
+        }
     </style>
 </head>
 <body>
@@ -47,12 +72,18 @@
     <h2>باقات الاشتراك وتفعيل الحساب 💳</h2>
     <p class="subtitle">اطلع على العروض المخفضة الحالية للمنصة، ثم تواصل معنا عبر قنوات الاتصال الرسمية بالأسفل لإصدار كود تفعيلك اللحظي.</p>
     
+    <!-- 🔥 صندوق المؤقت التنازلي الذكي (تأكيد الاستعجال النفسي دون تصفير الخصم) -->
+    <div class="flash-timer-box">
+        ⏳ <span>عقد التميز ينتهي قريباً! متبقي على قفل التسجيل بالأسعار المخفضة الحالية:</span>
+        <br>
+        <div id="countdown-timer" class="timer-display">15:00</div>
+    </div>
+
     <!-- باقات التفعيل الفوري الحالية -->
     <div class="form-group">
         <label>⚡ باقات التفعيل الفوري والمحاكاة الكاملة المتوفرة الآن:</label>
         <div class="price-list-group">
-<div style="text-align: center; font-size: 1.2rem; display: block !important; width: 100%;">✨ بنك اسئلة منوع ومبني وفق معايير الرخصة المهنية <span style="color: #e53e3e; font-weight: bold;">أكثر من 650 سؤال</span> للتربوي العام و <span style="color: #e53e3e; font-weight: bold;">أكثر من 300 سؤال</span> للتخصصات</div>
-
+            <div style="text-align: center; font-size: 1.2rem; display: block !important; width: 100%; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0; margin-bottom: 10px;">✨ بنك اسئلة منوع ومبني وفق معايير الرخصة المهنية <span style="color: #e53e3e; font-weight: bold;">أكثر من 650 سؤال</span> للتربوي العام و <span style="color: #e53e3e; font-weight: bold;">أكثر من 300 سؤال</span> للتخصصات</div>
             <div class="price-item">✨ الرخصة المهنية - العام (التربوي) <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">150 ريال</del> <b style="color: var(--danger);">50 ريال لفترة محدودة 🔥</b></div>
             <div class="price-item">✨ الرخصة المهنية - المدربين <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
             <div class="price-item">✨ الرخصة المهنية - حاسب آلي <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
@@ -66,33 +97,61 @@
             <div class="price-item">✨ مسار الثانوي - القدرات والتحصيلي <del style="color: #a0aec0; margin-right: auto; margin-left: 8px;">100 ريال</del> <b style="color: var(--danger);">40 ريال لفترة محدودة 🔥</b></div>
         </div>
     </div>
+    
     <!-- صندوق التخصصات القادمة لرفع التشويق -->
     <div class="form-group">
         <label>📚 تخصصات ومسارات قادمة ومحدثة قريباً (انتظروا تحديثاتنا):</label>
         <div class="upcoming-group">
-            <div class="upcoming-item">⏳قريباً جداً ⏱️</div>
+            <div class="upcoming-item">⏳ قريباً جداً وبشكل متتابع ⏱️</div>
         </div>
     </div>
 
     <!-- لوحة تواصل المطور الفاخرة المحدثة والمحمية ضد التداخل -->
     <div class="contact-box">
-        
-<!-- قناة منصة إكس الفاخرة والرابط التفاعلي المباشر باللون الأحمر -->
-<div class="sub-contact">
-    <span class="contact-label">𝕏 تابعنا على منصة إكس:</span>
-    <a href="https://x.com/asiltrain76" target="_blank" class="contact-value x-style" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
-</div>
+        <!-- قناة منصة إكس الفاخرة والرابط التفاعلي المباشر باللون الأحمر -->
+        <div class="sub-contact">
+            <span class="contact-label">𝕏 تابعنا على منصة إكس:</span>
+            <a href="https://x.com" target="_blank" class="contact-value x-style" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">@asiltrain76</a>
+        </div>
         
         <div class="instructions-text">
             💡 <b>طريقة التفعيل المهني السريع:</b>
             <br>
             يرجى إضافة الحساب بالأعلى والتواصل معنا عبر تطبيق إكس، مع إرسال رسالة تشتمل على:
-            <b>(رقم الجوال الفعال، ليتم التواصل معك)</b> للحصول على كود تفعيلك الفاخر .
+            <b>(رقم الجوال الفعال، ليتم التواصل معك)</b> للحصول على كود تفعيلك الفاخر.
         </div>
     </div>
 
     <a href="index.html" class="back-link">⬅️ العودة لصفحة الدخول الرئيسية</a>
 </div>
+
+<!-- 🕒 سكربت المؤقت التنازلي الذكي لمنع التردد وسرعة قفل الإشتراك -->
+<script>
+    function startUrgencyTimer(durationInMinutes) {
+        let timer = durationInMinutes * 60, minutes, seconds;
+        const display = document.getElementById('countdown-timer');
+        
+        const countdownInterval = setInterval(() => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            if (display) display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                // إذا انتهت الـ 15 دقيقة، يعيد تشغيل المؤقت مجدداً بشكل صامت لكي لا يغلق الموقع بوجه زائر جديد
+                timer = durationInMinutes * 60;
+            }
+        }, 1000);
+    }
+
+    // تشغيل العداد التنازلي لمدة 15 دقيقة تلقائياً عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', () => {
+        startUrgencyTimer(15);
+    });
+</script>
 
 </body>
 </html>

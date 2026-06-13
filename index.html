@@ -104,21 +104,19 @@
         </p>
     </div>
 
-<!-- 🌟 شريط التقدم التفاعلي المطور بالعبارات التسويقية الدقيقة لمنصة asiltrain -->
-<div id="guest-progress-container" class="guest-progress-wrapper">
-    <div class="guest-progress-info">
-        <span class="guest-text">
-            🔒 <strong class="highlight-text">تقدمك التجريبي:</strong> لقد حللت <span id="current-guest-q">0</span> من أصل <strong>20 سؤالاً</strong> مجانياً.
-        </span>
-        <span class="cta-text">
-            💡 متبقي <span id="locked-questions-count">630</span> سؤالاً للتربوي العام، وأكثر من 320 سؤالاً لكل تخصص!
-        </span>
-        <a href="subscribe.html" class="guest-btn-upgrade">فك القفل بالاشتراك 🔑</a>
+    <!-- 🌟 شريط التقدم التفاعلي للزوار (يتحرك ويظهر تلقائياً بناءً على تصفحهم) -->
+    <div id="guest-progress-container" class="guest-progress-wrapper">
+        <div class="guest-progress-info">
+            <span class="guest-text">
+                🔒 <strong class="highlight-text">تقدمك التجريبي:</strong> لقد حللت <span id="current-guest-q">0</span> من أصل <strong>20 سؤالاً</strong> مجانياً.
+            </span>
+            <span class="cta-text">💡 متبقي <span id="locked-questions-count">650</span> سؤالاً للتربوي العام، وأكثر من 300 سؤالاً لكل تخصص!</span>
+            <a href="subscribe.html" class="guest-btn-upgrade">فك القفل بالاشتراك 🔑</a>
+        </div>
+        <div class="guest-progress-bar-bg">
+            <div id="guest-progress-fill" class="guest-progress-bar-fill"></div>
+        </div>
     </div>
-    <div class="guest-progress-bar-bg">
-        <div id="guest-progress-fill" class="guest-progress-bar-fill"></div>
-    </div>
-</div>
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
 
     <!-- رسائل الأخطاء اللحظية والتنبيهات التلقائية -->
@@ -203,27 +201,43 @@ function checkLiveProgress() {
     const field = document.getElementById('examField').value;
     const container = document.getElementById('guest-progress-container');
     const currentQElem = document.getElementById('current-guest-q');
-    const lockedCountElem = document.getElementById('locked-questions-count');
     const progressFillElem = document.getElementById('guest-progress-fill');
     
-    // سحب العداد الحالي للمادة من متصفح العميل
+    // 1. مصفوفة لأسماء التخصصات باللغة العربية لعرضها ديناميكياً في العبارة التسويقية
+    const fieldNamesAr = {
+        'tarbawi': 'للتربوي العام', 'ejtemaeyat': 'لتخصص الاجتماعيات', 'computer': 'لتخصص الحاسب الآلي',
+        'art': 'لتخصص التربية الفنية', 'arabic': 'لتخصص اللغة العربية', 'science': 'لتخصص العلوم',
+        'math': 'لتخصص الرياضيات', 'islamic': 'لتخصص الدراسات الإسلامية', 'trainers': 'لمسار المدربين',
+        'sport': 'لتخصص التربية البدنية', 'qodrat_tahsili': 'لمسار القدرات والتحصيلي'
+    };
+
     const currentFieldCount = parseInt(localStorage.getItem(`asiltrain_guest_counter_${field}`) || '0');
     
     if (currentFieldCount > 0) {
-        // تحديد الحجم الكامل لبنك الأسئلة بناءً على المادة المحددة
+        // حساب ذكي: التربوي العام بنكه 650 سؤال، والتخصصات بنكها 300 سؤال
         let totalBankQuestions = (field === 'tarbawi') ? 650 : 300;
         let lockedCount = totalBankQuestions - currentFieldCount;
         let progressPercent = (currentFieldCount / 20) * 100;
         
         if (progressPercent > 100) progressPercent = 100;
         
-        // تحديث النصوص والواجهة وتحريك الشريط بسلاسة
+        // تحديث أرقام العداد والشريط
         if (currentQElem) currentQElem.innerText = currentFieldCount;
-        if (lockedCountElem) lockedCountElem.innerText = lockedCount;
         if (progressFillElem) progressFillElem.style.width = progressPercent + '%';
-        if (container) container.style.display = 'block'; // إظهار الشريط لو عنده تقدم
+        
+        // 2. 🔥 التكتيك السحري لتغيير النص بالكامل بناءً على اختيار العميل واختفاء الأخطاء الإملائية
+        const ctaTextElem = document.querySelector('.cta-text');
+        if (ctaTextElem) {
+            if (field === 'tarbawi') {
+                ctaTextElem.innerHTML = `💡 متبقي <strong style="color: #fbbf24;">${lockedCount}</strong> سؤالاً للتربوي العام، وأكثر من 300 سؤالاً لكل تخصص!`;
+            } else {
+                ctaTextElem.innerHTML = `💡 متبقي <strong style="color: #fbbf24;">${lockedCount}</strong> سؤالاً ${fieldNamesAr[field]}، وأكثر من 650 سؤالاً للتربوي العام!`;
+            }
+        }
+        
+        if (container) container.style.display = 'block';
     } else {
-        if (container) container.style.display = 'none'; // إخفاء الشريط لو العداد صفر
+        if (container) container.style.display = 'none';
     }
 }
 
