@@ -11,8 +11,9 @@
             --danger: #e53e3e; 
             --bg: #f7fafc; 
             --accent: #8e44ad;
+            --warning: #dd6b20;
         }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; user-select: none; }
         .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
@@ -20,17 +21,33 @@
         .help-panel { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #cbd5e0; }
         .help-btn { background: none; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #4a5568; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .help-btn:hover { color: var(--primary); transform: scale(1.05); }
-        .help-btn:disabled { color: #cbd5e0; cursor: not-allowed; transform: none; }
+        .help-btn:disabled { color: #cbd5e0; cursor: not-allowed; transform: none; opacity: 0.5; }
         .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
         .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
         .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
         .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
         .correct { background: var(--success) !important; color: white; border-color: var(--success); font-weight: bold; }
         .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); font-weight: bold; }
-        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; }
-        .btn-action { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .btn-action { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
         .btn-end { background: #718096; color: white; }
+        .btn-end:hover { background: #4a5568; }
+        .btn-skip { background: var(--warning); color: white; }
+        .btn-skip:hover { background: #c05621; transform: translateY(-1px); }
         .hidden { display: none; }
+        
+        /* 🔥 أشرطة التحليل البياني الفخمة الملونة */
+        .analytics-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin: 15px 0; text-align: right; }
+        .analytics-title { font-size: 14px; font-weight: bold; color: #4a5568; margin-bottom: 5px; }
+        .analytics-bar-bg { background: #edf2f7; height: 16px; border-radius: 8px; overflow: hidden; width: 100%; position: relative; }
+        .analytics-bar-fill { height: 100%; width: 0%; transition: width 1s cubic-bezier(0.1, 1, 0.1, 1); border-radius: 8px; }
+        .bar-success { background: linear-gradient(90deg, #48bb78, #38a169); }
+        .bar-warning { background: linear-gradient(90deg, #ed8936, #dd6b20); }
+        .bar-danger { background: linear-gradient(90deg, #f56565, #e53e3e); }
+        
+        /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
+        .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
     </style>
 </head>
 <body>
@@ -38,7 +55,7 @@
 <div class="container" id="exam-container">
     <div class="meta-info">
         <span id="student-info">المتدرب: جاري التحميل...</span>
-        <span style="color: var(--accent);" id="timer-info">⏱️ الوقت: 00:00</span>
+        <span style="color: var(--accent); transition: 0.3s;" id="timer-info">⏱️ الوقت: 00:00</span>
         <span id="score-info">الصح: 0</span>
     </div>
     
@@ -46,7 +63,8 @@
         <div class="progress-fill" id="progress"></div>
     </div>
 
-    <div class="help-panel">
+    <!-- لوحة المساعدات المجهزة للاختفاء التلقائي في وضع التحدي الصارم -->
+    <div class="help-panel" id="help-panel-box">
         <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
         <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
         <button class="help-btn" id="elim-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
@@ -64,28 +82,44 @@
         <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
     </div>
 
-    <div class="footer-actions" style="justify-content: flex-end;">
+    <div class="footer-actions">
+        <!-- 🚀 زر التخطي والمراجعة اللاحقة المطور هندسياً -->
+        <button class="btn-action btn-skip" id="skip-btn" onclick="skipQuestion()">🔄 تخطي ومراجعة لاحقاً</button>
         <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
-
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
     <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
+    
+    <!-- 📊 لوحة التحليل المرئية الملونة والمحدثة بالكامل لمنصة asiltrain -->
+    <div class="analytics-card">
+        <div class="analytics-title">📈 شريط التقييم والتحليل التدريبي اللحظي:</div>
+        <div class="analytics-bar-bg">
+            <div id="analytics-bar" class="analytics-bar-fill"></div>
+        </div>
+    </div>
+
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
+
 <script>
 let questions = []; 
+let skippedQuestions = []; // مصفوفة لتتبع الأسئلة التي تم تخطيها لمراجعتها لاحقاً
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
 let maxQuestions = 20; 
+let isStrictMode = false; // تفعيل وضع التحدي الصارم من عدمه
+let totalSecondsLeft = 0; // لعداد وضع التحدي الصارم التنازلي
 
-// متغيرات تجميد رموز الحروف اللحظية للإجابات بعد البعثرة العشوائية لكل سؤال مستقل
 let currentCorrectLetter = "";
 let currentElim1Letter = "";
 let currentElim2Letter = "";
+
+// جلب اسم الصفحة الحالية من الرابط تلقائياً لاستخدامه كـ (مفتاح فريد) لتأمين الذاكرة لكل تخصص مستقل
+const currentFieldKey = window.location.pathname.split("/").pop().replace(".html", "");
 
 function getRankText(pct) {
     if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
@@ -98,8 +132,7 @@ function getRankText(pct) {
 window.onload = function() {
     // 🎯 التعرف على بنك أسئلة الرياضيات الإلكتروني المستهدف وسحبه تلقائياً
     if (typeof mathQuestions !== 'undefined') {
-        // خلط الأسئلة عشوائياً عابراً للبنك كاملاً لمنع الحفظ والتكرار دراماتيكياً
-        questions = [...mathQuestions].sort(() => 0.5 - Math.random());
+        questions = [...mathQuestions];
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qmath.js) في المجلد الحالي!");
         return;
@@ -107,43 +140,115 @@ window.onload = function() {
 
     const user = localStorage.getItem('activeUser');
     isGuest = (localStorage.getItem('userRole') === 'guest');
+    // التحقق هل المتدرب فعّل وضع التحدي الصارم من صفحة index.html
+    isStrictMode = (localStorage.getItem('strictModeEnabled') === 'true');
+    
     if (!user) { window.location.href = "index.html"; return; }
     
-    // سحب حد الأسئلة وإجبار الـ Guest على 20 سؤالاً مشوقاً لفتح شهيته للتفعيل والاشتراك
     let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
     maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
+    
+    // 🛡️ [تكتيك التأمين الذكي]: استرجاع نقاط التوقف السابقة للمشتركين عند الانقطاع أو قفل المتصفح التلقائي
+    if (!isGuest) {
+        const savedIndex = localStorage.getItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+        const savedScore = localStorage.getItem(`asiltrain_autosave_score_${currentFieldKey}`);
+        const savedTime = localStorage.getItem(`asiltrain_autosave_time_${currentFieldKey}`);
+        const savedSkips = localStorage.getItem(`asiltrain_autosave_skips_${currentFieldKey}`);
+        
+        if (savedIndex !== null && savedScore !== null) {
+            currentIndex = parseInt(savedIndex);
+            correctCount = parseInt(savedScore);
+            document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`;
+            
+            if (savedTime !== null) {
+                startTime = Date.now() - (parseInt(savedTime) * 1000);
+                // مواءمة ثواني التحدي المتبقية مع الوقت المستغرق المسترجع
+                totalSecondsLeft = (maxQuestions * 90) - parseInt(savedTime);
+            }
+            if (savedSkips !== null && savedSkips !== "") {
+                skippedQuestions = savedSkips.split(',').map(Number);
+            }
+        } else {
+            // جلسة جديدة لوضع التحدي الصارم: دقيقة ونصف (90 ثانية) لكل سؤال
+            totalSecondsLeft = maxQuestions * 90; 
+        }
+    } else {
+        totalSecondsLeft = maxQuestions * 90;
+    }
+
+    // 🔒 إذا تم تفعيل وضع التحدي الصارم: إخفاء لوحة وسائل المساعدة فوراً
+    if (isStrictMode && !isGuest) {
+        const helpPanel = document.getElementById('help-panel-box');
+        if (helpPanel) helpPanel.style.display = 'none';
+    }
+
     startTimer();
-
-    localStorage.removeItem('math_idx');
-    localStorage.removeItem('math_scr');
-    currentIndex = 0;
-    correctCount = 0;
-
     loadQuestion();
 };
-
 function startTimer() {
     timerInterval = setInterval(() => {
-        const diff = Math.floor((Date.now() - startTime) / 1000);
-        const mins = String(Math.floor(diff / 60)).padStart(2, '0');
-        const secs = String(diff % 60).padStart(2, '0');
-        document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
+        if (isStrictMode && !isGuest) {
+            // ⏱️ وضع التحدي الصارم: عداد تنازلي حقيقي وصارم يحاكي اختبار قياس
+            if (totalSecondsLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("🛑 انتهى الوقت الفعلي المحدد للاختبار المحاكي! سيتم الانتقال للتحليل النهائي وعرض نتيجتك الحالية.");
+                showResults();
+                return;
+            }
+            totalSecondsLeft--;
+            const mins = String(Math.floor(totalSecondsLeft / 60)).padStart(2, '0');
+            const secs = String(totalSecondsLeft % 60).padStart(2, '0');
+            const timerInfo = document.getElementById('timer-info');
+            if (timerInfo) {
+                timerInfo.innerText = `⏳ متبقي: ${mins}:${secs}`;
+                // نبض أحمر تحذيري إذا متبقي أقل من دقيقتين لشحن حماس المتدرب
+                if (totalSecondsLeft <= 120) {
+                    timerInfo.classList.add('timer-alert');
+                }
+            }
+        } else {
+            // وضع التدريب العادي: عداد تصاعدي لحساب الوقت المستغرق براحة
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+            const secs = String(diff % 60).padStart(2, '0');
+            document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
+        }
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
     document.getElementById('elim-btn').disabled = false;
 
+    // 🔄 فحص التخطي الذكي: إذا وصلنا لنهاية الأسئلة وهناك أسئلة متخطاة، نفتح الجولة الثانية لمراجعتها
     if (currentIndex >= maxQuestions) { 
-        if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح بنك الأسئلة بالكامل وتأمين رخصتك المهنية."); 
-        showResults(); return; 
+        if (skippedQuestions.length > 0) {
+            // سحب أول سؤال تم تخطيه من مصفوفة التتبع لعرضه بالدور
+            currentIndex = skippedQuestions.shift();
+            // إخفاء زر التخطي في جولة المراجعة الأخيرة لكي لا يدخل في حلقة مفرغة
+            document.getElementById('skip-btn').style.display = 'none';
+            alert("🔄 جولة المراجعة: سيتم الآن عرض الأسئلة التي قمت بتخطيتها وتأجيلها سابقاً لحلها بالترتيب.");
+        } else {
+            if (isGuest) alert("انتهت الجولة التجريبية المشوقة المكونة من 20 سؤالاً! يرجى الاشتراك الكامل لفتح بنك الأسئلة بالكامل وتأمين رخصتك المهنية."); 
+            showResults(); 
+            return; 
+        }
     }
 
-    localStorage.setItem('math_idx', currentIndex); 
-    localStorage.setItem('math_scr', correctCount);
+    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد
+    if (!isGuest) {
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        localStorage.setItem(`asiltrain_autosave_idx_${currentFieldKey}`, currentIndex); 
+        localStorage.setItem(`asiltrain_autosave_score_${currentFieldKey}`, correctCount);
+        localStorage.setItem(`asiltrain_autosave_time_${currentFieldKey}`, elapsedTime);
+        localStorage.setItem(`asiltrain_autosave_skips_${currentFieldKey}`, skippedQuestions.join(','));
+    } else {
+        localStorage.setItem('math_idx', currentIndex); 
+        localStorage.setItem('math_scr', correctCount);
+    }
 
     const qData = questions[currentIndex];
     
@@ -151,20 +256,24 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل المعطيات الرياضية بدقة.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
-    // 🎯 أخذ نصوص الإجابات والخيارات الأصلية المتولدة قبل العشوائية للحرف
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
     const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
     const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
 
-    // بناء وبعثرة الخيارات الأربعة عشوائياً بداخل كتل الواجهة بشكل منفصل لكل سؤال
     let optArray = [
         { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
         { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
         { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
         { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
-    ].sort(() => 0.5 - Math.random());
+    ];
 
-    // حقن الخيارات ديناميكياً داخل الأزرار وتحديث رموز الذاكرة اللحظية
+    // لضمان استقرار الخيارات وثباتها عند العودة بعد قفل الصفحة أو التحديث
+    let seed = currentIndex;
+    optArray.sort(() => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return (seed / 233280) - 0.5;
+    });
+
     const targetLetters = ['A', 'B', 'C', 'D'];
     optArray.forEach((item, index) => {
         const letter = targetLetters[index];
@@ -179,6 +288,15 @@ function loadQuestion() {
     });
 
     document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
+}
+
+// 🔄 دالة التخطي وتأجيل السؤال للمراجعة اللاحقة في نهاية الاختبار
+function skipQuestion() {
+    if (!skippedQuestions.includes(currentIndex)) {
+        skippedQuestions.push(currentIndex);
+    }
+    currentIndex++;
+    loadQuestion();
 }
 
 function togglePopup(type) {
@@ -199,20 +317,13 @@ function checkAnswer(sel) {
         document.getElementById(`opt${corr}`).classList.add('correct'); 
     }
 
-    // 🛡️ صمام الأمان الفوري المستقل: تسجيل الإجابة داخل عداد المادة المفتوحة حالياً تلقائياً
     if (isGuest) {
-        // جلب اسم الصفحة الحالية من الرابط تلقائياً لزيادة عدادها الخاص
-        const currentField = window.location.pathname.split("/").pop().replace(".html", "");
-        
-        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentField}`) || '0');
+        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentFieldKey}`) || '0');
         persistentCounter++;
-        localStorage.setItem(`asiltrain_guest_counter_${currentField}`, persistentCounter);
+        localStorage.setItem(`asiltrain_guest_counter_${currentFieldKey}`, persistentCounter);
 
-        // 🚀 التعديل الفخم: إذا استهلك الـ 20 سؤالاً، يحوله فوراً وبنعومة للرئيسية لتظهر له الشاشة الكبيرة مباشرة بدون أي alert منبثق
         if (persistentCounter >= 20) {
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 1200);
+            setTimeout(() => { window.location.href = "index.html"; }, 1200);
             return;
         }
     }
@@ -222,7 +333,6 @@ function checkAnswer(sel) {
 
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
-    // تصفير الخيارات المحذوفة بناءً على حروفها المبعثرة اللحظية الجديدة لمنع حذف الإجابة الصحيحة
     if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
     if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
@@ -237,17 +347,35 @@ function showResults() {
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
+    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة
+    const bar = document.getElementById('analytics-bar');
+    if (bar) {
+        bar.style.width = `${pct}%`;
+        if (pct >= 80) {
+            bar.className = "analytics-bar-fill bar-success";
+        } else if (pct >= 50) {
+            bar.className = "analytics-bar-fill bar-warning";
+        } else {
+            bar.className = "analytics-bar-fill bar-danger";
+        }
+    }
+
     document.getElementById('final-name').innerText = `👤 اسم المتدرب الكريم: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    localStorage.removeItem('math_idx'); localStorage.removeItem('math_scr');
+    // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
+    localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_score_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_time_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_skips_${currentFieldKey}`);
+    localStorage.removeItem('math_idx'); 
+    localStorage.removeItem('math_scr');
 }
 
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
 }
-
 function exitToMain() { 
     window.location.href = "index.html"; 
 }

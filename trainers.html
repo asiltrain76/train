@@ -80,12 +80,14 @@
 <script>
 let questions = []; 
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
-let maxQuestions = 20; // القيمة الافتراضية المحدثة للحساب التجريبي
+let maxQuestions = 20;
 
-// متغيرات الذاكرة لتتبع الإجابة والخيارات المبعثرة لحظياً لكل سؤال مستقل
 let currentCorrectLetter = "";
 let currentElim1Letter = "";
 let currentElim2Letter = "";
+
+// جلب اسم الصفحة الحالية من الرابط تلقائياً لاستخدامه كـ (مفتاح فريد) لتأمين الذاكرة لكل تخصص مستقل
+const currentFieldKey = window.location.pathname.split("/").pop().replace(".html", "");
 
 function getRankText(pct) {
     if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
@@ -96,9 +98,8 @@ function getRankText(pct) {
 }
 
 window.onload = function() {
-    // التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qtadreb.js الفعلي للمدربين
     if (typeof trainersQuestions !== 'undefined') {
-        questions = [...trainersQuestions].sort(() => 0.5 - Math.random());
+        questions = [...trainersQuestions];
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qtadreb.js) في المجلد الحالي!");
         return;
@@ -108,18 +109,29 @@ window.onload = function() {
     isGuest = (localStorage.getItem('userRole') === 'guest');
     if (!user) { window.location.href = "index.html"; return; }
     
-    // إذا كان قوست يجبر على 20 سؤالاً للتنشيط والتشويق، والمشترك يتبع اختياره المخصص
     let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
     maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
+    
+    // 🛡️ [تكتيك التأمين الذكي]: استرجاع نقاط التوقف السابقة للمشتركين فقط عند الانقطاع أو قفل المتصفح التلقائي
+    if (!isGuest) {
+        const savedIndex = localStorage.getItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+        const savedScore = localStorage.getItem(`asiltrain_autosave_score_${currentFieldKey}`);
+        const savedTime = localStorage.getItem(`asiltrain_autosave_time_${currentFieldKey}`);
+        
+        if (savedIndex !== null && savedScore !== null) {
+            currentIndex = parseInt(savedIndex);
+            correctCount = parseInt(savedScore);
+            document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`;
+            
+            if (savedTime !== null) {
+                startTime = Date.now() - (parseInt(savedTime) * 1000);
+            }
+        }
+    }
+
     startTimer();
-
-    localStorage.removeItem('trn_idx');
-    localStorage.removeItem('trn_score');
-    currentIndex = 0;
-    correctCount = 0;
-
     loadQuestion();
 };
 
@@ -131,6 +143,7 @@ function startTimer() {
         document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -141,8 +154,16 @@ function loadQuestion() {
         showResults(); return; 
     }
 
-    localStorage.setItem('trn_idx', currentIndex); 
-    localStorage.setItem('trn_score', correctCount);
+    // 🛡️ تكتيك الحفظ اللحظي قبل عرض السؤال (تأمين ضد الإغلاق المفاجئ)
+    if (!isGuest) {
+        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+        localStorage.setItem(`asiltrain_autosave_idx_${currentFieldKey}`, currentIndex); 
+        localStorage.setItem(`asiltrain_autosave_score_${currentFieldKey}`, correctCount);
+        localStorage.setItem(`asiltrain_autosave_time_${currentFieldKey}`, elapsedTime);
+    } else {
+        localStorage.setItem('trn_idx', currentIndex); 
+        localStorage.setItem('trn_score', correctCount);
+    }
 
     const qData = questions[currentIndex];
     
@@ -150,20 +171,24 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل الحقيبة التدريبية والأسلوب التدريبي الأمثل.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
-    // 🎯 اقتناص نصوص الإجابات الحقيقية والخيارات المراد حذفها من مصفوفة التحرير قبل الخلط
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
     const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
     const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
 
-    // بناء وتفكيك مصفوفة نصوص الخيارات الأربعة وبعثرتها عشوائياً بشكل كامل لكل سؤال مستقل
     let optArray = [
         { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
         { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
         { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
         { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
-    ].sort(() => 0.5 - Math.random());
+    ];
 
-    // ضخ الخيارات عشوائياً بداخل أزرار الواجهة وتعيين دلالات الحروف اللحظية الجديدة
+    // لضمان استقرار الخيارات عند العودة بعد قفل الصفحة، يتم الخلط بطريقة تعتمد على الـ Index وليس عشوائية مطلقة بكل تحديث
+    let seed = currentIndex;
+    optArray.sort(() => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return (seed / 233280) - 0.5;
+    });
+
     const targetLetters = ['A', 'B', 'C', 'D'];
     optArray.forEach((item, index) => {
         const letter = targetLetters[index];
@@ -198,20 +223,13 @@ function checkAnswer(sel) {
         document.getElementById(`opt${corr}`).classList.add('correct'); 
     }
 
-    // 🛡️ صمام الأمان الفوري المستقل: تسجيل الإجابة داخل عداد المادة المفتوحة حالياً تلقائياً
     if (isGuest) {
-        // جلب اسم الصفحة الحالية من الرابط تلقائياً لزيادة عدادها الخاص
-        const currentField = window.location.pathname.split("/").pop().replace(".html", "");
-        
-        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentField}`) || '0');
+        let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentFieldKey}`) || '0');
         persistentCounter++;
-        localStorage.setItem(`asiltrain_guest_counter_${currentField}`, persistentCounter);
+        localStorage.setItem(`asiltrain_guest_counter_${currentFieldKey}`, persistentCounter);
 
-        // 🚀 التعديل الفخم: إذا استهلك الـ 20 سؤالاً، يحوله فوراً وبنعومة للرئيسية لتظهر له الشاشة الكبيرة مباشرة بدون أي alert منبثق
         if (persistentCounter >= 20) {
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 1200);
+            setTimeout(() => { window.location.href = "index.html"; }, 1200);
             return;
         }
     }
@@ -221,8 +239,6 @@ function checkAnswer(sel) {
 
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
-
-    // تصفير الخيارات المحذوفة بناءً على حروفها المبعثرة الجديدة ديناميكياً للسؤال الحالي
     if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
     if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
 }
@@ -241,7 +257,12 @@ function showResults() {
     document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    localStorage.removeItem('trn_idx'); localStorage.removeItem('trn_score');
+    // عند الإنهاء الكامل بنجاح يتم تنظيف مفاتيح الـ Auto-Save الخاصة بهذه المادة لتبدأ الجولة التالية نظيفة
+    localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_score_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_time_${currentFieldKey}`);
+    localStorage.removeItem('trn_idx'); 
+    localStorage.removeItem('trn_score');
 }
 
 function endExamEarly() { 
@@ -252,8 +273,6 @@ function exitToMain() {
 }
 </script>
 
-<!-- 🎯 ربط ملف بنك أسئلة رخصة المدربين المولد والمحدث باسم qtadreb.js -->
 <script src="qtadreb.js"></script>
-
 </body>
 </html>
