@@ -50,6 +50,43 @@
         .footer-links { margin-top: 20px; text-align: center; font-size: 15px; }
         .footer-links a { color: var(--accent); text-decoration: none; font-weight: bold; }
         .footer-links a:hover { text-decoration: underline; }
+
+        /* 🔥 تنسيقات شريط التقدم التشويقي المطور للضيوف */
+        .guest-progress-wrapper {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: none; /* يظهر فقط إذا كان هناك تقدم تجريبي للضيف */
+        }
+        .guest-progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #f8fafc;
+            font-size: 13px;
+        }
+        .highlight-text { color: #fbbf24; }
+        .cta-text { color: #38bdf8; font-weight: bold; }
+        .guest-btn-upgrade {
+            background: linear-gradient(90deg, #ec4899, #f43f5e);
+            color: #ffffff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
+        }
+        .guest-btn-upgrade:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(244, 63, 94, 0.4); color: #fff; }
+        .guest-progress-bar-bg { background: rgba(255, 255, 255, 0.1); height: 8px; border-radius: 4px; overflow: hidden; width: 100%; }
+        .guest-progress-bar-fill { background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; width: 0%; transition: width 0.4s ease; }
     </style>
 </head>
 <body>
@@ -67,6 +104,21 @@
         </p>
     </div>
 
+<!-- 🌟 شريط التقدم التفاعلي المطور بالعبارات التسويقية الدقيقة لمنصة asiltrain -->
+<div id="guest-progress-container" class="guest-progress-wrapper">
+    <div class="guest-progress-info">
+        <span class="guest-text">
+            🔒 <strong class="highlight-text">تقدمك التجريبي:</strong> لقد حللت <span id="current-guest-q">0</span> من أصل <strong>20 سؤالاً</strong> مجانياً.
+        </span>
+        <span class="cta-text">
+            💡 متبقي <span id="locked-questions-count">630</span> سؤالاً للتربوي العام، وأكثر من 320 سؤالاً لكل تخصص!
+        </span>
+        <a href="subscribe.html" class="guest-btn-upgrade">فك القفل بالاشتراك 🔑</a>
+    </div>
+    <div class="guest-progress-bar-bg">
+        <div id="guest-progress-fill" class="guest-progress-bar-fill"></div>
+    </div>
+</div>
     <h2>بوابة تسجيل الدخول للمحاكاة 🔐</h2>
 
     <!-- رسائل الأخطاء اللحظية والتنبيهات التلقائية -->
@@ -83,10 +135,9 @@
             <input type="password" id="activationCode" required placeholder="مثال: TAR-12345-6">
             <span class="password-toggle" id="toggleIcon" onclick="togglePasswordVisibility()">👁️</span>
         </div>
-
         <div class="form-group">
             <label>اختر التخصص / المادة المستهدفة:</label>
-            <select id="examField">
+            <select id="examField" onchange="checkLiveProgress()">
                 <option value="tarbawi">الرخصة المهنية - العام (التربوي)</option>
                 <option value="ejtemaeyat">الرخصة المهنية - اجتماعيات</option>
                 <option value="computer">الرخصة المهنية - حاسب آلي</option>
@@ -118,15 +169,15 @@
         لا تملك كود تفعيل؟ <a href="subscribe.html">اشترك معنا وارفع الإيصال من هنا 💳</a>
     </div>
 </div>
-
 <!-- 3. منطق التحكم البرمجي والتحقق السريع المعتمد والمجرب 100% -->
 <script>
-// استرجاع اسم المتدرب الأخير تلقائياً عند فتح الصفحة لتوفير الوقت
+// استرجاع اسم المتدرب الأخير وتشغيل فحص شريط التقدم عند فتح الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     const savedName = localStorage.getItem('lastEnteredName');
     if (savedName) {
         document.getElementById('studentName').value = savedName;
     }
+    checkLiveProgress(); // فحص إذا كان هناك تقدم سابق للضيف لإظهار الشريط فوراً
 });
 
 // 🔒 حماية إضافية: منع استخدام زر الفأرة الأيمن (Right-Click) لحماية الأكواد ومحتوى الأسئلة
@@ -146,6 +197,36 @@ function togglePasswordVisibility() {
         toggleIcon.textContent = '👁️';
     }
 }
+
+// 📊 دالة تفاعلية لفحص وحساب التقدم للضيف وعرض شريط التشويق التسويقي تلقائياً
+function checkLiveProgress() {
+    const field = document.getElementById('examField').value;
+    const container = document.getElementById('guest-progress-container');
+    const currentQElem = document.getElementById('current-guest-q');
+    const lockedCountElem = document.getElementById('locked-questions-count');
+    const progressFillElem = document.getElementById('guest-progress-fill');
+    
+    // سحب العداد الحالي للمادة من متصفح العميل
+    const currentFieldCount = parseInt(localStorage.getItem(`asiltrain_guest_counter_${field}`) || '0');
+    
+    if (currentFieldCount > 0) {
+        // تحديد الحجم الكامل لبنك الأسئلة بناءً على المادة المحددة
+        let totalBankQuestions = (field === 'tarbawi') ? 650 : 300;
+        let lockedCount = totalBankQuestions - currentFieldCount;
+        let progressPercent = (currentFieldCount / 20) * 100;
+        
+        if (progressPercent > 100) progressPercent = 100;
+        
+        // تحديث النصوص والواجهة وتحريك الشريط بسلاسة
+        if (currentQElem) currentQElem.innerText = currentFieldCount;
+        if (lockedCountElem) lockedCountElem.innerText = lockedCount;
+        if (progressFillElem) progressFillElem.style.width = progressPercent + '%';
+        if (container) container.style.display = 'block'; // إظهار الشريط لو عنده تقدم
+    } else {
+        if (container) container.style.display = 'none'; // إخفاء الشريط لو العداد صفر
+    }
+}
+
 function handleLogin(event) {
     event.preventDefault();
     const name = document.getElementById('studentName').value.trim();
