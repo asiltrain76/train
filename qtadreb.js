@@ -5441,3 +5441,4 @@ const trainersQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof trainersQuestions!=='undefined'){for(let i=trainersQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[trainersQuestions[i],trainersQuestions[j]]=[trainersQuestions[j],trainersQuestions[i]];}}

@@ -5441,3 +5441,4 @@ const computerQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof computerQuestions!=='undefined'){for(let i=computerQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[computerQuestions[i],computerQuestions[j]]=[computerQuestions[j],computerQuestions[i]];}}

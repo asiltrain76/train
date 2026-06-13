@@ -5441,3 +5441,4 @@ const scienceQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof scienceQuestions!=='undefined'){for(let i=scienceQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[scienceQuestions[i],scienceQuestions[j]]=[scienceQuestions[j],scienceQuestions[i]];}}

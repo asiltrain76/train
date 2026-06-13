@@ -5441,3 +5441,4 @@ const artQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof artQuestions!=='undefined'){for(let i=artQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[artQuestions[i],artQuestions[j]]=[artQuestions[j],artQuestions[i]];}}

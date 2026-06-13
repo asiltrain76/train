@@ -5441,3 +5441,4 @@ const islamQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof islamicQuestions!=='undefined'){for(let i=islamicQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[islamicQuestions[i],islamicQuestions[j]]=[islamicQuestions[j],islamicQuestions[i]];}}

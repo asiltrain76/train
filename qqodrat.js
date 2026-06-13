@@ -5373,3 +5373,4 @@ const qudratQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof qodratQuestions!=='undefined'){for(let i=qodratQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[qodratQuestions[i],qodratQuestions[j]]=[qodratQuestions[j],qodratQuestions[i]];}}

@@ -5441,3 +5441,4 @@ const ejtemaeyatQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof ejtemaeyatQuestions!=='undefined'){for(let i=ejtemaeyatQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ejtemaeyatQuestions[i],ejtemaeyatQuestions[j]]=[ejtemaeyatQuestions[j],ejtemaeyatQuestions[i]];}}

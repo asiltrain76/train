@@ -11051,3 +11051,4 @@ const examQuestions = [
         "elim2": "d"
     }
 ];
+if(typeof examQuestions!=='undefined'){for(let i=examQuestions.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[examQuestions[i],examQuestions[j]]=[examQuestions[j],examQuestions[i]];}}
