@@ -48,6 +48,10 @@
         /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
         .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
         @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+
+        /* الزر الفخم التابع لمنصة تراك لمشاركة النتيجة المضافة هندسياً */
+        .btn-share { display: block; width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; transition: background 0.2s, transform 0.2s; margin-top: 15px; margin-bottom: 15px; }
+        .btn-share:hover { background: #2f855a; transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -88,6 +92,7 @@
         <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
+
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
@@ -102,6 +107,10 @@
     </div>
 
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    
+    <!-- 🚀 زر مشاركة النتيجة الفخم المدمج هندسياً بنفس الموقع والشكل المطلوبين -->
+    <button class="btn-share" onclick="shareResult()">📢 شارك إنجازك في تويتر وتليجرام وافخر بنفسك</button>
+
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
@@ -187,6 +196,7 @@ window.onload = function() {
     startTimer();
     loadQuestion();
 };
+
 function startTimer() {
     timerInterval = setInterval(() => {
         if (isStrictMode && !isGuest) {
@@ -217,7 +227,6 @@ function startTimer() {
         }
     }, 1000);
 }
-
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -371,6 +380,15 @@ function showResults() {
     localStorage.removeItem(`asiltrain_autosave_skips_${currentFieldKey}`);
     localStorage.removeItem('sec_idx'); 
     localStorage.removeItem('sec_scr');
+}
+
+// دالة مشاركة النتيجة الموجهة لتويتر وتليجرام الخاصة بتخصص القدرات والتحصيلي
+function shareResult() {
+    const solvedCount = Math.min(currentIndex, maxQuestions);
+    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    const text = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار القدرات والتحصيلي المطور عبر منصة تراك 🎯✨`;
+    const twitterUrl = `https://twitter.com{encodeURIComponent(text)}`;
+    window.open(twitterUrl, '_blank');
 }
 
 function endExamEarly() { 
