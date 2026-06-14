@@ -25,19 +25,200 @@
         .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
         .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
         .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
-function shareResult() {
-    const solvedCount = Math.min(currentIndex, maxQuestions);
-    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+        .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
+        .correct { background: var(--success) !important; color: white; border-color: var(--success); font-weight: bold; }
+        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); font-weight: bold; }
+        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+        .btn-action { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
+        .btn-end { background: #718096; color: white; }
+        .btn-end:hover { background: #4a5568; }
+        .btn-skip { background: var(--warning); color: white; }
+        .btn-skip:hover { background: #c05621; transform: translateY(-1px); }
+        .hidden { display: none; }
+        
+        /* 🔥 أشرطة التحليل البياني الفخمة الملونة */
+        .analytics-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin: 15px 0; text-align: right; }
+        .analytics-title { font-size: 14px; font-weight: bold; color: #4a5568; margin-bottom: 5px; }
+        .analytics-bar-bg { background: #edf2f7; height: 16px; border-radius: 8px; overflow: hidden; width: 100%; position: relative; }
+        .analytics-bar-fill { height: 100%; width: 0%; transition: width 1s cubic-bezier(0.1, 1, 0.1, 1); border-radius: 8px; }
+        .bar-success { background: linear-gradient(90deg, #48bb78, #38a169); }
+        .bar-warning { background: linear-gradient(90deg, #ed8936, #dd6b20); }
+        .bar-danger { background: linear-gradient(90deg, #f56565, #e53e3e); }
+        
+        /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
+        .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
+        @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="exam-container">
+    <div class="meta-info">
+        <span id="student-info">المتدرب: جاري التحميل...</span>
+        <span style="color: var(--accent); transition: 0.3s;" id="timer-info">⏱️ الوقت: 00:00</span>
+        <span id="score-info">الصح: 0</span>
+    </div>
     
-    // النص اللي بينسخ للحافظة بدون فتح أي روابط خارجية
-    const textToCopy = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار الرخصة المهنية للدراسات الإسلامية عبر منصة تراك التعليمية 🎯✨`;
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <!-- لوحة المساعدات المجهزة للاختفاء التلقائي في وضع التحدي الصارم -->
+    <div class="help-panel" id="help-panel-box">
+        <button class="help-btn" onclick="togglePopup('hint')">💡 مفتاح الإجابة / التلميح</button>
+        <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار والمؤشر</button>
+        <button class="help-btn" id="elim-btn" style="color: #ed8936;" onclick="eliminateTwo()">❌ حذف إجابتين</button>
+    </div>
+
+    <div id="hint-box" class="popup-info"></div>
+    <div id="standard-box" class="popup-info"></div>
+
+    <div class="question-card" id="question-text">جاري تحميل السؤال...</div>
+
+    <div id="options-container">
+        <button class="btn-opt" id="optA" onclick="checkAnswer('A')"></button>
+        <button class="btn-opt" id="optB" onclick="checkAnswer('B')"></button>
+        <button class="btn-opt" id="optC" onclick="checkAnswer('C')"></button>
+        <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
+    </div>
+
+    <div class="footer-actions">
+        <!-- 🚀 زر التخطي والمراجعة اللاحقة المطور هندسياً -->
+        <button class="btn-action btn-skip" id="skip-btn" onclick="skipQuestion()">🔄 تخطي ومراجعة لاحقاً</button>
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
+    </div>
+</div>
+<div class="container hidden" id="result-container">
+    <h2>التحليل النهائي للاختبار 🎉</h2>
+    <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
+    <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
+    <!-- 📊 لوحة التحليل المرئية الملونة والمحدثة بالكامل لمنصة asiltrain -->
+    <div class="analytics-card">
+        <div class="analytics-title">📈 شريط التقييم والتحليل التدريبي اللحظي:</div>
+        <div class="analytics-bar-bg">
+            <div id="analytics-bar" class="analytics-bar-fill"></div>
+        </div>
+    </div>
+
+    <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
+    <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
+</div>
+
+<script>
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
+let questions = []; 
+let skippedQuestions = []; // مصفوفة لتتبع الأسئلة التي تم تخطيها لمراجعتها لاحقاً
+let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
+let maxQuestions = 20; 
+let isStrictMode = false; // تفعيل وضع التحدي الصارم من عدمه
+let totalSecondsLeft = 0; // لعداد وضع التحدي الصارم التنازلي
+
+let currentCorrectLetter = "";
+let currentElim1Letter = "";
+let currentElim2Letter = "";
+
+// جلب اسم الصفحة الحالية من الرابط تلقائياً لاستخدامه كـ (مفتاح فريد) لتأمين الذاكرة لكل تخصص مستقل
+const currentFieldKey = window.location.pathname.split("/").pop().replace(".html", "");
+
+function getRankText(pct) {
+    if (pct >= 90) return "👑 متميز جداً (مستشار رخصة خبير)";
+    if (pct >= 80) return "🥇 ممتاز (مؤهل بجدارة للرخصة المتقدمة)";
+    if (pct >= 70) return "🥈 جيد جداً (مسار متمكن وثابت)";
+    if (pct >= 50) return "🥉 جيد (مقبول ويحتاج لمزيد من التدريب العشوائي)";
+    return "⚠️ يحتاج إلى تطوير مكثف (ننصح بإعادة مراجعة بنوك الأسئلة الفاخرة)";
+}
+
+window.onload = function() {
+    // 🎯 التعرف على بنك أسئلة الدراسات الإسلامية الإلكتروني المستهدف وسحبه تلقائياً
+    if (typeof islamQuestions !== 'undefined') {
+        questions = [...islamQuestions];
+    } else {
+        alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qislam.js) في المجلد الحالي!");
+        return;
+    }
+
+    const user = localStorage.getItem('activeUser');
+    isGuest = (localStorage.getItem('userRole') === 'guest');
+    // التحقق هل المتدرب فعّل وضع التحدي الصارم من صفحة index.html
+    isStrictMode = (localStorage.getItem('strictModeEnabled') === 'true');
     
-    // أمر النسخ البرمي المباشر للحافظة
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("✅ تم نسخ النتيجة بنجاح! يمكنك الآن لصقها ومشاركتها في أي مكان تريد.");
-    }).catch(err => {
-        alert("⚠️ عذراً، تعذر النسخ التلقائي. يمكنك نسخ النص يدوياً.");
-    });
+    if (!user) { window.location.href = "index.html"; return; }
+    
+    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
+    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
+
+    document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
+    
+    // 🛡️ [تكتيك التأمين الذكي]: استرجاع نقاط التوقف السابقة للمشتركين عند الانقطاع أو قفل المتصفح التلقائي
+    if (!isGuest) {
+        const savedIndex = localStorage.getItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+        const savedScore = localStorage.getItem(`asiltrain_autosave_score_${currentFieldKey}`);
+        const savedTime = localStorage.getItem(`asiltrain_autosave_time_${currentFieldKey}`);
+        const savedSkips = localStorage.getItem(`asiltrain_autosave_skips_${currentFieldKey}`);
+        
+        if (savedIndex !== null && savedScore !== null) {
+            currentIndex = parseInt(savedIndex);
+            correctCount = parseInt(savedScore);
+            document.getElementById('score-info').innerText = `✅ الصح: ${correctCount}`;
+            
+            if (savedTime !== null) {
+                startTime = Date.now() - (parseInt(savedTime) * 1000);
+                // مواءمة ثواني التحدي المتبقية مع الوقت المستغرق المسترجع
+                totalSecondsLeft = (maxQuestions * 90) - parseInt(savedTime);
+            }
+            if (savedSkips !== null && savedSkips !== "") {
+                skippedQuestions = savedSkips.split(',').map(Number);
+            }
+        } else {
+            // جلسة جديدة لوضع التحدي الصارم: دقيقة ونصف (90 ثانية) لكل سؤال
+            totalSecondsLeft = maxQuestions * 90; 
+        }
+    } else {
+        totalSecondsLeft = maxQuestions * 90;
+    }
+
+    // 🔒 إذا تم تفعيل وضع التحدي الصارم: إخفاء لوحة وسائل المساعدة فوراً
+    if (isStrictMode && !isGuest) {
+        const helpPanel = document.getElementById('help-panel-box');
+        if (helpPanel) helpPanel.style.display = 'none';
+    }
+
+    startTimer();
+    loadQuestion();
+};
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        if (isStrictMode && !isGuest) {
+            // ⏱️ وضع التحدي الصارم: عداد تنازلي حقيقي وصارم يحاكي اختبار قياس
+            if (totalSecondsLeft <= 0) {
+                clearInterval(timerInterval);
+                alert("🛑 انتهى الوقت الفعلي المحدد للاختبار المحاكي! سيتم الانتقال للتحليل النهائي وعرض نتيجتك الحالية.");
+                showResults();
+                return;
+            }
+            totalSecondsLeft--;
+            const mins = String(Math.floor(totalSecondsLeft / 60)).padStart(2, '0');
+            const secs = String(totalSecondsLeft % 60).padStart(2, '0');
+            const timerInfo = document.getElementById('timer-info');
+            if (timerInfo) {
+                timerInfo.innerText = `⏳ متبقي: ${mins}:${secs}`;
+                // نبض أحمر تحذيري إذا متبقي أقل من دقيقتين لشحن حماس المتدرب
+                if (totalSecondsLeft <= 120) {
+                    timerInfo.classList.add('timer-alert');
+                }
+            }
+        } else {
+            // وضع التدريب العادي: عداد تصاعدي لحساب الوقت المستغرق براحة
+            const diff = Math.floor((Date.now() - startTime) / 1000);
+            const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+            const secs = String(diff % 60).padStart(2, '0');
+            document.getElementById('timer-info').innerText = `⏱️ الوقت: ${mins}:${secs}`;
+        }
+    }, 1000);
 }
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
@@ -192,19 +373,6 @@ function showResults() {
     localStorage.removeItem(`asiltrain_autosave_skips_${currentFieldKey}`);
     localStorage.removeItem('isl_idx'); 
     localStorage.removeItem('isl_score');
-}
-
-// دالة مشاركة النتيجة المحدثة بدون روابط خارجية (منطق النسخ والتنبيه الأصلي الموثوق)
-function shareResult() {
-    const solvedCount = Math.min(currentIndex, maxQuestions);
-    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
-    const textToCopy = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار الرخصة المهنية للدراسات الإسلامية عبر منصة تراك التعليمية 🎯✨`;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("✅ تم نسخ النتيجة بنجاح! يمكنك الآن لصقها ومشاركتها في أي مكان تريد.");
-    }).catch(err => {
-        alert("⚠️ عذراً، تعذر النسخ التلقائي. يمكنك نسخ النص يدوياً.");
-    });
 }
 
 function endExamEarly() { 

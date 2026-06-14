@@ -48,10 +48,6 @@
         /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
         .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
         @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
-
-        /* الزر الفخم التابع لمنصة تراك لمشاركة النتيجة المضافة هندسياً */
-        .btn-share { display: block; width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; text-align: center; transition: background 0.2s, transform 0.2s; margin-top: 15px; margin-bottom: 15px; }
-        .btn-share:hover { background: #2f855a; transform: translateY(-1px); }
     </style>
 </head>
 <body>
@@ -92,7 +88,6 @@
         <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
-
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
@@ -105,12 +100,7 @@
             <div id="analytics-bar" class="analytics-bar-fill"></div>
         </div>
     </div>
-
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
-    
-    <!-- 🚀 زر مشاركة النتيجة المدمج بموقعه الصحيح المنسق تماماً -->
-    <button class="btn-share" onclick="shareResult()">📢 اضغط هنا لنسخ نيجتك ومشاركتها مع زملائك وافخر بنفسك</button>
-
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
@@ -139,8 +129,10 @@ function getRankText(pct) {
 }
 
 window.onload = function() {
-    // 🎯 التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qqodrat.js الفعلي
-    if (typeof qudratQuestions !== 'undefined') {
+    // 🛠️ الفحص المرن لتجاوز التحذير: التعرف التلقائي على المصفوفة سواء كانت qodratQuestions أو qudratQuestions
+    if (typeof qodratQuestions !== 'undefined') {
+        questions = [...qodratQuestions];
+    } else if (typeof qudratQuestions !== 'undefined') {
         questions = [...qudratQuestions];
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qqodrat.js) في المجلد الحالي!");
@@ -382,18 +374,9 @@ function showResults() {
     localStorage.removeItem('sec_scr');
 }
 
-// دالة مشاركة النتيجة المحدثة لنسخ النص تلقائياً إلى الحافظة بدون أي روابط خارجية
-function shareResult() {
-    const solvedCount = Math.min(currentIndex, maxQuestions);
-    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
-    const textToCopy = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار القدرات والتحصيلي المطور عبر منصة تراك 🎯✨`;
-    
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        alert("✅ تم نسخ النتيجة بنجاح! يمكنك الآن لصقها ومشاركتها في أي مكان تريد.");
-    }).catch(err => {
-        alert("⚠️ عذراً، تعذر النسخ التلقائي. يمكنك نسخ النص يدوياً.");
-    });
-}
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
 
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
