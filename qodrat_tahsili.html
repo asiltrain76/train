@@ -108,8 +108,8 @@
 
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     
-    <!-- 🚀 زر مشاركة النتيجة الفخم المدمج هندسياً بنفس الموقع والشكل المطلوبين -->
-    <button class="btn-share" onclick="shareResult()">📢 شارك إنجازك في تويتر وتليجرام وافخر بنفسك</button>
+    <!-- 🚀 زر مشاركة النتيجة المدمج بموقعه الصحيح المنسق تماماً -->
+    <button class="btn-share" onclick="shareResult()">📢 اضغط هنا لنسخ نيجتك ومشاركتها مع زملائك وافخر بنفسك</button>
 
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
@@ -382,13 +382,17 @@ function showResults() {
     localStorage.removeItem('sec_scr');
 }
 
-// دالة مشاركة النتيجة الموجهة لتويتر وتليجرام الخاصة بتخصص القدرات والتحصيلي
+// دالة مشاركة النتيجة المحدثة لنسخ النص تلقائياً إلى الحافظة بدون أي روابط خارجية
 function shareResult() {
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
-    const text = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار القدرات والتحصيلي المطور عبر منصة تراك 🎯✨`;
-    const twitterUrl = `https://twitter.com{encodeURIComponent(text)}`;
-    window.open(twitterUrl, '_blank');
+    const textToCopy = `الحمد لله! حصلت على نسبة ${pct}% في محاكي اختبار القدرات والتحصيلي المطور عبر منصة تراك 🎯✨`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("✅ تم نسخ النتيجة بنجاح! يمكنك الآن لصقها ومشاركتها في أي مكان تريد.");
+    }).catch(err => {
+        alert("⚠️ عذراً، تعذر النسخ التلقائي. يمكنك نسخ النص يدوياً.");
+    });
 }
 
 function endExamEarly() { 
