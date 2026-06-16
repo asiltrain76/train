@@ -422,33 +422,33 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <script>
-// ====================== حماية نظيفة بدون أي رسائل ======================
+// ====================== حماية قوية وآمنة على الموبايل ======================
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // منع الزر الأيمن
-    document.addEventListener('contextmenu', e => { 
-        e.preventDefault(); 
-        return false; 
+    // 1. منع الزر الأيمن
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        return false;
     });
 
-    // منع تحديد النص
-    document.addEventListener('selectstart', e => { 
-        e.preventDefault(); 
-        return false; 
+    // 2. منع تحديد النص والنسخ
+    document.addEventListener('selectstart', e => {
+        e.preventDefault();
+        return false;
     });
 
-    // منع السحب
-    document.addEventListener('dragstart', e => { 
-        e.preventDefault(); 
-        return false; 
+    // 3. منع السحب
+    document.addEventListener('dragstart', e => {
+        e.preventDefault();
+        return false;
     });
 
-    // منع النسخ والقص
+    // 4. منع النسخ المباشر (Ctrl+C, Ctrl+X)
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
 
-    // حماية اختصارات DevTools و F12
+    // 5. حماية من اختصارات لوحة المفاتيح
     document.addEventListener('keydown', function(e) {
         if (e.key === "F12" || 
             (e.ctrlKey && e.shiftKey && ["I","C","J","K"].includes(e.key)) ||
@@ -457,18 +457,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return false;
         }
     });
-
-    // كشف DevTools (صامت تماماً - بدون أي رسالة)
-    let devtoolsOpen = false;
-    setInterval(() => {
-        if (window.outerWidth - window.innerWidth > 180 || 
-            window.outerHeight - window.innerHeight > 180) {
-            if (!devtoolsOpen) {
-                devtoolsOpen = true;
-                // صامت تماماً - لا يظهر أي شيء للمتدرب
-            }
-        }
-    }, 700);
 
 });
 </script>
