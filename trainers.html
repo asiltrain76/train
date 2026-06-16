@@ -275,24 +275,33 @@ function exitToMain() {
 <script src="qtadreb.js"></script>
 
 <script>
-// ====================== حماية متقدمة جداً (مستوى Very High) ======================
+// ====================== حماية نظيفة بدون أي رسائل ======================
 
 document.addEventListener('DOMContentLoaded', function() {
 
     // منع الزر الأيمن
-    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+    document.addEventListener('contextmenu', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
 
-    // منع تحديد النص والنسخ
-    document.addEventListener('selectstart', e => { e.preventDefault(); return false; });
+    // منع تحديد النص
+    document.addEventListener('selectstart', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
 
     // منع السحب
-    document.addEventListener('dragstart', e => { e.preventDefault(); return false; });
+    document.addEventListener('dragstart', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
 
-    // منع النسخ المباشر
+    // منع النسخ والقص
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
 
-    // حماية قوية من اختصارات لوحة المفاتيح
+    // حماية اختصارات DevTools و F12
     document.addEventListener('keydown', function(e) {
         if (e.key === "F12" || 
             (e.ctrlKey && e.shiftKey && ["I","C","J","K"].includes(e.key)) ||
@@ -302,20 +311,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // كشف DevTools (بهدوء - بدون رسالة)
+    // كشف DevTools (صامت تماماً - بدون أي رسالة)
     let devtoolsOpen = false;
-    const checkDevTools = setInterval(() => {
+    setInterval(() => {
         if (window.outerWidth - window.innerWidth > 180 || 
             window.outerHeight - window.innerHeight > 180) {
-            
             if (!devtoolsOpen) {
                 devtoolsOpen = true;
-                // بدلاً من alert، نعمل شيء هادئ (مثل إعادة تحميل أو تشويش)
-                document.body.style.filter = "blur(8px)";
-                setTimeout(() => location.reload(), 800);
+                // صامت تماماً - لا يظهر أي شيء للمتدرب
             }
         }
-    }, 600);
+    }, 700);
 
 });
 </script>
