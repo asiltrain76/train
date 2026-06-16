@@ -92,6 +92,7 @@
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
     <p id="final-name" style="font-size: 1.2rem; font-weight: bold; text-align: right;"></p>
+    
     <!-- 📊 لوحة التحليل المرئية الملونة والمحدثة بالكامل لمنصة asiltrain -->
     <div class="analytics-card">
         <div class="analytics-title">📈 شريط التقييم والتحليل التدريبي اللحظي:</div>
@@ -106,9 +107,6 @@
 </div>
 
 <script>
-document.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-});
 let questions = []; 
 let skippedQuestions = []; // مصفوفة لتتبع الأسئلة التي تم تخطيها لمراجعتها لاحقاً
 let currentIndex = 0, correctCount = 0, startTime = Date.now(), isGuest = false, timerInterval;
@@ -189,7 +187,6 @@ window.onload = function() {
     startTimer();
     loadQuestion();
 };
-
 function startTimer() {
     timerInterval = setInterval(() => {
         if (isStrictMode && !isGuest) {
@@ -220,6 +217,7 @@ function startTimer() {
         }
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -385,6 +383,52 @@ function exitToMain() {
 
 <!-- 🎯 ربط ملف بنك أسئلة الدراسات الإسلامية المولد من الـ Node.js تلقائياً -->
 <script src="qislam.js"></script>
+
+<script>
+// ====================== حماية متقدمة جداً (مستوى Very High) ======================
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // منع الزر الأيمن
+    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+
+    // منع تحديد النص والنسخ
+    document.addEventListener('selectstart', e => { e.preventDefault(); return false; });
+
+    // منع السحب
+    document.addEventListener('dragstart', e => { e.preventDefault(); return false; });
+
+    // منع النسخ المباشر
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+
+    // حماية قوية من اختصارات لوحة المفاتيح
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "F12" || 
+            (e.ctrlKey && e.shiftKey && ["I","C","J","K"].includes(e.key)) ||
+            (e.ctrlKey && ["u","s","p","h"].includes(e.key.toLowerCase()))) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // كشف DevTools (بهدوء - بدون رسالة)
+    let devtoolsOpen = false;
+    const checkDevTools = setInterval(() => {
+        if (window.outerWidth - window.innerWidth > 180 || 
+            window.outerHeight - window.innerHeight > 180) {
+            
+            if (!devtoolsOpen) {
+                devtoolsOpen = true;
+                // بدلاً من alert، نعمل شيء هادئ (مثل إعادة تحميل أو تشويش)
+                document.body.style.filter = "blur(8px)";
+                setTimeout(() => location.reload(), 800);
+            }
+        }
+    }, 600);
+
+});
+</script>
 
 </body>
 </html>
