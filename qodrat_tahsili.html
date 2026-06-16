@@ -100,6 +100,7 @@
             <div id="analytics-bar" class="analytics-bar-fill"></div>
         </div>
     </div>
+
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
@@ -129,10 +130,8 @@ function getRankText(pct) {
 }
 
 window.onload = function() {
-    // 🛠️ الفحص المرن لتجاوز التحذير: التعرف التلقائي على المصفوفة سواء كانت qodratQuestions أو qudratQuestions
-    if (typeof qodratQuestions !== 'undefined') {
-        questions = [...qodratQuestions];
-    } else if (typeof qudratQuestions !== 'undefined') {
+    // 🎯 التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qqodrat.js الفعلي
+    if (typeof qudratQuestions !== 'undefined') {
         questions = [...qudratQuestions];
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qqodrat.js) في المجلد الحالي!");
@@ -188,7 +187,6 @@ window.onload = function() {
     startTimer();
     loadQuestion();
 };
-
 function startTimer() {
     timerInterval = setInterval(() => {
         if (isStrictMode && !isGuest) {
@@ -219,6 +217,7 @@ function startTimer() {
         }
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -374,20 +373,51 @@ function showResults() {
     localStorage.removeItem('sec_scr');
 }
 
-document.addEventListener('contextmenu', (event) => {
-    event.preventDefault();
-});
-
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
 }
 function exitToMain() { 
     window.location.href = "index.html"; 
 }
+
 </script>
 
 <!-- 🎯 ربط ملف بنك أسئلة القدرات والتحصيلي المولد بدقة باسم qqodrat.js -->
 <script src="qqodrat.js"></script>
+
+<script>
+// ====================== حماية قوية وهادئة (منع اليمين + النسخ) ======================
+
+// 1. منع الزر الأيمن (Right Click)
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// 2. منع تحديد ونسخ النص
+document.addEventListener('selectstart', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// 3. منع السحب
+document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+    return false;
+});
+
+// 4. حماية خفيفة من اختصارات لوحة المفاتيح (F12, Ctrl+U, Ctrl+Shift+I ... إلخ)
+document.addEventListener('keydown', function(e) {
+    if (e.key === "F12" || 
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "C" || e.key === "J")) || 
+        (e.ctrlKey && (e.key.toLowerCase() === "u" || 
+                       e.key.toLowerCase() === "s" || 
+                       e.key.toLowerCase() === "p"))) {
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
 
 </body>
 </html>
