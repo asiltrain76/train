@@ -46,7 +46,6 @@
     </div>
     <button class="btn" onclick="checkAdminPass()">فتح لوحة التحكم</button>
 </div>
-
 <!-- لوحة التحكم الفعلية -->
 <div id="adminPanel" class="admin-box hidden">
     <button class="btn-logout" onclick="adminLogout()">🚪 خروج آمن</button>
@@ -66,7 +65,9 @@
             <option value="SOC">الرخصة المهنية - اجتماعيات</option>
             <option value="SPO">الرخصة المهنية - تربية بدنية (رياضة)</option>
             <option value="ART">الرخصة المهنية - تربية فنية</option>
-            <option value="SEC">مسار الثانوي - القدرات والتحصيلي</option>
+            <!-- 🎯 التحديث الفني الحصري: فصل الأكواد للمشتركين لرحلة القدرات والتحصيلي بشكل مستقل -->
+            <option value="QOD">مسار الثانوي - القدرات العامة</option>
+            <option value="TAH">مسار الثانوي - الاختبار التحصيلي</option>
         </select>
     </div>
 
@@ -83,7 +84,6 @@
         <button class="btn btn-success" onclick="downloadTxtFile()">📥 تحميل الأكواد في ملف مفكرة (.txt)</button>
     </div>
 </div>
-
 <script>
 const EXPECTED_USER = 'asiltrain76';
 const EXPECTED_PASS = 'I1396#z1398'; 
@@ -116,7 +116,6 @@ function adminLogout() {
         window.location.reload();
     }
 }
-
 function generateSecureCodes() {
     const prefix = document.getElementById('targetField').value;
     const count = parseInt(document.getElementById('codesCount').value);

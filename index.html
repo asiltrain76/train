@@ -117,11 +117,10 @@
         </div>
         <p style="margin: 0; color: #4a5568; font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
             <span style="color: #e53e3e; font-weight: bold;">الحق بالركب الآن..</span> لا تتردد، حدد مسارك، واصنع قصة نجاحك المهني معنا خطوة بخطوة. لمعرفة جديد الموقع تابعنا على منصة إكس 
-            <a href="https://x.com/asiltrain76?s=20" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">معلم تقني @asiltrain76</a>
+            <a href="https://x.com" target="_blank" style="color: #e53e3e; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #e53e3e;">معلم تقني @asiltrain76</a>
         </p>
     </div>
-
-    <!-- 🌟 شريط التقدم التفاعلي للزوار (يتحرك ويظهر تلقائياً بناءً على تصفحهم) -->
+<!-- 🌟 شريط التقدم التفاعلي للزوار (يتحرك ويظهر تلقائياً بناءً على تصفحهم) -->
     <div id="guest-progress-container" class="guest-progress-wrapper">
         <div class="guest-progress-info">
             <span class="guest-text">
@@ -163,7 +162,9 @@
                 <option value="islamic">الرخصة المهنية - دراسات إسلامية</option>
                 <option value="trainers">الرخصة المهنية - المدربين</option>
                 <option value="sport">الرخصة المهنية - تربية بدنية (رياضة)</option>
-                <option value="qodrat_tahsili">مسار الثانوي - القدرات والتحصيلي</option>
+                <!-- 🎯 فصل مسار الثانوي إلى قسمين مستقلين بالأسماء الرسمية المعتمدة -->
+                <option value="qodrat">القدرات العامة للمرحلة الثانوية</option>
+                <option value="tahsili">الاخبار التحصيلي للمرحلة الثانوية</option>
             </select>
         </div>
 
@@ -222,7 +223,6 @@ function togglePasswordVisibility() {
         toggleIcon.textContent = '👁️';
     }
 }
-
 // 📊 دالة تفاعلية لفحص وحساب التقدم للضيف وعرض شريط التشويق التسويقي تلقائياً
 function checkLiveProgress() {
     const field = document.getElementById('examField').value;
@@ -230,19 +230,19 @@ function checkLiveProgress() {
     const currentQElem = document.getElementById('current-guest-q');
     const progressFillElem = document.getElementById('guest-progress-fill');
     
-    // 1. مصفوفة لأسماء التخصصات باللغة العربية لعرضها ديناميكياً في العبارة التسويقية
+    // 1. مصفوفة لأسماء التخصصات والمسارات باللغة العربية لعرضها ديناميكياً في العبارة التسويقية
     const fieldNamesAr = {
         'tarbawi': 'للتربوي العام', 'ejtemaeyat': 'لتخصص الاجتماعيات', 'computer': 'لتخصص الحاسب الآلي',
         'art': 'لتخصص التربية الفنية', 'arabic': 'لتخصص اللغة العربية', 'science': 'لتخصص العلوم',
         'math': 'لتخصص الرياضيات', 'islamic': 'لتخصص الدراسات الإسلامية', 'trainers': 'لمسار المدربين',
-        'sport': 'لتخصص التربية البدنية', 'qodrat_tahsili': 'لمسار القدرات والتحصيلي'
+        'sport': 'لتخصص التربية البدنية', 'qodrat': 'لمسار القدرات العامة', 'tahsili': 'للاختبار التحصيلي'
     };
 
     const currentFieldCount = parseInt(localStorage.getItem(`asiltrain_guest_counter_${field}`) || '0');
     
     if (currentFieldCount > 0) {
-        // حساب ذكي: التربوي العام بنكه 650 سؤال، والتخصصات بنكها 300 سؤال
-        let totalBankQuestions = (field === 'tarbawi') ? 650 : 300;
+        // حساب ذكي لعدد الأسئلة المتبقية بحسب المسار المحدد
+        let totalBankQuestions = (field === 'tarbawi') ? 650 : 320;
         let lockedCount = totalBankQuestions - currentFieldCount;
         let progressPercent = (currentFieldCount / 20) * 100;
         
@@ -256,7 +256,7 @@ function checkLiveProgress() {
         const ctaTextElem = document.querySelector('.cta-text');
         if (ctaTextElem) {
             if (field === 'tarbawi') {
-                ctaTextElem.innerHTML = `💡 متبقي <strong style="color: #fbbf24;">${lockedCount}</strong> سؤالاً للتربوي العام، وأكثر من 300 سؤالاً لكل تخصص!`;
+                ctaTextElem.innerHTML = `💡 متبقي <strong style="color: #fbbf24;">${lockedCount}</strong> سؤالاً للتربوي العام، وأكثر من 320 سؤالاً لكل تخصص ومسار ثانوية!`;
             } else {
                 ctaTextElem.innerHTML = `💡 متبقي <strong style="color: #fbbf24;">${lockedCount}</strong> سؤالاً ${fieldNamesAr[field]}، وأكثر من 650 سؤالاً للتربوي العام!`;
             }
@@ -297,15 +297,15 @@ function handleLogin(event) {
             document.body.innerHTML = `
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f7fafc; padding: 40px; font-family: system-ui, -apple-system, sans-serif; direction: rtl;">
                     <div style="max-width: 750px; background: white; padding: 50px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border-top: 8px solid var(--danger, #e53e3e);">
-                        <h1 style="font-size: 32px; color: #e53e3e; margin-bottom: 25px; font-weight: 800;">عذراً، انتهت الفترة التجريبية لهذا التخصص! 🛑</h1>
+                        <h1 style="font-size: 32px; color: #e53e3e; margin-bottom: 25px; font-weight: 800;">عذراً، انتهت الفترة التجريبية لهذا المسار! 🛑</h1>
                         <p style="font-size: 22px; color: #2d3748; line-height: 1.8; margin-bottom: 35px; font-weight: 500;">
                             لقد استهلكت الحد الأقصى المسموح به للتجربة المجانية في هذا القسم وهو <b>20 سؤالاً</b> بنجاح.
                         </p>
                         <a href="subscribe.html" style="display: block; text-decoration: none; background: #27ae60; color: white; padding: 20px 35px; border-radius: 12px; font-size: 22px; font-weight: bold; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3); transition: 0.3s; margin-bottom: 20px;">
-                            🔑 اشترك الآن وافتح أكثر من 650 سؤال للتربوي العام وأكثر من 320 سؤال للتخصصات
+                            🔑 اشترك الآن وافتح الأسئلة كاملة لتضمن تميزك واعتلاء منصات النجاح!
                         </a>
                         <button onclick="window.location.reload()" style="background: #718096; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                            ↩️ العودة لتجربة تخصص آخر
+                            ↩️ العودة لتجربة مسار آخر
                         </button>
                     </div>
                 </div>
@@ -317,13 +317,12 @@ function handleLogin(event) {
         return;
     }
 
-    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية للمشتركين
+    // مصفوفة البوادئ الفنية المتطابقة مع نظام المنصة الحية للمشتركين بعد الفصل
     const codePrefixes = {
         'tarbawi': 'TAR', 'trainers': 'TRN', 'computer': 'COM', 'islamic': 'ISL', 
         'arabic': 'ARA', 'math': 'MAT', 'science': 'SCI', 'ejtemaeyat': 'SOC', 
-        'sport': 'SPO', 'art': 'ART', 'qodrat_tahsili': 'SEC'
+        'sport': 'SPO', 'art': 'ART', 'qodrat': 'QOD', 'tahsili': 'TAH'
     };
-
     const expectedPrefix = codePrefixes[field];
     const parts = upperCode.split('-'); 
     let isValid = false;
@@ -353,7 +352,7 @@ function saveAndRedirect(name, field, role, limit) {
     
     // 🛡️ التكتيك السحري: سحب وحفظ جميع العدادات المستقلة للمواد في ذاكرة المتصفح المؤقتة قبل تنظيف الذاكرة
     const savedCounters = {};
-    const examFields = ['tarbawi', 'ejtemaeyat', 'computer', 'art', 'arabic', 'science', 'math', 'islamic', 'trainers', 'sport', 'qodrat_tahsili'];
+    const examFields = ['tarbawi', 'ejtemaeyat', 'computer', 'art', 'arabic', 'science', 'math', 'islamic', 'trainers', 'sport', 'qodrat', 'tahsili'];
     
     examFields.forEach(f => {
         savedCounters[f] = localStorage.getItem(`asiltrain_guest_counter_${f}`) || '0';
