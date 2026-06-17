@@ -88,6 +88,7 @@
         <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
     </div>
 </div>
+
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
@@ -100,11 +101,10 @@
             <div id="analytics-bar" class="analytics-bar-fill"></div>
         </div>
     </div>
-<p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
-
 <script>
 let questions = []; 
 let skippedQuestions = []; // مصفوفة لتتبع الأسئلة التي تم تخطيها لمراجعتها لاحقاً
@@ -114,8 +114,6 @@ let isStrictMode = false; // تفعيل وضع التحدي الصارم من ع
 let totalSecondsLeft = 0; // لعداد وضع التحدي الصارم التنازلي
 
 let currentCorrectLetter = "";
-let currentElim1Letter = "";
-let currentElim2Letter = "";
 
 // جلب اسم الصفحة الحالية من الرابط تلقائياً لاستخدامه كـ (مفتاح فريد) لتأمين الذاكرة لكل مسار مستقل
 const currentFieldKey = window.location.pathname.split("/").pop().replace(".html", "");
@@ -137,7 +135,7 @@ function shuffleArray(array) {
 }
 
 window.onload = function() {
-    // 🎯 التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qqodrat.js الفعلي
+    // 🎯 التحقق والمطابقة المباشرة مع مصفوفة الأسئلة المتولدة من ملف qqodrat.js الفعلي للقدرات
     if (typeof qudratQuestions !== 'undefined') {
         // حماية الجلسة: إذا كان هناك حفظ تلقائي جاري، لا نخلط الأسئلة حتى لا تضيع الأسئلة التي يحلها المتدرب الآن
         const hasAutosave = localStorage.getItem(`asiltrain_autosave_idx_${currentFieldKey}`) !== null;
@@ -206,7 +204,6 @@ window.onload = function() {
     startTimer();
     loadQuestion();
 };
-
 function startTimer() {
     timerInterval = setInterval(() => {
         if (isStrictMode && !isGuest) {
@@ -234,6 +231,7 @@ function startTimer() {
         }
     }, 1000);
 }
+
 function loadQuestion() {
     document.getElementById('hint-box').style.display = 'none';
     document.getElementById('standard-box').style.display = 'none';
@@ -242,9 +240,7 @@ function loadQuestion() {
     // 🔄 فحص التخطي الذكي: إذا وصلنا لنهاية الأسئلة وهناك أسئلة متخطاة، نفتح الجولة الثانية لمراجعتها
     if (currentIndex >= maxQuestions) { 
         if (skippedQuestions.length > 0) {
-            // سحب أول سؤال تم تخطيه من مصفوفة التتبع لعرضه بالدور
             currentIndex = skippedQuestions.shift();
-            // إخفاء زر التخطي في جولة المراجعة الأخيرة لكي لا يدخل في حلقة مفرغة
             document.getElementById('skip-btn').style.display = 'none';
             alert("🔄 جولة المراجعة: سيتم الآن عرض الأسئلة التي قمت بتخطيتها وتأجيلها سابقاً لحلها بالترتيب.");
         } else {
@@ -272,23 +268,19 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل السؤال والعلاقة المنطقية جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 التصنيف الفني: ${qData.standard_hint || 'مسار القدرات العامة والتحصيلي.'}`;
 
+    // جلب النص الفعلي للإجابة الصحيحة فقط لبناء مصفوفة الخيارات وخلطها بشكل آمن ومستقل
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
-    const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
-    const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
 
+    // بناء مصفوفة الخيارات الأربعة بشكل مستقل ونظيف لخلطها عشوائياً بشكل حقيقي كسر لثبات الأماكن
     let optArray = [
-        { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
-        { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
-        { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
-        { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
+        { text: qData.options.a },
+        { text: qData.options.b },
+        { text: qData.options.c },
+        { text: qData.options.d }
     ];
 
-    // لضمان استقرار الخيارات وثباتها عند العودة بعد قفل الصفحة أو التحديث
-    let seed = currentIndex;
-    optArray.sort(() => {
-        seed = (seed * 9301 + 49297) % 233280;
-        return (seed / 233280) - 0.5;
-    });
+    // 🔥 خلط الخيارات عشوائياً بشكل حقيقي ومطلق لكل سؤال
+    shuffleArray(optArray);
 
     const targetLetters = ['A', 'B', 'C', 'D'];
     optArray.forEach((item, index) => {
@@ -298,15 +290,15 @@ function loadQuestion() {
         b.className = "btn-opt";
         b.disabled = false;
 
-        if (item.isCorrect) currentCorrectLetter = letter;
-        if (item.isElim1) currentElim1Letter = letter;
-        if (item.isElim2) currentElim2Letter = letter;
+        // مطابقة النص الحالي وتثبيت الحرف اللحظي للزر المختار ليكون هو الإجابة الصحيحة الصحيحة بعد الخلط
+        if (item.text === originalCorrectText) {
+            currentCorrectLetter = letter;
+        }
     });
 
     document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
 }
 
-// 🔄 دالة التخطي وتأجيل السؤال للمراجعة اللاحقة في نهاية الاختبار
 function skipQuestion() {
     if (!skippedQuestions.includes(currentIndex)) {
         skippedQuestions.push(currentIndex);
@@ -337,7 +329,6 @@ function checkAnswer(sel) {
         let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentFieldKey}`) || '0');
         persistentCounter++;
         localStorage.setItem(`asiltrain_guest_counter_${currentFieldKey}`, persistentCounter);
-
         if (persistentCounter >= 20) {
             setTimeout(() => { window.location.href = "index.html"; }, 1200);
             return;
@@ -347,11 +338,21 @@ function checkAnswer(sel) {
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
 
+// ❌ دالة حذف إجابتين الديناميكية والمؤمنة بالكامل كلياً ضد أي أخطاء في ملف بنك الأسئلة لصفحة القدرات
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
-    if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
-    if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
+    
+    // تجميع الحروف الخاطئة فقط واستبعاد حرف الزر الصحيح تماماً لضمان عدم حذفه مطلقاً
+    let wrongLetters = ['A', 'B', 'C', 'D'].filter(letter => letter !== currentCorrectLetter);
+    
+    // خلط حروف الأزرار الثلاثة الخاطئة بشكل مستقل لاختيار اثنين منها
+    shuffleArray(wrongLetters);
+    
+    // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة
+    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
 }
+
 function showResults() {
     clearInterval(timerInterval);
     document.getElementById('exam-container').classList.add('hidden');
@@ -376,8 +377,8 @@ function showResults() {
     }
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
-    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
-    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدفها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق in المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save ومصفوفة الترتيب فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
     localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
@@ -392,10 +393,10 @@ function showResults() {
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
 }
+
 function exitToMain() { 
     window.location.href = "index.html"; 
 }
-
 </script>
 
 <!-- 🎯 ربط ملف بنك أسئلة القدرات المولد بدقة باسم qqodrat.js -->
@@ -403,7 +404,6 @@ function exitToMain() {
 
 <script>
 // ====================== حماية نظيفة بدون أي رسائل ======================
-
 document.addEventListener('DOMContentLoaded', function() {
 
     // منع الزر الأيمن
@@ -445,7 +445,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.outerHeight - window.innerHeight > 180) {
             if (!devtoolsOpen) {
                 devtoolsOpen = true;
-                // صامت تماماً - لا يظهر أي شيء للمتدرب
             }
         }
     }, 700);
