@@ -165,7 +165,7 @@ window.onload = function() {
     
     if (!user) { window.location.href = "index.html"; return; }
     
-    // 🔥 [تم الإصلاح]: قراءة وتطبيق القيمة المختارة (10، 20، 30، 80، 100) بدقة وفصلها عن الحساب التجريبي
+    // 🔥 تطبيق ومطابقة خيار الحد الأقصى للأسئلة المختارة للمشتركين بدقة وفصلها عن الزوار
     let savedLimit = parseInt(localStorage.getItem('examLimit'));
     if (isGuest) {
         maxQuestions = 20;
@@ -345,7 +345,7 @@ function checkAnswer(sel) {
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
 
-// ❌ دالة حذف إجابتين الديناميكية والمؤمنة بالكامل كلياً ضد أي أخطاء في ملف بنك الأسئلة لصفحة القدرات
+// ❌ دالة حذف إجابتين الديناميكية والمؤمنة والمصححة بالكامل لصفحة القدرات
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
     
@@ -355,9 +355,9 @@ function eliminateTwo() {
     // خلط حروف الأزرار الثلاثة الخاطئة بشكل مستقل لاختيار اثنين منها
     shuffleArray(wrongLetters);
     
-    // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة
-    document.getElementById(`opt${wrongLetters}`).innerText = "---";
-    document.getElementById(`opt${wrongLetters}`).innerText = "---";
+    // 🔥 [تم الإصلاح]: حذف الإجابتين الخاطئتين بدقة بناءً على الفهرسة الصحيحة للمصفوفة المخلطة
+    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
 }
 
 function showResults() {
