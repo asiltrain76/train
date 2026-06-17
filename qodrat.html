@@ -165,8 +165,15 @@ window.onload = function() {
     
     if (!user) { window.location.href = "index.html"; return; }
     
-    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
-    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
+    // 🔥 [تم الإصلاح]: قراءة وتطبيق القيمة المختارة (10، 20، 30، 80، 100) بدقة وفصلها عن الحساب التجريبي
+    let savedLimit = parseInt(localStorage.getItem('examLimit'));
+    if (isGuest) {
+        maxQuestions = 20;
+    } else if (savedLimit && !isNaN(savedLimit)) {
+        maxQuestions = Math.min(savedLimit, questions.length);
+    } else {
+        maxQuestions = 20; 
+    }
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     
@@ -250,7 +257,7 @@ function loadQuestion() {
         }
     }
 
-    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد
+    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد بناء على الحد الديناميكي الفعلي
     if (!isGuest) {
         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
         localStorage.setItem(`asiltrain_autosave_idx_${currentFieldKey}`, currentIndex); 
@@ -268,7 +275,7 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل السؤال والعلاقة المنطقية جيداً.'}`;
     document.getElementById('standard-box').innerText = `🎯 التصنيف الفني: ${qData.standard_hint || 'مسار القدرات العامة والتحصيلي.'}`;
 
-    // جلب النص الفعلي للإجابة الصحيحة فقط لبناء مصفوفة الخيارات وخلطها بشكل آمن ومستقل
+    // جلب النص الفعلي للإجابة الصحيحة فقط لبناء الخلط وتحديد الحرف الجديد بشكل آمن وعشوائي
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
 
     // بناء مصفوفة الخيارات الأربعة بشكل مستقل ونظيف لخلطها عشوائياً بشكل حقيقي كسر لثبات الأماكن
@@ -279,7 +286,7 @@ function loadQuestion() {
         { text: qData.options.d }
     ];
 
-    // 🔥 خلط الخيارات عشوائياً بشكل حقيقي ومطلق لكل سؤال
+    // 🔥 خلط الخيارات عشوائياً بشكل حقيقي ومطلق لكل سؤال مستقل
     shuffleArray(optArray);
 
     const targetLetters = ['A', 'B', 'C', 'D'];
@@ -349,8 +356,8 @@ function eliminateTwo() {
     shuffleArray(wrongLetters);
     
     // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة
-    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
-    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters}`).innerText = "---";
 }
 
 function showResults() {
@@ -363,7 +370,7 @@ function showResults() {
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
-    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة
+    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة المحدثة فوراُ للعدد الكلي
     const bar = document.getElementById('analytics-bar');
     if (bar) {
         bar.style.width = `${pct}%`;
@@ -378,7 +385,7 @@ function showResults() {
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
     document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدفها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
-    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق in المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save ومصفوفة الترتيب فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
     localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
