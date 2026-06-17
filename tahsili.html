@@ -1,186 +1,116 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محاكي الاختبارات المطور - التحصيلي</title>
-    <style>
-        :root { 
-            --primary: #2b6cb0; 
-            --success: #38a169; 
-            --danger: #e53e3e; 
-            --bg: #f7fafc; 
-            --accent: #8e44ad;
-            --warning: #dd6b20;
-        }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; text-align: center; user-select: none; }
-        .container { max-width: 650px; background: white; margin: 20px auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .progress-bar { width: 100%; background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 15px; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s; }
-        .meta-info { display: flex; justify-content: space-between; font-size: 0.95rem; color: #4a5568; font-weight: bold; margin-bottom: 15px; }
-        .help-panel { display: flex; justify-content: space-around; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #cbd5e0; }
-        .help-btn { background: none; border: none; font-size: 0.9rem; font-weight: bold; cursor: pointer; color: #4a5568; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .help-btn:hover { color: var(--primary); transform: scale(1.05); }
-        .help-btn:disabled { color: #cbd5e0; cursor: not-allowed; opacity: 0.5; }
-        .popup-info { background: #fffaf0; border: 1px solid #feebc8; color: #c05621; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 500; margin-bottom: 15px; text-align: right; display: none; }
-        .question-card { font-size: 1.25rem; font-weight: bold; margin-bottom: 25px; padding: 18px; border-right: 6px solid var(--primary); background: #ebf8ff; text-align: right; line-height: 1.6; }
-        .btn-opt { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; background: white; font-size: 1.05rem; font-weight: 500; cursor: pointer; text-align: right; transition: all 0.2s; }
-        .btn-opt:hover { background: #f7fafc; border-color: #cbd5e0; }
-        .correct { background: var(--success) !important; color: white; border-color: var(--success); font-weight: bold; }
-        .wrong { background: var(--danger) !important; color: white; border-color: var(--danger); font-weight: bold; }
-        .footer-actions { margin-top: 25px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-        .btn-action { padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.95rem; transition: 0.2s; }
-        .btn-end { background: #718096; color: white; }
-        .btn-end:hover { background: #4a5568; }
-        .btn-skip { background: var(--warning); color: white; }
-        .btn-skip:hover { background: #c05621; transform: translateY(-1px); }
-    </style>
-</head>
-<body>
-<div class="container" id="exam-container">
-    <div class="meta-info">
-        <span id="student-info">المتدرب: جاري التحميل...</span>
-        <span style="color: var(--accent);" id="timer-info">⏱️ الوقت: 00:00</span>
-        <span id="score-info">الصح: 0</span>
-    </div>
-    <div class="progress-bar">
-        <div class="progress-fill" id="progress"></div>
-    </div>
-    <div class="help-panel">
-        <button class="help-btn" onclick="togglePopup('hint')">💡 التلميح</button>
-        <button class="help-btn" onclick="togglePopup('standard')">🎯 المعيار</button>
-        <button class="help-btn" id="elim-btn" onclick="eliminateTwo()">❌ حذف إجابتين</button>
-    </div>
-    <div id="hint-box" class="popup-info"></div>
-    <div id="standard-box" class="popup-info"></div>
-    <div class="question-card" id="question-text">جاري تحميل السؤال...</div>
-    <div id="options-container">
-        <button class="btn-opt" id="optA" onclick="checkAnswer('A')"></button>
-        <button class="btn-opt" id="optB" onclick="checkAnswer('B')"></button>
-        <button class="btn-opt" id="optC" onclick="checkAnswer('C')"></button>
-        <button class="btn-opt" id="optD" onclick="checkAnswer('D')"></button>
-    </div>
-    <div class="footer-actions">
-        <button class="btn-action btn-skip" onclick="skipQuestion()">🔄 تخطي ومراجعة لاحقاً</button>
-        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة النتيجة</button>
-    </div>
-</div>
-
-<script src="qtahsili.js"></script>
-<script>
-function strongShuffle(array) {
-    let arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-}
-
-let questions = [];
-let currentIndex = 0, correctCount = 0;
-let currentCorrectLetter = "";
-let currentOptionsMap = {};
-
-window.onload = function() {
-    if (typeof tahsiliQuestions === 'undefined' || tahsiliQuestions.length === 0) {
-        alert("⚠️ بنك الأسئلة فارغ!");
-        return;
-    }
-    let all = [...tahsiliQuestions];
-    all = strongShuffle(all);
-    questions = all.slice(0, 100);
-    document.getElementById('student-info').innerText = `👤 المتدرب: ${localStorage.getItem('activeUser') || 'زائر'}`;
-    loadQuestion();
-};
-
-function loadQuestion() {
-    document.getElementById('hint-box').style.display = 'none';
-    document.getElementById('standard-box').style.display = 'none';
-    document.getElementById('elim-btn').disabled = false;
-
-    if (currentIndex >= questions.length) {
-        showResults();
-        return;
-    }
-
-    const q = questions[currentIndex];
-    document.getElementById('question-text').innerText = `${currentIndex + 1}. ${q.question}`;
-    document.getElementById('hint-box').innerText = `💡 ${q.simple_hint || 'لا يوجد تلميح'}`;
-    document.getElementById('standard-box').innerText = `🎯 ${q.standard_hint || 'الاختبار التحصيلي'}`;
-
-    const correctText = q.options[q.correct.toLowerCase()];
-    let textsArray = [q.options.a, q.options.b, q.options.c, q.options.d];
-    textsArray = strongShuffle(textsArray);
-
-    const labels = ['A', 'B', 'C', 'D'];
-    currentOptionsMap = {};
-
-    textsArray.forEach((text, i) => {
-        const letter = labels[i];
-        const btn = document.getElementById(`opt${letter}`);
-        btn.innerText = text;
-        btn.className = "btn-opt";
-        btn.disabled = false;
-        currentOptionsMap[letter] = text;
-
-        if (text === correctText) {
-            currentCorrectLetter = letter;
-        }
-    });
-
-    document.getElementById('progress').style.width = `${((currentIndex + 1) / questions.length) * 100}%`;
-}
-
+// ❌ دالة حذف إجابتين الذكية والمؤمنة بالكامل والمستقلة عن أي أخطاء في ملف بنك الأسئلة
 function eliminateTwo() {
-    const btn = document.getElementById('elim-btn');
-    if (btn.disabled) return;
-    btn.disabled = true;
-
-    let wrong = ['A','B','C','D'].filter(l => l !== currentCorrectLetter);
-    wrong = strongShuffle(wrong).slice(0, 2);
-    wrong.forEach(letter => {
-        const b = document.getElementById(`opt${letter}`);
-        if (b) {
-            b.innerText = "———";
-            b.disabled = true;
-        }
-    });
-}
-
-function checkAnswer(sel) {
-    ['A','B','C','D'].forEach(l => document.getElementById(`opt${l}`).disabled = true);
-    if (sel === currentCorrectLetter) {
-        document.getElementById(`opt${sel}`).classList.add('correct');
-        correctCount++;
-    } else {
-        document.getElementById(`opt${sel}`).classList.add('wrong');
-        document.getElementById(`opt${currentCorrectLetter}`).classList.add('correct');
-    }
-    document.getElementById('score-info').innerText = `الصح: ${correctCount}`;
-    setTimeout(() => {
-        currentIndex++;
-        loadQuestion();
-    }, 1400);
-}
-
-function skipQuestion() {
-    currentIndex++;
-    loadQuestion();
-}
-
-function togglePopup(type) {
-    const box = document.getElementById(type + '-box');
-    box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    document.getElementById('elim-btn').disabled = true;
+    
+    // تجميع الحروف الخاطئة فقط عن طريق تصفية مصفوفة الأزرار واستبعاد زر الإجابة الصحيحة كلياً
+    let wrongLetters = ['A', 'B', 'C', 'D'].filter(letter => letter !== currentCorrectLetter);
+    
+    // خلط الحروف الثلاثة الخاطئة عشوائياً لاختيار اثنين منها للحذف
+    shuffleArray(wrongLetters);
+    
+    // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية
+    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
 }
 
 function showResults() {
-    alert(`انتهى الاختبار!\nالصحيح: ${correctCount} من ${questions.length}`);
+    clearInterval(timerInterval);
+    document.getElementById('exam-container').classList.add('hidden');
+    document.getElementById('result-container').classList.remove('hidden');
+    
+    const solvedCount = Math.min(currentIndex, maxQuestions);
+    const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    const rank = getRankText(parseFloat(pct));
+    const diff = Math.floor((Date.now() - startTime) / 1000);
+
+    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة
+    const bar = document.getElementById('analytics-bar');
+    if (bar) {
+        bar.style.width = `${pct}%`;
+        if (pct >= 80) {
+            bar.className = "analytics-bar-fill bar-success";
+        } else if (pct >= 50) {
+            bar.className = "analytics-bar-fill bar-warning";
+        } else {
+            bar.className = "analytics-bar-fill bar-danger";
+        }
+    }
+
+    document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
+    document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدفها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
+    
+    // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save ومصفوفة الترتيب فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
+    localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_score_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_time_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_autosave_skips_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_questions_order_${currentFieldKey}`);
+    localStorage.removeItem('sec_idx'); 
+    localStorage.removeItem('sec_scr');
 }
 
 function endExamEarly() { 
-    if(confirm("هل أنت متأكد من إنهاء الاختبار؟")) showResults(); 
+    if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
+}
+
+function exitToMain() { 
+    window.location.href = "index.html"; 
 }
 </script>
+
+<!-- 🎯 ربط ملف بنك أسئلة التحصيلي المولد بدقة باسم qtahsili.js -->
+<script src="qtahsili.js"></script>
+
+<script>
+// ====================== حماية نظيفة بدون أي رسائل ======================
+document.addEventListener('DOMContentLoaded', function() {
+
+    // منع الزر الأيمن
+    document.addEventListener('contextmenu', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
+
+    // منع تحديد النص
+    document.addEventListener('selectstart', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
+
+    // منع السحب
+    document.addEventListener('dragstart', e => { 
+        e.preventDefault(); 
+        return false; 
+    });
+
+    // منع النسخ والقص
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+
+    // حماية اختصارات DevTools و F12
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "F12" || 
+            (e.ctrlKey && e.shiftKey && ["I","C","J","K"].includes(e.key)) ||
+            (e.ctrlKey && ["u","s","p","h"].includes(e.key.toLowerCase()))) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // كشف DevTools (صامت تماماً - بدون أي رسالة)
+    let devtoolsOpen = false;
+    setInterval(() => {
+        if (window.outerWidth - window.innerWidth > 180 || 
+            window.outerHeight - window.innerHeight > 180) {
+            if (!devtoolsOpen) {
+                devtoolsOpen = true;
+            }
+        }
+    }, 700);
+
+});
+</script>
+
 </body>
 </html>
