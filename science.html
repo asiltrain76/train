@@ -278,7 +278,9 @@ function loadQuestion() {
     const qData = questions[currentIndex];
     
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
-    document.getElementById('hint-box').innerText = `💡 مفتاح الحل وتلميح: ${qData.simple_hint || 'تأمل المفاهيم العلمية أو التجريبية بدقة.'}`;
+// دمج التلميح المبسط ومفتاح الحل الفاخر ليظهرا معاً داخل الصندوق ديناميكياً
+document.getElementById('hint-box').innerHTML = `💡 <b>التلميح المبسط:</b> ${qData.simple_hint || 'تأمل معطيات السؤال بدقة.'}<br>🎯 <b>مفتاح الحل والربط:</b> ${qData.key_hint || 'العلاقة المنطقية واضحة.'}`;
+
     document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];

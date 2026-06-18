@@ -291,7 +291,9 @@ function loadQuestion() {
     const qData = questions[currentIndex];
     
     document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.question}`;
-    document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل السؤال والمعطيات العلمية جيداً.'}`;
+// دمج التلميح المبسط ومفتاح الحل الفاخر ليظهرا معاً داخل الصندوق ديناميكياً
+document.getElementById('hint-box').innerHTML = `💡 <b>التلميح المبسط:</b> ${qData.simple_hint || 'تأمل معطيات السؤال بدقة.'}<br>🎯 <b>مفتاح الحل والربط:</b> ${qData.key_hint || 'العلاقة المنطقية واضحة.'}`;
+
     document.getElementById('standard-box').innerText = `🎯 التصنيف الفني: ${qData.standard_hint || 'الاختبار التحصيلي للمرحلة الثانوية.'}`;
 
     // جلب النص الفعلي للإجابة الصحيحة فقط لبناء الخلط وتحديد الحرف الجديد بشكل آمن وعشوائي
