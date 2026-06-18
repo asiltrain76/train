@@ -45,6 +45,11 @@
         .bar-warning { background: linear-gradient(90deg, #ed8936, #dd6b20); }
         .bar-danger { background: linear-gradient(90deg, #f56565, #e53e3e); }
         
+        /* 🔥 تصميم لوحة وبثقة زر التميز والمشاركة الفاخر المطور للنسخ */
+        .share-panel { border: 2px dashed #38a169; background: #f0fff4; color: #276749; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; text-align: center; font-size: 1.05rem; line-height: 1.6; }
+        .btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #319795; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-share:hover { background: #234e52; transform: translateY(-1px); }
+
         /* نبض المؤقت باللون الأحمر في وضع التحدي الصارم عند اقتراب الوقت */
         .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
         @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
@@ -85,9 +90,10 @@
     <div class="footer-actions">
         <!-- 🚀 زر التخطي والمراجعة اللاحقة الجديد والمطور هندسياً -->
         <button class="btn-action btn-skip" id="skip-btn" onclick="skipQuestion()">🔄 تخطي ومراجعة لاحقاً</button>
-        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة Nتيجة</button>
+        <button class="btn-action btn-end" onclick="endExamEarly()">إنهاء الاختبار ومراجعة نتيجة</button>
     </div>
 </div>
+
 <div class="container hidden" id="result-container">
     <h2>التحليل النهائي للاختبار 🎉</h2>
     <hr style="border: 1px solid #e2e8f0; margin: 20px 0;">
@@ -102,10 +108,16 @@
     </div>
 
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    
+    <!-- 🔥 صندوق لوحة مشاركة الإنجاز الفخمة التلقائية المحمية بالشرط اللحظي المطور للنسخ -->
+    <div id="share-box-panel" class="share-panel hidden">
+        🎉 كفو يا أستاذ! لقد تجاوزت نسبة الاجتياز وعادلت الفخمة بمعدل <span id="share-pct-label">0</span>%!
+        <button class="btn-share" onclick="copyResultToClipboard()">📋 انسخ نص إنجازك لتقديمه في تليجرام وتويتر وافخر بنفسك</button>
+    </div>
+
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
-
 <script>
 let questions = []; 
 let skippedQuestions = []; // مصفوفة لتتبع الأسئلة التي تم تخطيها لمراجعتها لاحقاً
@@ -115,8 +127,6 @@ let isStrictMode = false; // تفعيل وضع التحدي الصارم من ع
 let totalSecondsLeft = 0; // لعداد وضع التحدي الصارم التنازلي
 
 let currentCorrectLetter = "";
-let currentElim1Letter = "";
-let currentElim2Letter = "";
 
 // جلب اسم الصفحة الحالية من الرابط تلقائياً لاستخدامه كـ (مفتاح فريد) لتأمين الذاكرة لكل تخصص مستقل
 const currentFieldKey = window.location.pathname.split("/").pop().replace(".html", "");
@@ -129,10 +139,30 @@ function getRankText(pct) {
     return "⚠️ يحتاج إلى تطوير مكثف (ننصح بإعادة مراجعة بنوك الأسئلة الفاخرة)";
 }
 
+// دالة خلط المصفوفات عشوائياً (Fisher-Yates Shuffle)
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 window.onload = function() {
     // 🎯 التعرف على بنك أسئلة اللغة العربية الإلكتروني المستهدف وسحبه تلقائياً
     if (typeof arabicQuestions !== 'undefined') {
-        questions = [...arabicQuestions];
+        // حماية الجلسة وتطبيق الخلط العشوائي الحقيقي للأقسام المستقلة لتأمين الرخص المهنية
+        const hasAutosave = localStorage.getItem(`asiltrain_autosave_idx_${currentFieldKey}`) !== null;
+        const savedOrder = localStorage.getItem(`asiltrain_questions_order_${currentFieldKey}`);
+        
+        if (hasAutosave && savedOrder) {
+            const orderIndexes = savedOrder.split(',').map(Number);
+            questions = orderIndexes.map(idx => arabicQuestions[idx]).filter(q => q);
+        } else {
+            let sourceIndexes = arabicQuestions.map((_, idx) => idx);
+            shuffleArray(sourceIndexes);
+            localStorage.setItem(`asiltrain_questions_order_${currentFieldKey}`, sourceIndexes.join(','));
+            questions = sourceIndexes.map(idx => arabicQuestions[idx]);
+        }
     } else {
         alert("⚠️ خطأ تقني: لم يتم العثور على ملف بنك الأسئلة الرئيسي (qarabic.js) في المجلد الحالي!");
         return;
@@ -140,13 +170,19 @@ window.onload = function() {
 
     const user = localStorage.getItem('activeUser');
     isGuest = (localStorage.getItem('userRole') === 'guest');
-    // التحقق هل المتدرب فعّل وضع التحدي الصارم من صفحة index.html
     isStrictMode = (localStorage.getItem('strictModeEnabled') === 'true');
     
     if (!user) { window.location.href = "index.html"; return; }
     
-    let savedLimit = parseInt(localStorage.getItem('examLimit')) || 20;
-    maxQuestions = isGuest ? 20 : Math.min(savedLimit, questions.length);
+    // 🔥 تطبيق ومطابقة خيار الحد الأقصى للأسئلة المختارة (10، 20، 30، 80، 100) بدقة للمشتركين وفصلها عن الحساب التجريبي
+    let savedLimit = parseInt(localStorage.getItem('examLimit'));
+    if (isGuest) {
+        maxQuestions = 20;
+    } else if (savedLimit && !isNaN(savedLimit)) {
+        maxQuestions = Math.min(savedLimit, questions.length);
+    } else {
+        maxQuestions = 20; 
+    }
 
     document.getElementById('student-info').innerText = `👤 المتدرب: ${user} ${isGuest ? '(تجريبي)' : '(مشترك)'}`;
     
@@ -164,21 +200,18 @@ window.onload = function() {
             
             if (savedTime !== null) {
                 startTime = Date.now() - (parseInt(savedTime) * 1000);
-                // مواءمة ثواني التحدي المتبقية مع الوقت المستغرق المسترجع
                 totalSecondsLeft = (maxQuestions * 90) - parseInt(savedTime);
             }
             if (savedSkips !== null && savedSkips !== "") {
                 skippedQuestions = savedSkips.split(',').map(Number);
             }
         } else {
-            // جلسة جديدة لوضع التحدي الصارم: دقيقة ونصف (90 ثانية) لكل سؤال
             totalSecondsLeft = maxQuestions * 90; 
         }
     } else {
         totalSecondsLeft = maxQuestions * 90;
     }
 
-    // 🔒 إذا تم تفعيل وضع التحدي الصارم: إخفاء لوحة وسائل المساعدة فوراً
     if (isStrictMode && !isGuest) {
         const helpPanel = document.getElementById('help-panel-box');
         if (helpPanel) helpPanel.style.display = 'none';
@@ -190,7 +223,6 @@ window.onload = function() {
 function startTimer() {
     timerInterval = setInterval(() => {
         if (isStrictMode && !isGuest) {
-            // ⏱️ وضع التحدي الصارم: عداد تنازلي حقيقي وصارم يحاكي اختبار قياس
             if (totalSecondsLeft <= 0) {
                 clearInterval(timerInterval);
                 alert("🛑 انتهى الوقت الفعلي المحدد للاختبار المحاكي! سيتم الانتقال للتحليل النهائي وعرض نتيجتك الحالية.");
@@ -203,13 +235,11 @@ function startTimer() {
             const timerInfo = document.getElementById('timer-info');
             if (timerInfo) {
                 timerInfo.innerText = `⏳ متبقي: ${mins}:${secs}`;
-                // نبض أحمر تحذيري إذا متبقي أقل من دقيقتين لشحن حماس المتدرب
                 if (totalSecondsLeft <= 120) {
                     timerInfo.classList.add('timer-alert');
                 }
             }
         } else {
-            // وضع التدريب العادي: عداد تصاعدي لحساب الوقت المستغرق براحة
             const diff = Math.floor((Date.now() - startTime) / 1000);
             const mins = String(Math.floor(diff / 60)).padStart(2, '0');
             const secs = String(diff % 60).padStart(2, '0');
@@ -226,9 +256,7 @@ function loadQuestion() {
     // 🔄 فحص التخطي الذكي: إذا وصلنا لنهاية الأسئلة وهناك أسئلة متخطاة، نفتح الجولة الثانية لمراجعتها
     if (currentIndex >= maxQuestions) { 
         if (skippedQuestions.length > 0) {
-            // سحب أول سؤال تم تخطيه من مصفوفة التتبع لعرضه بالدور
             currentIndex = skippedQuestions.shift();
-            // إخفاء زر التخطي في جولة المراجعة الأخيرة لكي لا يدخل في حلقة مفرغة
             document.getElementById('skip-btn').style.display = 'none';
             alert("🔄 جولة المراجعة: سيتم الآن عرض الأسئلة التي قمت بتخطيتها وتأجيلها سابقاً لحلها بالترتيب.");
         } else {
@@ -238,7 +266,7 @@ function loadQuestion() {
         }
     }
 
-    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد
+    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد بناء على الحد الفعلي المختبر
     if (!isGuest) {
         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
         localStorage.setItem(`asiltrain_autosave_idx_${currentFieldKey}`, currentIndex); 
@@ -256,23 +284,19 @@ function loadQuestion() {
     document.getElementById('hint-box').innerText = `💡 تلميح ومفتاح الحل: ${qData.simple_hint || 'تأمل القاعدة النحوية أو اللغوية بدقة.'}`;
     document.getElementById('standard-box').innerText = `🎯 الرابط والخصائص المهنية: ${qData.standard_hint || 'المعيار والمؤشر التخصصي المعتمد.'}`;
 
+    // جلب النص الفعلي للإجابة الصحيحة فقط لبناء الخلط وتحديد الحرف الجديد بشكل آمن وعشوائي
     const originalCorrectText = qData.options[qData.correct.toLowerCase()];
-    const originalElim1Text = qData.options[qData.elim1.toLowerCase()];
-    const originalElim2Text = qData.options[qData.elim2.toLowerCase()];
 
+    // بناء مصفوفة الخيارات الأربعة بشكل مستقل ونظيف لخلطها عشوائياً بشكل حقيقي كسر لثبات الأماكن
     let optArray = [
-        { text: qData.options.a, isCorrect: qData.options.a === originalCorrectText, isElim1: qData.options.a === originalElim1Text, isElim2: qData.options.a === originalElim2Text },
-        { text: qData.options.b, isCorrect: qData.options.b === originalCorrectText, isElim1: qData.options.b === originalElim1Text, isElim2: qData.options.b === originalElim2Text },
-        { text: qData.options.c, isCorrect: qData.options.c === originalCorrectText, isElim1: qData.options.c === originalElim1Text, isElim2: qData.options.c === originalElim2Text },
-        { text: qData.options.d, isCorrect: qData.options.d === originalCorrectText, isElim1: qData.options.d === originalElim1Text, isElim2: qData.options.d === originalElim2Text }
+        { text: qData.options.a },
+        { text: qData.options.b },
+        { text: qData.options.c },
+        { text: qData.options.d }
     ];
 
-    // لضمان استقرار الخيارات وثباتها عند العودة بعد قفل الصفحة أو التحديث
-    let seed = currentIndex;
-    optArray.sort(() => {
-        seed = (seed * 9301 + 49297) % 233280;
-        return (seed / 233280) - 0.5;
-    });
+    // 🔥 خلط الخيارات عشوائياً بشكل حقيقي ومطلق لخيارات أزرار تخصص اللغة العربية
+    shuffleArray(optArray);
 
     const targetLetters = ['A', 'B', 'C', 'D'];
     optArray.forEach((item, index) => {
@@ -282,15 +306,15 @@ function loadQuestion() {
         b.className = "btn-opt";
         b.disabled = false;
 
-        if (item.isCorrect) currentCorrectLetter = letter;
-        if (item.isElim1) currentElim1Letter = letter;
-        if (item.isElim2) currentElim2Letter = letter;
+        // مطابقة النص الحالي وتثبيت الحرف اللحظي للزر المختار ليكون هو الإجابة الصحيحة الصحيحة بعد الخلط
+        if (item.text === originalCorrectText) {
+            currentCorrectLetter = letter;
+        }
     });
 
     document.getElementById('progress').style.width = `${(currentIndex / maxQuestions) * 100}%`;
 }
 
-// 🔄 دالة التخطي وتأجيل السؤال للمراجعة اللاحقة في نهاية الاختبار
 function skipQuestion() {
     if (!skippedQuestions.includes(currentIndex)) {
         skippedQuestions.push(currentIndex);
@@ -321,7 +345,6 @@ function checkAnswer(sel) {
         let persistentCounter = parseInt(localStorage.getItem(`asiltrain_guest_counter_${currentFieldKey}`) || '0');
         persistentCounter++;
         localStorage.setItem(`asiltrain_guest_counter_${currentFieldKey}`, persistentCounter);
-
         if (persistentCounter >= 20) {
             setTimeout(() => { window.location.href = "index.html"; }, 1200);
             return;
@@ -331,11 +354,24 @@ function checkAnswer(sel) {
     setTimeout(() => { currentIndex++; loadQuestion(); }, 1200);
 }
 
+// ❌ دالة حذف إجابتين الديناميكية والمؤمنة والمصححة بالكامل لصفحة اللغة العربية
 function eliminateTwo() {
     document.getElementById('elim-btn').disabled = true;
-    if(currentElim1Letter) document.getElementById(`opt${currentElim1Letter}`).innerText = "---";
-    if(currentElim2Letter) document.getElementById(`opt${currentElim2Letter}`).innerText = "---";
+    
+    // تجميع الحروف الخاطئة فقط واستبعاد حرف الزر الصحيح تماماً لضمان عدم حذفه مطلقاً
+    let wrongLetters = ['A', 'B', 'C', 'D'].filter(letter => letter !== currentCorrectLetter);
+    
+    // خلط حروف الأزرار الثلاثة الخاطئة بشكل مستقل لاختيار اثنين منها
+    shuffleArray(wrongLetters);
+    
+    // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة الصحيحة للمصفوفة
+    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
 }
+
+// متغيرات عامة لحفظ النسبة واسم التخصص الفعلي ديناميكياً لتوليد التقرير المنسوخ
+let globalFinalPct = 0;
+let globalFieldTitle = "اللغة العربية";
 
 function showResults() {
     clearInterval(timerInterval);
@@ -344,10 +380,17 @@ function showResults() {
     
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    globalFinalPct = pct;
+    
+    // استخراج عنوان التخصص الحالي من الصفحة ديناميكياً لصياغة التقرير المنسوخ بشكل صحيح
+    if (document.title && document.title.includes("-")) {
+        globalFieldTitle = document.title.split("-").pop().trim();
+    }
+    
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
-    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة
+    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة المحدثة فوراُ للعدد الكلي
     const bar = document.getElementById('analytics-bar');
     if (bar) {
         bar.style.width = `${pct}%`;
@@ -362,20 +405,54 @@ function showResults() {
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب الكريم: ${localStorage.getItem('activeUser')}`;
     document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة من أصل <b>${solvedCount}</b> سؤالاً تم استهدافها بمحاكاتك.<br>📊 النسبة والتقدير المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    
+    // 🔥 [تم التحديث اللحظي المطور]: التحقق من شرط الاجتياز (70% فما فوق) وعرض صندوق زر نسخ الإنجاز
+    if (parseFloat(pct) >= 70) {
+        document.getElementById('share-pct-label').innerText = pct;
+        document.getElementById('share-box-panel').classList.remove('hidden');
+    } else {
+        document.getElementById('share-box-panel').classList.add('hidden');
+    }
+
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
-    // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
+    // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save ومصفوفة الترتيب فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
     localStorage.removeItem(`asiltrain_autosave_idx_${currentFieldKey}`);
     localStorage.removeItem(`asiltrain_autosave_score_${currentFieldKey}`);
     localStorage.removeItem(`asiltrain_autosave_time_${currentFieldKey}`);
     localStorage.removeItem(`asiltrain_autosave_skips_${currentFieldKey}`);
+    localStorage.removeItem(`asiltrain_questions_order_${currentFieldKey}`);
     localStorage.removeItem('ara_idx'); 
     localStorage.removeItem('ara_score');
+}
+
+// 🔥 [دالة النسخ اللحظي الفاخرة]: نسخ نص الإنجاز مضافاً إليه التخصص والنسبة ديناميكياً مع منبثق إشعار فخم ومحمي
+function copyResultToClipboard() {
+    const textToCopy = `🎯 حققت نسبة ${globalFinalPct}% في منصة المحاكاة الحية للرخصة المهنية (${globalFieldTitle}) جرب اختبار تخصصك الآن وتحدى نفسك لضمان رخصتك:\nhttps://github.io`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("✅ تم نسخ نص الإنجاز بنجاح في الذاكرة! يمكنك الآن لصقه مباشرة في تليجرام أو تويتر ومشاركته مع زملائك 🎉");
+    }).catch(err => {
+        // تأمين بديل برميجي للمتصفحات القديمة التي قد لا تدعم أمر الحافظة الحديث
+        const textarea = document.createElement("textarea");
+        textarea.value = textToCopy;
+        textarea.style.position = "fixed";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand("copy");
+            alert("✅ تم نسخ نص الإنجاز بنجاح في الذاكرة! يمكنك الآن لصقه مباشرة في تليجرام أو تويتر ومشاركته مع زملائك 🎉");
+        } catch (e) {
+            alert("⚠️ عذراً، لم نتمكن من نسخ النص تلقائياً، يرجى تظليله ونسخه يدوياً.");
+        }
+        document.body.removeChild(textarea);
+    });
 }
 
 function endExamEarly() { 
     if(confirm("هل أنت متأكد من إنهاء المحاكاة مبكراً ومراجعة النتيجة للأسئلة الحالية؟")) showResults(); 
 }
+
 function exitToMain() { 
     window.location.href = "index.html"; 
 }
@@ -386,7 +463,6 @@ function exitToMain() {
 
 <script>
 // ====================== حماية نظيفة بدون أي رسائل ======================
-
 document.addEventListener('DOMContentLoaded', function() {
 
     // منع الزر الأيمن
@@ -411,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
 
-    // حماية اختصارات DevTools و F12
+    // hماية اختصارات DevTools و F12
     document.addEventListener('keydown', function(e) {
         if (e.key === "F12" || 
             (e.ctrlKey && e.shiftKey && ["I","C","J","K"].includes(e.key)) ||
@@ -428,7 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.outerHeight - window.innerHeight > 180) {
             if (!devtoolsOpen) {
                 devtoolsOpen = true;
-                // صامت تماماً - لا يظهر أي شيء للمتدرب
             }
         }
     }, 700);
