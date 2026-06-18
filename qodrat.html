@@ -45,10 +45,10 @@
         .bar-warning { background: linear-gradient(90deg, #ed8936, #dd6b20); }
         .bar-danger { background: linear-gradient(90deg, #f56565, #e53e3e); }
         
-        /* 🔥 تصميم لوحة وبثقة زر التميز والمشاركة الفاخر المطور للقدرات */
+        /* 🔥 لوحة وبوتقة زر التميز والمشاركت الفاخرة للنسخ الذكي اللحظي */
         .share-panel { border: 2px dashed #38a169; background: #f0fff4; color: #276749; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; text-align: center; font-size: 1.05rem; line-height: 1.6; }
-        .btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #319795; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .btn-share:hover { background: #234e52; transform: translateY(-1px); }
+        .btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #38a169; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-share:hover { background: #276749; transform: translateY(-1px); }
 
         /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
         .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
@@ -108,10 +108,10 @@
     </div>
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
     
-    <!-- 🔥 صندوق لوحة مشاركة الإنجاز الفخمة التلقائية المحمية بالشرط اللحظي للقدرات -->
+    <!-- 🔥 صندوق لوحة مشاركة الإنجاز الفخمة التلقائية المحمية بالنسخ والتحذير الفوري للقدرات -->
     <div id="share-box-panel" class="share-panel hidden">
         🎉 كفو يا أستاذ! لقد تجاوزت نسبة الاجتياز وعادلت الفخمة بمعدل <span id="share-pct-label">0</span>%!
-        <button class="btn-share" onclick="shareToPlatforms()">📢 شارك إنجازك في تويتر وتليجرام وافخر بنفسك</button>
+        <button class="btn-share" onclick="copyResultText()">📋 اضغط هنا لنسخ نص الإنجاز ومشاركته مع زملائك</button>
     </div>
 
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
@@ -368,12 +368,13 @@ function eliminateTwo() {
     shuffleArray(wrongLetters);
     
     // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة الصحيحة للمصفوفة
-    document.getElementById(`opt${wrongLetters}`).innerText = "---";
-    document.getElementById(`opt${wrongLetters}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
 }
 
-// متغير يحفظ النسبة المحققة النهائية لإرسالها لنص مشاركة إكس
+// متغيرات عامة لحفظ النسبة والتخصص الحالي للمشاركة
 let globalFinalPct = 0;
+let globalFieldName = "القدرات العامة";
 
 function showResults() {
     clearInterval(timerInterval);
@@ -383,10 +384,15 @@ function showResults() {
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
     globalFinalPct = pct;
+    
+    // 🔥 [استخراج اسم التخصص ديناميكياً]: استخراج التخصص الفعلي المكتوب في عنوان الصفحة لتخصيص الرسالة تلقائياً
+    let pageTitle = document.title.split("-").pop().trim();
+    if(pageTitle) globalFieldName = pageTitle;
+
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
-    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة المحدثة فوراُ للعدد الكلي
+    // 📊 هندسة لوحة التحليل المرئية الملونة ديناميكياً بناءً على النسبة المحققة
     const bar = document.getElementById('analytics-bar');
     if (bar) {
         bar.style.width = `${pct}%`;
@@ -402,7 +408,7 @@ function showResults() {
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
     document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدفها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
     
-    // 🔥 [تم التحديث اللحظي]: التحقق من شرط الاجتياز (70% فما فوق) وعرض صندوق وبوتقة المشاركة للتميز في القدرات
+    // 🔥 التحقق من شرط الاجتياز (70% فما فوق) وعرض صندوق وبوتقة المشاركة للتميز في القدرات
     if (parseFloat(pct) >= 70) {
         document.getElementById('share-pct-label').innerText = pct;
         document.getElementById('share-box-panel').classList.remove('hidden');
@@ -422,11 +428,22 @@ function showResults() {
     localStorage.removeItem('sec_scr');
 }
 
-// 🔥 دالة فتح شاشة إكس الرسمية ومشاركة النتيجة الحية الذكية للقدرات العامة
-function shareToPlatforms() {
-    const textToShare = `🎯 حققت نسبة ${globalFinalPct}% في منصة المحاكاة الحية للقدرات العامة للمرحلة الثانوية ⚡ جرب اختبارك الآن وتحدى نفسك لضمان مجموعك العالي: https://github.io`;
-    const twitterUrl = `https://twitter.com{encodeURIComponent(textToShare)}`;
-    window.open(twitterUrl, '_blank');
+// 🔥 [تعديل الحفظ والنسخ اللحظي المطور بدقة]: نسخ النص مباشرة الحافظة وعرض إشعار تنبيهي آمن
+function copyResultText() {
+    const textToCopy = `🎯 حققت نسبة ${globalFinalPct}% في منصة المحاكاة الحية للرخصة المهنية (${globalFieldName}) جرب اختبار تخصصك الآن وتحدى نفسك لضمان رخصتك:\nhttps://github.io`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        alert("📋 تم نسخ نص الإنجاز بنجاح إلى الذاكرة! يمكنك الآن لصقه ومشاركته في تويتر أو تليجرام وفخرك بنفسك.");
+    }).catch(err => {
+        // حماية احتياطية للمتصفحات القديمة جداً
+        const textarea = document.createElement("textarea");
+        textarea.value = textToCopy;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+        alert("📋 تم نسخ نص الإنجاز بنجاح إلى الذاكرة!");
+    });
 }
 
 function endExamEarly() { 
@@ -478,18 +495,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // كشف DevTools (صامت تماماً - بدون أي رسالة)
-    let devtoolsOpen = false;
-    setInterval(() => {
-        if (window.outerWidth - window.innerWidth > 180 || 
-            window.outerHeight - window.innerHeight > 180) {
-            if (!devtoolsOpen) {
-                devtoolsOpen = true;
-            }
-        }
-    }, 700);
-
-});
-</script>
-
-</body>
-</html>
+    
