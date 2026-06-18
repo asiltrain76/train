@@ -45,6 +45,11 @@
         .bar-warning { background: linear-gradient(90deg, #ed8936, #dd6b20); }
         .bar-danger { background: linear-gradient(90deg, #f56565, #e53e3e); }
         
+        /* 🔥 تصميم لوحة وبثقة زر التميز والمشاركة الفاخر المطور للقدرات */
+        .share-panel { border: 2px dashed #38a169; background: #f0fff4; color: #276749; padding: 15px; border-radius: 10px; margin: 20px 0; font-weight: bold; text-align: center; font-size: 1.05rem; line-height: 1.6; }
+        .btn-share { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #319795; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; width: 100%; margin-top: 12px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn-share:hover { background: #234e52; transform: translateY(-1px); }
+
         /* نبض المؤقت باللون الأحمر في وضع التحدي عند اقتراب الوقت */
         .timer-alert { color: var(--danger) !important; animation: pulse 1s infinite alternate; font-size: 1.1rem; }
         @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
@@ -102,6 +107,13 @@
         </div>
     </div>
     <p id="final-score" style="font-size: 1.3rem; color: #2d3748; text-align: right; font-weight: 500; line-height: 1.8;"></p>
+    
+    <!-- 🔥 صندوق لوحة مشاركة الإنجاز الفخمة التلقائية المحمية بالشرط اللحظي للقدرات -->
+    <div id="share-box-panel" class="share-panel hidden">
+        🎉 كفو يا أستاذ! لقد تجاوزت نسبة الاجتياز وعادلت الفخمة بمعدل <span id="share-pct-label">0</span>%!
+        <button class="btn-share" onclick="shareToPlatforms()">📢 شارك إنجازك في تويتر وتليجرام وافخر بنفسك</button>
+    </div>
+
     <p id="final-time" style="font-size: 1.1rem; text-align: right; color: #4a5568;"></p>
     <button class="btn-action btn-end" style="width: 100%; margin-top: 20px;" onclick="exitToMain()">العودة للشاشة الرئيسية</button>
 </div>
@@ -165,7 +177,7 @@ window.onload = function() {
     
     if (!user) { window.location.href = "index.html"; return; }
     
-    // 🔥 تطبيق ومطابقة خيار الحد الأقصى للأسئلة المختارة للمشتركين بدقة وفصلها عن الزوار
+    // تطبيق ومطابقة خيار الحد الأقصى للأسئلة المختارة (10، 20، 30، 80، 100) بدقة للمشتركين وفصلها عن الحساب التجريبي
     let savedLimit = parseInt(localStorage.getItem('examLimit'));
     if (isGuest) {
         maxQuestions = 20;
@@ -257,7 +269,7 @@ function loadQuestion() {
         }
     }
 
-    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد بناء على الحد الديناميكي الفعلي
+    // 🛡️ تكتيك الحفظ اللحظي الكامل للمشتركين قبل عرض السؤال الجديد بناء على الحد الفعلي
     if (!isGuest) {
         const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
         localStorage.setItem(`asiltrain_autosave_idx_${currentFieldKey}`, currentIndex); 
@@ -355,10 +367,13 @@ function eliminateTwo() {
     // خلط حروف الأزرار الثلاثة الخاطئة بشكل مستقل لاختيار اثنين منها
     shuffleArray(wrongLetters);
     
-    // 🔥 [تم الإصلاح]: حذف الإجابتين الخاطئتين بدقة بناءً على الفهرسة الصحيحة للمصفوفة المخلطة
-    document.getElementById(`opt${wrongLetters[0]}`).innerText = "---";
-    document.getElementById(`opt${wrongLetters[1]}`).innerText = "---";
+    // حذف أول إجابتين خاطئتين تقع عليهما القرعة العشوائية المفلترة الصحيحة للمصفوفة
+    document.getElementById(`opt${wrongLetters}`).innerText = "---";
+    document.getElementById(`opt${wrongLetters}`).innerText = "---";
 }
+
+// متغير يحفظ النسبة المحققة النهائية لإرسالها لنص مشاركة إكس
+let globalFinalPct = 0;
 
 function showResults() {
     clearInterval(timerInterval);
@@ -367,6 +382,7 @@ function showResults() {
     
     const solvedCount = Math.min(currentIndex, maxQuestions);
     const pct = solvedCount > 0 ? ((correctCount / solvedCount) * 100).toFixed(1) : 0;
+    globalFinalPct = pct;
     const rank = getRankText(parseFloat(pct));
     const diff = Math.floor((Date.now() - startTime) / 1000);
 
@@ -385,6 +401,15 @@ function showResults() {
 
     document.getElementById('final-name').innerText = `👤 اسم المتدرب: ${localStorage.getItem('activeUser')}`;
     document.getElementById('final-score').innerHTML = `🎯 النتيجة للتحليل اللحظي: حققت <span style='color:var(--success); font-weight:bold;'>${correctCount}</span> إجابة صحيحة موثقة من أصل <b>${solvedCount}</b> سؤالاً تم استهدفها بمحاكاتك.<br>📊 النسبة والتقدير التدريبي المهني الموثق: <b>${pct}%</b> - <span style='color:var(--primary); font-weight:bold;'>${rank}</span>`;
+    
+    // 🔥 [تم التحديث اللحظي]: التحقق من شرط الاجتياز (70% فما فوق) وعرض صندوق وبوتقة المشاركة للتميز في القدرات
+    if (parseFloat(pct) >= 70) {
+        document.getElementById('share-pct-label').innerText = pct;
+        document.getElementById('share-box-panel').classList.remove('hidden');
+    } else {
+        document.getElementById('share-box-panel').classList.add('hidden');
+    }
+
     document.getElementById('final-time').innerText = `⏱️ إجمالي الوقت المستغرق في المحاكاة الحية: ${Math.floor(diff / 60)} دقيقة و ${diff % 60} ثانية`;
     
     // تنظيف مفاتيح التتبع اللحظية للـ Auto-Save ومصفوفة الترتيب فور اكتمال الجولة ونجاح التصحيح الكلي للمشترك
@@ -395,6 +420,13 @@ function showResults() {
     localStorage.removeItem(`asiltrain_questions_order_${currentFieldKey}`);
     localStorage.removeItem('sec_idx'); 
     localStorage.removeItem('sec_scr');
+}
+
+// 🔥 دالة فتح شاشة إكس الرسمية ومشاركة النتيجة الحية الذكية للقدرات العامة
+function shareToPlatforms() {
+    const textToShare = `🎯 حققت نسبة ${globalFinalPct}% في منصة المحاكاة الحية للقدرات العامة للمرحلة الثانوية ⚡ جرب اختبارك الآن وتحدى نفسك لضمان مجموعك العالي: https://github.io`;
+    const twitterUrl = `https://twitter.com{encodeURIComponent(textToShare)}`;
+    window.open(twitterUrl, '_blank');
 }
 
 function endExamEarly() { 
